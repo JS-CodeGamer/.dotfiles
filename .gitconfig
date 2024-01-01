@@ -9,3 +9,5 @@
   prompt = true
 [difftool "nvimdiff"]
     cmd = "nvim -d \"$LOCAL\" \"$REMOTE\""
+[push]
+	autoSetupRemote = true

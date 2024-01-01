@@ -47,3 +47,9 @@ fi
 
 # local bin
 export PATH=$PATH:~/.local/bin
+
+# cargo bin
+if command -v cargo >>/dev/null;
+then
+  export PATH=$PATH:~/.cargo/bin
+fi
