@@ -20,3 +20,12 @@ xhost +local:root >/dev/null 2>&1
 
 # pyenv
 eval "$(pyenv init -)"
+
+# User configuration
+export MANPATH="/usr/local/man:$MANPATH"
+
+# You may need to manually set your language environment
+export LANG=en_IN.UTF-8
+
+# ssh
+# export SSH_KEY_PATH="~/.ssh/rsa_id"

@@ -2,7 +2,7 @@
 
 ## Global defaults
 command -v bat >/dev/null && export PAGER="bat"
-command -v nvim >/dev/null && export EDITOR="nvim"
+command -v nvim >/dev/null && export EDITOR="nvim" VISUAL="nvim"
 
 ## nvm -- node version manager
 export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] &&
