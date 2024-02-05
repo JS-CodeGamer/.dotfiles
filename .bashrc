@@ -110,7 +110,7 @@ alias cat='bat --style header,snip,changes'
 alias bathelp='bat -pl help'
 
 ## neovim
-alias nv="nvim"
+alias n="nvim"
 alias v="vim"
 
 # iptables

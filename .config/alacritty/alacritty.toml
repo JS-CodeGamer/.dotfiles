@@ -438,7 +438,8 @@ mods = "Control|Shift"
 history = 5000
 
 [shell]
-program = "byobu"
+program = "bash"
+#program = "byobu"
 
 [window]
 opacity = 0.75
