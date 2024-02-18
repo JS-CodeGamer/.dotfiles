@@ -1,60 +1,9 @@
-[[ $- != *i* ]] && return
+#!/bin/bash
 
-shopt -s histappend checkwinsize expand_aliases
+## note: exports are placed before check for 
+##  interactivity for use in scripts
 
-for script in "$HOME/.bash/"*.sh; do
-	[[ -f $script ]] && source $script
-done
-
-# pyenv
-eval "$(pyenv init -)"
-
-# You may need to manually set your language environment
-export LANG=en_IN.UTF-8
-
-#################################################
-#################################################
-##################             ##################
-##################   3rd Party ##################
-##################    Scripts  ##################
-##################             ##################
-#################################################
-#################################################
-
-# fzf -- fuzy search
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
-
-# nvm -- node version manager
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"                   # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion" # This loads nvm bash_completion
-
-# Advanced command-not-found
-[ -r /usr/share/doc/find-the-command/ftc.bash ] && . /usr/share/doc/find-the-command/ftc.bash
-
-# Oh-My-Bash
-export OSH="$HOME/.oh-my-bash"
-OSH_THEME="powerbash10k"
-ENABLE_CORRECTION="true"
-OMB_DEFAULT_ALIASES="check"
-OMB_USE_SUDO=true
-OMB_PROMPT_SHOW_PYTHON_VENV=true
-completions=(django git npm nvm pip pip3 ssh tmux)
-aliases=(general chmod docker misc)
-plugins=(bashmarks git nvm pyenv)
-. "$OSH"/oh-my-bash.sh
-
-if [ -f "$HOME/.local/bin/bashmarks.sh" ]; then
-	. "$HOME/.local/bin/bashmarks.sh"
-fi
-
-#################################################
-#################################################
-##################             ##################
-##################   ALIASES   ##################
-##################             ##################
-#################################################
-#################################################
-
+# check if a prog exists or not
 check() {
 	if command -v $1 >/dev/null; then
 		return 0
@@ -62,108 +11,6 @@ check() {
 		return 1
 	fi
 }
-
-alias less='less -RF'
-alias du='du -had1'
-alias df='df -h'     # human-readable sizes
-alias free='free -m' # show sizes in MB
-
-## ls
-# Replace ls with exa
-alias ls='exa --color=always --group-directories-first --icons' # use exa if available
-alias la='ls -A'                                                # all files and dirs
-alias ll='ls -al'                                               # long format
-alias lt='ls -aT'                                               # tree listing using exa
-alias l.='ls -d .*'                                             # show only dotfiles
-
-## grep
-alias grep='grep --colour=always'
-alias egrep='grep -E'
-alias fgrep='fgrep -F'
-check rg && alias grep='rg'
-
-## python
-alias py='python'
-alias pym='python -m'
-alias pip='python -m pip'
-
-## pacman, yay & paru
-alias ys='pacman -S'
-alias yu='pacman -Syu'
-alias yq='pacman -Q'
-alias yr='pacman -R'
-check paru && alias pacman='paru'
-
-## openvpn3
-alias vpnc='openvpn3 session-start --persist-tun --dco true -c'
-alias vpnd='openvpn3 session-manage -D -c'
-alias vpnr='openvpn3 session-manage --restart -c'
-alias vpnl='openvpn3 sessions-list'
-
-## git
-alias glog='git log --oneline --graph'
-alias ga='git add' gcm='git commit' gco='git checkout'
-alias gs='git status -sb' gsh='git stash' gus='git stash pop'
-
-## bat
-alias cat='bat --style header,snip,changes'
-alias bathelp='bat -pl help'
-
-## neovim
-alias n="nvim"
-alias v="vim"
-
-# iptables
-alias ipt='sudo iptables -nvL --line-numbers'
-
-## Useful aliases
-### credit: bashrc from garduda linux
-alias grubup="sudo update-grub"
-alias fixpacman="sudo rm /var/lib/pacman/db.lck"
-alias tarnow='tar -acf '
-alias untar='tar -zxvf '
-alias wget='wget -c '
-alias rmpkg="sudo pacman -Rdd"
-alias psmem='ps auxf | sort -nr -k 4'
-alias psmem10='ps auxf | sort -nr -k 4 | head -10'
-alias upd='/usr/bin/garuda-update'
-alias ..='cd ..'
-alias ...='cd ../..'
-alias ....='cd ../../..'
-alias .....='cd ../../../..'
-alias ......='cd ../../../../..'
-alias dir='dir --color=auto'
-alias vdir='vdir --color=auto'
-alias grep='ugrep --color=auto'
-alias fgrep='ugrep -F --color=auto'
-alias egrep='ugrep -E --color=auto'
-alias hw='hwinfo --short'                          # Hardware Info
-alias big="expac -H M '%m\t%n' | sort -h | nl"     # Sort installed packages according to size in MB (expac must be installed)
-alias gitpkg='pacman -Q | grep -i "\-git" | wc -l' # List amount of -git packages
-alias ip='ip -color'
-
-# Get fastest mirrors
-alias mirror="sudo reflector -f 30 -l 30 --number 10 --verbose --save /etc/pacman.d/mirrorlist"
-alias mirrord="sudo reflector --latest 50 --number 20 --sort delay --save /etc/pacman.d/mirrorlist"
-alias mirrors="sudo reflector --latest 50 --number 20 --sort score --save /etc/pacman.d/mirrorlist"
-alias mirrora="sudo reflector --latest 50 --number 20 --sort age --save /etc/pacman.d/mirrorlist"
-
-# Help people new to Arch
-alias apt='man pacman'
-alias apt-get='man pacman'
-alias please='sudo'
-alias tb='nc termbin.com 9999'
-alias helpme='cht.sh --shell'
-alias pacdiff='sudo -H DIFFPROG=meld pacdiff'
-
-# Cleanup orphaned packages
-alias cleanup='sudo pacman -Rns $(pacman -Qtdq)'
-
-# Get the error messages from journalctl
-alias jctl="journalctl -p 3 -xb"
-
-# Recent installed packages
-alias rip="expac --timefmt='%Y-%m-%d %T' '%l\t%n %v' | sort | tail -200 | nl"
 
 #################################################
 #################################################
@@ -212,15 +59,164 @@ if [ -d "$HOME/.pyenv" ]; then
 	export PYENV_ROOT="$HOME/.pyenv"
 	check pyenv ||
 		export PATH=$PYENV_ROOT/bin:$PATH
+  eval -- "$(pyenv init --path)"
+	eval -- "$(pyenv init -)"
 fi
 
 # local bin
 export PATH=$PATH:"$HOME/.local/bin"
 
+# local backgrounds folder
+export BG_Folder=$HOME/backgrounds
+
 # cargo bin
 if check cargo; then
 	export PATH=$PATH:"$HOME/.cargo/bin"
 fi
+
+## check for shell interactivity
+[[ $- != *i* ]] && return
+
+shopt -s histappend checkwinsize expand_aliases
+
+# You may need to manually set your language environment
+export LANG=en_IN.UTF-8
+
+#################################################
+#################################################
+##################             ##################
+##################   3rd Party ##################
+##################    Scripts  ##################
+##################             ##################
+#################################################
+#################################################
+
+# fzf -- fuzy search
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+# nvm -- node version manager
+export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"                   # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion" # This loads nvm bash_completion
+
+# Advanced command-not-found
+[ -r /usr/share/doc/find-the-command/ftc.bash ] && . /usr/share/doc/find-the-command/ftc.bash
+
+# Oh-My-Bash
+export OSH="$HOME/.oh-my-bash"
+OSH_THEME="powerbash10k"
+ENABLE_CORRECTION="true"
+OMB_DEFAULT_ALIASES="check"
+OMB_USE_SUDO=true
+OMB_PROMPT_SHOW_PYTHON_VENV=true
+completions=(django git npm pip pip3 ssh tmux)
+aliases=(general chmod docker misc)
+plugins=(bashmarks git)
+. "$OSH"/oh-my-bash.sh
+
+#################################################
+#################################################
+##################             ##################
+##################   ALIASES   ##################
+##################             ##################
+#################################################
+#################################################
+
+alias less='less -RF'
+alias du='du -had1'
+alias df='df -h'     # human-readable sizes
+alias free='free -m' # show sizes in MB
+
+## ls
+check exa && \
+  alias ls='exa --color --group-directories-first --icons'  # use exa if available
+alias la='ls -A'                                            # all files and dirs
+alias ll='ls -al'                                           # long format
+alias lt='ls -aT'                                           # tree listing using exa
+alias l.='ls -d .*'                                         # show only dotfiles
+
+## grep
+alias grep='grep --colour'
+alias egrep='grep -E'
+alias fgrep='fgrep -F'
+check rg && alias grep='rg'
+
+## python
+alias py='python'
+alias pym='python -m'
+alias pip='python -m pip'
+
+## pacman, yay & paru
+alias ys='pacman -S'
+alias yu='pacman -Syu'
+alias yq='pacman -Q'
+alias yr='pacman -R'
+alias rmpkg="sudo pacman -Rdd"
+alias fixpacman="sudo rm /var/lib/pacman/db.lck"
+alias gitpkg='pacman -Q | grep -i "\-git" | wc -l' # List amount of -git packages
+check paru && alias pacman='paru'
+
+## reflector
+alias mirror="sudo reflector -f 30 -l 30 -n 10 --verbose --save /etc/pacman.d/mirrorlist"
+alias mirrord="sudo reflector -l 50 -n 20 --sort delay --save /etc/pacman.d/mirrorlist"
+alias mirrors="sudo reflector -l 50 -n 20 --sort score --save /etc/pacman.d/mirrorlist"
+alias mirrora="sudo reflector -l 50 -n 20 --sort age --save /etc/pacman.d/mirrorlist"
+
+## openvpn3
+alias vpnc='openvpn3 session-start --persist-tun --dco true -c'
+alias vpnd='openvpn3 session-manage -D -c'
+alias vpnr='openvpn3 session-manage --restart -c'
+alias vpnl='openvpn3 sessions-list'
+
+## git
+alias glog='git log --oneline --graph'
+alias ga='git add' gcm='git commit' gco='git checkout'
+alias gs='git status -sb' gsh='git stash' gus='git stash pop'
+
+## bat
+alias cat='bat --style header,snip,changes'
+alias bh='bat -pl help' # bathelp
+
+## neovim
+alias n="nvim"
+alias v="vim"
+
+# iptables
+alias ipt='sudo iptables -nvL --line-numbers'
+
+## Useful aliases
+### credit: bashrc from garduda linux
+alias grubup="sudo update-grub"
+alias tarnow='tar -acf'
+alias untar='tar -zxvf'
+alias wget='wget -c'
+alias psmem='ps auxf | sort -nr -k 4'
+alias psmem10='ps auxf | sort -nr -k 4 | head -10'
+alias upd='/usr/bin/garuda-update'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+alias ......='cd ../../../../..'
+alias dir='dir --color=auto'
+alias vdir='vdir --color=auto'
+alias hw='hwinfo --short'                          # Hardware Info
+alias big="expac -H M '%m\t%n' | sort -h | nl"     # Sort installed packages according to size in MB (expac must be installed)
+alias ip='ip -color'
+
+# Help people new to Arch
+alias tb='nc termbin.com 9999'
+alias helpme='cht.sh --shell'
+alias pacdiff='sudo -H DIFFPROG=meld pacdiff'
+
+# Cleanup orphaned packages
+alias cleanup='sudo pacman -Rns $(pacman -Qtdq)'
+
+# Get the error messages from journalctl
+alias jctl="journalctl -p 3 -xb"
+
+# Recent installed packages
+alias rip="expac --timefmt='%Y-%m-%d %T' '%l\t%n %v' | sort | tail -200 | nl"
 
 unset check
 
