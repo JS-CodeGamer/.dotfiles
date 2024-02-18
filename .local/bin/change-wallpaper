@@ -1,0 +1,9 @@
+#! /bin/bash
+
+# swww
+if command -v swww >/dev/null;
+then
+  for disp in $(swww query | awk -F: '{ print $1 }'); do
+    swww img -o $disp "$(random-wallpaper)"
+  done
+fi

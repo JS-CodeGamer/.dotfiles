@@ -1,3 +1,0 @@
-#! /bin/bash
-
-find -L $BG_Folder -type f -ipath '*landscape*' | sort -R | tail -n1

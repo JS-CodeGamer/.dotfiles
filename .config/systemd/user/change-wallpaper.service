@@ -1,0 +1,5 @@
+[Unit]
+Description=Change wallpaper
+
+[Service]
+ExecStart=bash -lc 'change-wallpaper'

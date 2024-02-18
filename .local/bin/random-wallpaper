@@ -1,0 +1,3 @@
+#! /bin/bash
+
+find -L $WALLPAPER_FOLDER -type f -ipath '*landscape*' | sort -R | tail -n1

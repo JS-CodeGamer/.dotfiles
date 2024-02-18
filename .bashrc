@@ -25,16 +25,17 @@ check bat && export PAGER="bat"
 check nvim && export EDITOR="nvim" \
 	VISUAL="nvim"
 
+## xdg
+export XDG_CONFIG_HOME=$HOME/.config
+
 ## nvm -- node version manager
-export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] &&
-	printf %s "${HOME}/.nvm" ||
-	printf %s "${XDG_CONFIG_HOME}/nvm")"
+export NVM_DIR=$XDG_CONFIG_HOME/nvm
 
 ## git
 export GIT_DISCOVERY_ACROSS_FILESYSTEM=1
 
 ## bat -- cat replacement
-export BAT_CONFIG_PATH="$HOME/.config/bat/bat.conf"
+export BAT_CONFIG_PATH=$XDG_CONFIG_HOME/bat/bat.conf
 
 ## man
 export MANROFFOPT="-c"
@@ -63,16 +64,14 @@ if [ -d "$HOME/.pyenv" ]; then
 	eval -- "$(pyenv init -)"
 fi
 
-# local bin
-export PATH=$PATH:"$HOME/.local/bin"
-
-# local backgrounds folder
-export BG_Folder=$HOME/backgrounds
-
 # cargo bin
 if check cargo; then
 	export PATH=$PATH:"$HOME/.cargo/bin"
 fi
+
+# local environment
+export PATH=~/.local/bin/:$PATH
+export WALLPAPER_FOLDER=$HOME/backgrounds
 
 ## check for shell interactivity
 [[ $- != *i* ]] && return
@@ -94,13 +93,20 @@ export LANG=en_IN.UTF-8
 # fzf -- fuzy search
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
+# bash-completion (aur)
+[ -f /usr/share/bash-completion/bash_completion ] && \
+  . /usr/share/bash-completion/bash_completion
+
 # nvm -- node version manager
-export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"                   # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion" # This loads nvm bash_completion
+export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && \
+  printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
 
 # Advanced command-not-found
-[ -r /usr/share/doc/find-the-command/ftc.bash ] && . /usr/share/doc/find-the-command/ftc.bash
+[ -r /usr/share/doc/find-the-command/ftc.bash ] && \
+  . /usr/share/doc/find-the-command/ftc.bash
+
 
 # Oh-My-Bash
 export OSH="$HOME/.oh-my-bash"
