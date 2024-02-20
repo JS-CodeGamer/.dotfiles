@@ -1,5 +1,5 @@
 #!/bin/bash
 
-swaylock -efFi "$(random_bg)"
+swaylock
 sleep 5s
 hyprctl dispatch dpms off
