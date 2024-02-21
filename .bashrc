@@ -306,3 +306,5 @@ config() {
 scriptedit() {
 	$EDITOR "$HOME/.local/bin/$1"
 }
+
+neofetch
