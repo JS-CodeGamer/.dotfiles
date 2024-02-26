@@ -1,0 +1,9 @@
+[submodule ".config/nvim/lua/js"]
+	path = .config/nvim/lua/js
+	url = ../nvim-config
+[submodule ".config/alacritty/themes"]
+	path = .config/alacritty/themes
+	url = https://github.com/alacritty/alacritty-theme.git
+[submodule ".oh-my-bash"]
+	path = .oh-my-bash
+	url = https://github.com/ohmybash/oh-my-bash.git

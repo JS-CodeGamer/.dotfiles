@@ -79,7 +79,7 @@ export WALLPAPER_FOLDER=$HOME/backgrounds
 shopt -s histappend checkwinsize expand_aliases
 
 # You may need to manually set your language environment
-export LANG=en_IN.UTF-8
+export LANG=en_US.UTF-8
 
 #################################################
 #################################################
@@ -132,6 +132,7 @@ alias less='less -RF'
 alias du='du -had1'
 alias df='df -h'     # human-readable sizes
 alias free='free -m' # show sizes in MB
+alias clear="command clear; seq 1 $(tput cols) | sort -R | sparklines | lolcat"
 
 ## ls
 check exa && \
@@ -306,5 +307,4 @@ config() {
 scriptedit() {
 	$EDITOR "$HOME/.local/bin/$1"
 }
-
-neofetch
+neofetch | lolcat

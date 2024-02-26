@@ -1,4 +1,4 @@
-import = ["~/.config/alacritty/themes/themes/aura.toml"]
+import = ["~/.config/alacritty/themes/themes/cyber_punk_neon.toml"]
 
 [window]
 padding = { x = 1, y = 1 }

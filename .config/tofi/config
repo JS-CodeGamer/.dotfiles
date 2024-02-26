@@ -34,3 +34,4 @@ border-color = #924dbf
 
 exclusive-zone = 0
 require-match = false
+terminal = alacritty -e
