@@ -1,3 +1,4 @@
 #! /bin/bash
-
+#
+# mainly used in conjunction with other wallpaper scripts
 find -L $WALLPAPER_FOLDER -type f -ipath *landscape* | sort -R | tail -n1

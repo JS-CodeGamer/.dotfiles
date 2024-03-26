@@ -1,6 +1,6 @@
 #!/bin/bash
 
-## note: exports are placed before check for 
+## note: exports are placed before check for
 ##  interactivity for use in scripts
 
 # check if a prog exists or not
@@ -60,7 +60,7 @@ if [ -d "$HOME/.pyenv" ]; then
 	export PYENV_ROOT="$HOME/.pyenv"
 	check pyenv ||
 		export PATH=$PYENV_ROOT/bin:$PATH
-  eval -- "$(pyenv init --path)"
+	eval -- "$(pyenv init --path)"
 	eval -- "$(pyenv init -)"
 fi
 
@@ -81,6 +81,19 @@ shopt -s histappend checkwinsize expand_aliases
 # You may need to manually set your language environment
 export LANG=en_US.UTF-8
 
+# dart pub
+export PATH="$PATH":"$HOME/.pub-cache/bin"
+
+#################################################
+#################################################
+##################             ##################
+##################   Options   ##################
+##################             ##################
+#################################################
+#################################################
+
+set +o noclobber
+
 #################################################
 #################################################
 ##################             ##################
@@ -94,23 +107,25 @@ export LANG=en_US.UTF-8
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
 # bash-completion (aur)
-[ -f /usr/share/bash-completion/bash_completion ] && \
-  . /usr/share/bash-completion/bash_completion
+[ -f /usr/share/bash-completion/bash_completion ] &&
+	. /usr/share/bash-completion/bash_completion
 
 # nvm -- node version manager
-export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && \
-  printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] &&
+	printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
 
 # Advanced command-not-found
-[ -r /usr/share/doc/find-the-command/ftc.bash ] && \
-  . /usr/share/doc/find-the-command/ftc.bash
-
+[ -r /usr/share/doc/find-the-command/ftc.bash ] &&
+	. /usr/share/doc/find-the-command/ftc.bash
 
 # Oh-My-Bash
 export OSH="$HOME/.oh-my-bash"
-OSH_THEME="powerbash10k"
+OSH_THEME="nwinkler_random_colors"
+# "powerbash10k" -- good
+# "nwinkler_random_colors" -- good colors
+# "edsonarios" -- minimal
 ENABLE_CORRECTION="true"
 OMB_DEFAULT_ALIASES="check"
 OMB_USE_SUDO=true
@@ -128,6 +143,14 @@ plugins=(bashmarks git)
 #################################################
 #################################################
 
+check() {
+	if command -v $1 >/dev/null; then
+		return 0
+	else
+		return 1
+	fi
+}
+
 alias less='less -RF'
 alias du='du -had1'
 alias df='df -h'     # human-readable sizes
@@ -135,12 +158,12 @@ alias free='free -m' # show sizes in MB
 alias clear="command clear; seq 1 $(tput cols) | sort -R | sparklines | lolcat"
 
 ## ls
-check exa && \
-  alias ls='exa --color --group-directories-first --icons'  # use exa if available
-alias la='ls -A'                                            # all files and dirs
-alias ll='ls -al'                                           # long format
-alias lt='ls -aT'                                           # tree listing using exa
-alias l.='ls -d .*'                                         # show only dotfiles
+check exa &&
+	alias ls='exa --color --group-directories-first --icons' # use exa if available
+alias la='ls -A'                                          # all files and dirs
+alias ll='ls -al'                                         # long format
+alias lt='ls -aT'                                         # tree listing using exa
+alias l.='ls -d .*'                                       # show only dotfiles
 
 ## grep
 alias grep='grep --colour'
@@ -153,7 +176,7 @@ alias py='python'
 alias pym='python -m'
 alias pip='python -m pip'
 
-## pacman, yay & paru
+## pacman, yay
 alias ys='pacman -S'
 alias yu='pacman -Syu'
 alias yq='pacman -Q'
@@ -161,7 +184,7 @@ alias yr='pacman -R'
 alias rmpkg="sudo pacman -Rdd"
 alias fixpacman="sudo rm /var/lib/pacman/db.lck"
 alias gitpkg='pacman -Q | grep -i "\-git" | wc -l' # List amount of -git packages
-check paru && alias pacman='paru'
+check yay && alias pacman='yay'
 
 ## reflector
 alias mirror="sudo reflector -f 30 -l 30 -n 10 --verbose --save /etc/pacman.d/mirrorlist"
@@ -207,8 +230,8 @@ alias .....='cd ../../../..'
 alias ......='cd ../../../../..'
 alias dir='dir --color=auto'
 alias vdir='vdir --color=auto'
-alias hw='hwinfo --short'                          # Hardware Info
-alias big="expac -H M '%m\t%n' | sort -h | nl"     # Sort installed packages according to size in MB (expac must be installed)
+alias hw='hwinfo --short'                      # Hardware Info
+alias big="expac -H M '%m\t%n' | sort -h | nl" # Sort installed packages according to size in MB (expac must be installed)
 alias ip='ip -color'
 
 # Help people new to Arch
@@ -224,6 +247,8 @@ alias jctl="journalctl -p 3 -xb"
 
 # Recent installed packages
 alias rip="expac --timefmt='%Y-%m-%d %T' '%l\t%n %v' | sort | tail -200 | nl"
+
+alias cloudflared="docker run -dv ~/.cloudflared:/etc/cloudflared --network host --rm cloudflare/cloudflared"
 
 unset check
 
@@ -302,9 +327,22 @@ help() {
 config() {
 	git --git-dir="$HOME/.cfg/" --work-tree="$HOME" $@
 }
+# $(complete -p git | sed 's/\(.*\)git/\1config/')
 
 ## edit my scripts
 scriptedit() {
 	$EDITOR "$HOME/.local/bin/$1"
 }
+complete -W "$(ls $HOME/.local/bin)" scriptedit
+
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+# OMP_THEME="uew.omp.json" # $(ls $(brew --prefix oh-my-posh)/themes/ | sort -R | tail -1)
+# eval "$(oh-my-posh init bash --config $(brew --prefix oh-my-posh)/themes/$OMP_THEME)"
+# echo using oh my posh theme: $OMP_THEME | lolcat
+#
+# function ompset() {
+# 	oh-my-posh init bash --config $(brew --prefix oh-my-posh)/themes/$@
+# }
+
 neofetch | lolcat

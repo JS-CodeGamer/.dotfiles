@@ -1,9 +1,9 @@
 #! /bin/bash
 
 # swww
-if command -v swww >/dev/null;
-then
-  for disp in $(swww query | awk -F: '{ print $1 }'); do
-    swww img -o $disp "$(random-wallpaper)"
-  done
+# change wallpaper using ~/.local/bin/random-wallpaper to get path to wallpaper
+if command -v swww >/dev/null; then
+	for disp in $(swww query | awk -F: '{ print $1 }'); do
+		swww img -o $disp "$(~/.local/bin/random-wallpaper)"
+	done
 fi
