@@ -1,0 +1,4 @@
+[Unit]
+Description=Services to be started with hyprland
+Wants=change-wallpaper.timer
+Wants=cloudflare-tunnel.service

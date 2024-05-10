@@ -1,0 +1,37 @@
+font = "JetBrainsMonoNerdFontMono"
+font-size = 20
+
+prompt-text = "-> "
+
+# COLOR THEME:
+#  #0f0529
+#  #4a2574
+#  #7338a0
+#  #924dbf
+input-color = #9e72c3
+prompt-color = #9e72c3
+selection-color = #0f0529
+default-result-color = #7338a0
+alternate-result-color = #0f0529
+
+selection-background = #fff9
+background-color = #0f0529
+alternate-result-background = #7338a0
+
+padding-top = 0
+padding-bottom = 0
+padding-left = 0
+padding-right = 0
+selection-background-padding = 0,-1
+alternate-result-background-padding = 0,-1
+
+corner-radius = 20
+
+outline-width = 1
+outline-color = #fff
+border-width = 4
+border-color = #924dbf
+
+exclusive-zone = 0
+require-match = false
+terminal = alacritty -e

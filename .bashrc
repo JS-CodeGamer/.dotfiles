@@ -20,6 +20,11 @@ check() {
 #################################################
 #################################################
 
+# You may need to manually set your language environment
+export LANG=en_US.UTF-8
+export TERM=xterm
+
+
 ## Global defaults
 check bat && export PAGER="bat"
 check nvim && export EDITOR="nvim" \
@@ -78,9 +83,6 @@ export WALLPAPER_FOLDER=$HOME/backgrounds
 
 shopt -s histappend checkwinsize expand_aliases
 
-# You may need to manually set your language environment
-export LANG=en_US.UTF-8
-
 # dart pub
 export PATH="$PATH":"$HOME/.pub-cache/bin"
 
@@ -122,7 +124,7 @@ export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] &&
 
 # Oh-My-Bash
 export OSH="$HOME/.oh-my-bash"
-OSH_THEME="nwinkler_random_colors"
+OSH_THEME="edsonarios"
 # "powerbash10k" -- good
 # "nwinkler_random_colors" -- good colors
 # "edsonarios" -- minimal
@@ -186,6 +188,7 @@ alias fixpacman="sudo rm /var/lib/pacman/db.lck"
 alias gitpkg='pacman -Q | grep -i "\-git" | wc -l' # List amount of -git packages
 check yay && alias pacman='yay'
 
+
 ## reflector
 alias mirror="sudo reflector -f 30 -l 30 -n 10 --verbose --save /etc/pacman.d/mirrorlist"
 alias mirrord="sudo reflector -l 50 -n 20 --sort delay --save /etc/pacman.d/mirrorlist"
@@ -247,8 +250,6 @@ alias jctl="journalctl -p 3 -xb"
 
 # Recent installed packages
 alias rip="expac --timefmt='%Y-%m-%d %T' '%l\t%n %v' | sort | tail -200 | nl"
-
-alias cloudflared="docker run -dv ~/.cloudflared:/etc/cloudflared --network host --rm cloudflare/cloudflared"
 
 unset check
 
@@ -327,7 +328,9 @@ help() {
 config() {
 	git --git-dir="$HOME/.cfg/" --work-tree="$HOME" $@
 }
-# $(complete -p git | sed 's/\(.*\)git/\1config/')
+
+# some completions
+complete -o bashdefault -o default -o nospace -F __git_wrap__git_main config
 
 ## edit my scripts
 scriptedit() {
@@ -335,7 +338,7 @@ scriptedit() {
 }
 complete -W "$(ls $HOME/.local/bin)" scriptedit
 
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+# eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
 # OMP_THEME="uew.omp.json" # $(ls $(brew --prefix oh-my-posh)/themes/ | sort -R | tail -1)
 # eval "$(oh-my-posh init bash --config $(brew --prefix oh-my-posh)/themes/$OMP_THEME)"
