@@ -44,6 +44,7 @@ return { -- Autoformat
       lua = { 'stylua' },
       python = { 'isort', 'black' },
       javascript = { { 'prettierd', 'prettier' } },
+      sh = { 'shfmt' },
     },
   },
 }

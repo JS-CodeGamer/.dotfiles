@@ -1,6 +1,9 @@
 [Unit]
-Description=Run change-wallpaper service every 2 minutes after start of this service
+Description=Run timer to change wallpaper
 
 [Timer]
 OnActiveSec=0
 OnUnitActiveSec=2m
+
+[Install]
+WantedBy=timers.target

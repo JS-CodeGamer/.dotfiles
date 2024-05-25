@@ -11,3 +11,9 @@
     cmd = "nvim -d \"$LOCAL\" \"$REMOTE\""
 [push]
 	autoSetupRemote = true
+[rerere]
+	enabled = true
+[column]
+	ui = auto
+[branch]
+	sort = -committerdate

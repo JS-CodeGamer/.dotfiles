@@ -6,7 +6,11 @@ import { MarginRevealer } from '../.widgethacks/advancedrevealers.js';
 import Brightness from '../../services/brightness.js';
 import Indicator from '../../services/indicator.js';
 
-const OsdValue = ({ name, nameSetup = undefined, labelSetup, progressSetup, ...rest }) => {
+const OsdValue = ({
+    name, nameSetup = undefined, labelSetup, progressSetup,
+    extraClassName = '', extraProgressClassName = '',
+    ...rest
+}) => {
     const valueName = Label({
         xalign: 0, yalign: 0, hexpand: true,
         className: 'osd-label',
@@ -20,7 +24,7 @@ const OsdValue = ({ name, nameSetup = undefined, labelSetup, progressSetup, ...r
     return Box({ // Volume
         vertical: true,
         hexpand: true,
-        className: 'osd-bg osd-value',
+        className: `osd-bg osd-value ${extraClassName}`,
         attribute: {
             'disable': () => {
                 valueNumber.label = '󰖭';
@@ -35,7 +39,7 @@ const OsdValue = ({ name, nameSetup = undefined, labelSetup, progressSetup, ...r
                 ]
             }),
             ProgressBar({
-                className: 'osd-progress',
+                className: `osd-progress ${extraProgressClassName}`,
                 hexpand: true,
                 vertical: false,
                 setup: progressSetup,
@@ -45,23 +49,25 @@ const OsdValue = ({ name, nameSetup = undefined, labelSetup, progressSetup, ...r
     });
 }
 
-export default () => {
+export default (monitor = 0) => {
     const brightnessIndicator = OsdValue({
         name: 'Brightness',
-        labelSetup: (self) => self.hook(Brightness, self => {
-            self.label = `${Math.round(Brightness.screen_value * 100)}`;
+        extraClassName: 'osd-brightness',
+        extraProgressClassName: 'osd-brightness-progress',
+        labelSetup: (self) => self.hook(Brightness[monitor], self => {
+            self.label = `${Math.round(Brightness[monitor].screen_value * 100)}`;
         }, 'notify::screen-value'),
-        progressSetup: (self) => self.hook(Brightness, (progress) => {
-            const updateValue = Brightness.screen_value;
+        progressSetup: (self) => self.hook(Brightness[monitor], (progress) => {
+            const updateValue = Brightness[monitor].screen_value;
             progress.value = updateValue;
         }, 'notify::screen-value'),
     });
 
     const volumeIndicator = OsdValue({
         name: 'Volume',
-        attribute: {
-            headphones: undefined,
-        },
+        extraClassName: 'osd-volume',
+        extraProgressClassName: 'osd-volume-progress',
+        attribute: { headphones: undefined },
         nameSetup: (self) => Utils.timeout(1, () => {
             const updateAudioDevice = (self) => {
                 const usingHeadphones = (Audio.speaker?.stream?.port)?.toLowerCase().includes('headphone');
@@ -69,7 +75,7 @@ export default () => {
                     volumeIndicator.attribute.headphones !== usingHeadphones) {
                     volumeIndicator.attribute.headphones = usingHeadphones;
                     self.label = usingHeadphones ? 'Headphones' : 'Speakers';
-                    Indicator.popup(1);
+                    // Indicator.popup(1);
                 }
             }
             self.hook(Audio, updateAudioDevice);

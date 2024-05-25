@@ -1,2 +1,0 @@
-#!/bin/sh
-cat /sys/class/power_supply/BAT*/capacity | awk '{s+=$1} END {printf "%.0f", s/NR}'

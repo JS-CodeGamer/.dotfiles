@@ -1,130 +1,11 @@
 #!/bin/bash
 
-## note: exports are placed before check for
-##  interactivity for use in scripts
-
-# check if a prog exists or not
-check() {
-	if command -v $1 >/dev/null; then
-		return 0
-	else
-		return 1
-	fi
-}
-
-#################################################
-#################################################
-##################             ##################
-##################   EXPORTS   ##################
-##################             ##################
-#################################################
-#################################################
-
-# You may need to manually set your language environment
-export LANG=en_US.UTF-8
-export TERM=xterm
-
-
-## Global defaults
-check bat && export PAGER="bat"
-check nvim && export EDITOR="nvim" \
-	VISUAL="nvim"
-
-## xdg
-export XDG_CONFIG_HOME=$HOME/.config
-
-## nvm -- node version manager
-export NVM_DIR=$XDG_CONFIG_HOME/nvm
-
-## git
-export GIT_DISCOVERY_ACROSS_FILESYSTEM=1
-
-## bat -- cat replacement
-export BAT_CONFIG_PATH=$XDG_CONFIG_HOME/bat/bat.conf
-
-## man
-export MANROFFOPT="-c"
-check bat && export MANPAGER="sh -c 'col -bx | bat -plman'"
-
-## fzf
-if check fzf && check rg; then
-	export FZF_DEFAULT_COMMAND='rg --files' \
-		FZF_DEFAULT_OPTS='-m'
-else
-	export FZF_DEFAULT_COMMAND="find . -regextype 'posix-extended' -iregex '.*(\.git|cache|node_modules).*' -type d -prune -o -type f -print -o -type l -print"
-fi
-
-# bun
-if [ -d "$HOME/.bun" ]; then
-	export BUN_INSTALL="$HOME/.bun" \
-		PATH=$BUN_INSTALL/bin:$PATH
-fi
-
-# pyenv
-if [ -d "$HOME/.pyenv" ]; then
-	export PYENV_ROOT="$HOME/.pyenv"
-	check pyenv ||
-		export PATH=$PYENV_ROOT/bin:$PATH
-	eval -- "$(pyenv init --path)"
-	eval -- "$(pyenv init -)"
-fi
-
-# cargo bin
-if check cargo; then
-	export PATH=$PATH:"$HOME/.cargo/bin"
-fi
-
-# local environment
-export PATH=~/.local/bin/:$PATH
-export WALLPAPER_FOLDER=$HOME/backgrounds
-
 ## check for shell interactivity
 [[ $- != *i* ]] && return
 
-shopt -s histappend checkwinsize expand_aliases
-
-# dart pub
-export PATH="$PATH":"$HOME/.pub-cache/bin"
-
-#################################################
-#################################################
-##################             ##################
-##################   Options   ##################
-##################             ##################
-#################################################
-#################################################
-
-set +o noclobber
-
-#################################################
-#################################################
-##################             ##################
-##################   3rd Party ##################
-##################    Scripts  ##################
-##################             ##################
-#################################################
-#################################################
-
-# fzf -- fuzy search
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
-
-# bash-completion (aur)
-[ -f /usr/share/bash-completion/bash_completion ] &&
-	. /usr/share/bash-completion/bash_completion
-
-# nvm -- node version manager
-export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] &&
-	printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
-
-# Advanced command-not-found
-[ -r /usr/share/doc/find-the-command/ftc.bash ] &&
-	. /usr/share/doc/find-the-command/ftc.bash
-
 # Oh-My-Bash
 export OSH="$HOME/.oh-my-bash"
-OSH_THEME="edsonarios"
+OSH_THEME="nwinkler_random_colors"
 # "powerbash10k" -- good
 # "nwinkler_random_colors" -- good colors
 # "edsonarios" -- minimal
@@ -137,14 +18,7 @@ aliases=(general chmod docker misc)
 plugins=(bashmarks git)
 . "$OSH"/oh-my-bash.sh
 
-#################################################
-#################################################
-##################             ##################
-##################   ALIASES   ##################
-##################             ##################
-#################################################
-#################################################
-
+# check if a prog exists or not
 check() {
 	if command -v $1 >/dev/null; then
 		return 0
@@ -153,25 +27,116 @@ check() {
 	fi
 }
 
+# You may need to manually set your language environment
+export LANG=en_US.UTF-8
+
+## xdg
+export XDG_CONFIG_HOME=$HOME/.config
+
+## man
+export MANROFFOPT="-c"
+
+## bat -- cat replacement
+check bat && {
+	export MANPAGER="sh -c 'col -bx | bat -plman'"
+	export PAGER="bat"
+	export BAT_CONFIG_PATH=$XDG_CONFIG_HOME/bat/bat.conf
+	alias cat='bat --style header,snip,changes'
+	alias bh='bat -pl help' # bathelp
+}
+
+# local environment
+export PATH=~/.local/bin/:$PATH
+export WALLPAPER_FOLDER=$HOME/backgrounds
+
+## neovim
+alias n="nvim"
+alias v="vim"
+check nvim && export EDITOR="nvim" \
+	VISUAL="nvim"
+
+## nvm -- node version manager
+export NVM_DIR=$XDG_CONFIG_HOME/nvm
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
+
+## fzf -- fuzy search
+if check fzf; then
+	eval "$(fzf --bash)"
+	export FZF_DEFAULT_OPTS='-m'
+	if check fd; then
+		export FZF_DEFAULT_COMMAND='fd --hidden --strip-cwd-prefix --exclude .git'
+		export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+		export FZF_ALT_C_COMMAND='fd --type=d --hidden --strip-cwd-prefix --exclude .git'
+		_fzf_compgen_path() {
+			fd --hidden --exclude .git . "$1"
+		}
+		_fzf_compgen_dir() {
+			fd --dir --hidden --exclude .git . "$1"
+		}
+	elif check rg; then
+		export FZF_DEFAULT_COMMAND='rg --files --hidden'
+	else
+		export FZF_DEFAULT_COMMAND="find . -regextype 'posix-extended' -iregex '\.(git|cache|node_modules).*' -type d -prune -o -print"
+	fi
+fi
+
+# bun
+if [ -d "$HOME/.bun" ]; then
+	export BUN_INSTALL="$HOME/.bun" \
+		PATH=$BUN_INSTALL/bin:$PATH
+fi
+
+# pyenv
+if [ -d "$HOME/.pyenv" ]; then
+	export PYENV_ROOT="$HOME/.pyenv"
+	export PATH=$PYENV_ROOT/bin:$PATH
+	check pyenv && {
+		eval -- "$(pyenv init --path)"
+		eval -- "$(pyenv init -)"
+	}
+fi
+
+# cargo bin
+if check cargo; then
+	export PATH=$PATH:"$HOME/.cargo/bin"
+fi
+
+shopt -s histappend checkwinsize expand_aliases
+set +o noclobber
+
+# bash-completion (aur)
+[ -f /usr/share/bash-completion/bash_completion ] &&
+	. /usr/share/bash-completion/bash_completion
+
+# Advanced command-not-found
+[ -r /usr/share/doc/find-the-command/ftc.bash ] &&
+	. /usr/share/doc/find-the-command/ftc.bash
+
 alias less='less -RF'
 alias du='du -had1'
 alias df='df -h'     # human-readable sizes
 alias free='free -m' # show sizes in MB
-alias clear="command clear; seq 1 $(tput cols) | sort -R | sparklines | lolcat"
+alias clear='command clear; seq 1 $(tput cols) | sort -R | sparklines | lolcat'
 
 ## ls
-check exa &&
-	alias ls='exa --color --group-directories-first --icons' # use exa if available
+check eza &&
+	alias ls='eza --color --group-directories-first --icons' # use exa if available
 alias la='ls -A'                                          # all files and dirs
 alias ll='ls -al'                                         # long format
 alias lt='ls -aT'                                         # tree listing using exa
 alias l.='ls -d .*'                                       # show only dotfiles
 
 ## grep
-alias grep='grep --colour'
-alias egrep='grep -E'
-alias fgrep='fgrep -F'
-check rg && alias grep='rg'
+check rg && {
+	alias grep='rg'
+	alias fgrep='rg -F'
+	alias egrep='rg'
+} || {
+	alias grep='grep --colour'
+	alias fgrep='grep -F'
+	alias egrep='grep -E'
+}
 
 ## python
 alias py='python'
@@ -179,15 +144,13 @@ alias pym='python -m'
 alias pip='python -m pip'
 
 ## pacman, yay
+check yay && alias pacman='yay'
 alias ys='pacman -S'
 alias yu='pacman -Syu'
 alias yq='pacman -Q'
 alias yr='pacman -R'
 alias rmpkg="sudo pacman -Rdd"
 alias fixpacman="sudo rm /var/lib/pacman/db.lck"
-alias gitpkg='pacman -Q | grep -i "\-git" | wc -l' # List amount of -git packages
-check yay && alias pacman='yay'
-
 
 ## reflector
 alias mirror="sudo reflector -f 30 -l 30 -n 10 --verbose --save /etc/pacman.d/mirrorlist"
@@ -195,37 +158,19 @@ alias mirrord="sudo reflector -l 50 -n 20 --sort delay --save /etc/pacman.d/mirr
 alias mirrors="sudo reflector -l 50 -n 20 --sort score --save /etc/pacman.d/mirrorlist"
 alias mirrora="sudo reflector -l 50 -n 20 --sort age --save /etc/pacman.d/mirrorlist"
 
-## openvpn3
-alias vpnc='openvpn3 session-start --persist-tun --dco true -c'
-alias vpnd='openvpn3 session-manage -D -c'
-alias vpnr='openvpn3 session-manage --restart -c'
-alias vpnl='openvpn3 sessions-list'
-
 ## git
 alias glog='git log --oneline --graph'
 alias ga='git add' gcm='git commit' gco='git checkout'
 alias gs='git status -sb' gsh='git stash' gus='git stash pop'
-
-## bat
-alias cat='bat --style header,snip,changes'
-alias bh='bat -pl help' # bathelp
-
-## neovim
-alias n="nvim"
-alias v="vim"
 
 # iptables
 alias ipt='sudo iptables -nvL --line-numbers'
 
 ## Useful aliases
 ### credit: bashrc from garduda linux
-alias grubup="sudo update-grub"
-alias tarnow='tar -acf'
-alias untar='tar -zxvf'
 alias wget='wget -c'
 alias psmem='ps auxf | sort -nr -k 4'
 alias psmem10='ps auxf | sort -nr -k 4 | head -10'
-alias upd='/usr/bin/garuda-update'
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
@@ -236,11 +181,7 @@ alias vdir='vdir --color=auto'
 alias hw='hwinfo --short'                      # Hardware Info
 alias big="expac -H M '%m\t%n' | sort -h | nl" # Sort installed packages according to size in MB (expac must be installed)
 alias ip='ip -color'
-
-# Help people new to Arch
 alias tb='nc termbin.com 9999'
-alias helpme='cht.sh --shell'
-alias pacdiff='sudo -H DIFFPROG=meld pacdiff'
 
 # Cleanup orphaned packages
 alias cleanup='sudo pacman -Rns $(pacman -Qtdq)'
@@ -338,14 +279,6 @@ scriptedit() {
 }
 complete -W "$(ls $HOME/.local/bin)" scriptedit
 
-# eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-
-# OMP_THEME="uew.omp.json" # $(ls $(brew --prefix oh-my-posh)/themes/ | sort -R | tail -1)
-# eval "$(oh-my-posh init bash --config $(brew --prefix oh-my-posh)/themes/$OMP_THEME)"
-# echo using oh my posh theme: $OMP_THEME | lolcat
-#
-# function ompset() {
-# 	oh-my-posh init bash --config $(brew --prefix oh-my-posh)/themes/$@
-# }
-
-neofetch | lolcat
+ascii-image-converter "$HOME/Downloads/Formal.jpg" -gnd 50,25
+figlet Jagteshver\'s Shell | lolcat
+#figlet JShell | lolcat

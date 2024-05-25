@@ -1,3 +1,0 @@
-timeout 120   'swaylock && sleep 5 && hyprctl dispatch dpms off'
-before-sleep  'swaylock'
-lock          'swaylock'

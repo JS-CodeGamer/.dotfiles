@@ -2,4 +2,5 @@
 Description=Change wallpaper
 
 [Service]
+type=oneshot
 ExecStart=bash -lc 'change-wallpaper'
