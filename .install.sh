@@ -123,8 +123,8 @@ nvim --headless +Lazy sync +qa
 
 # Install common tools
 log -i "Installing common tools that I use:"
-pkgs=(cargo ripgrep eza bat alacritty tealdeer)
-for i in ${pkgs[@]} rustup; do log -i $i; done
+pkgs=(ripgrep eza bat alacritty tealdeer)
+for i in ${pkgs[@]} rustup cargo; do log -i $i; done
 log -n "Note: please have gcc, make and cmake installed"
 # rustup and cargo
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -yq
@@ -134,11 +134,8 @@ unset pkgs
 # Setup tealdeer
 tldr --update
 
-if [ -n "$PKG_MGR_CMD" ]; then
-	sudo $PKG_MGR_CMD fzf
-else
-	curl -Lo "$HOME/.local/fzf-install" "https://raw.githubusercontent.com/junegunn/fzf/master/install"
- 	bash "$HOME/.local/fzf-install" --all --xdg
-  	rm -f "$HOME/.local/fzf-install"
-fi
+log -i "Installing fzf"
+curl -Lo "$HOME/.local/fzf-install" "https://raw.githubusercontent.com/junegunn/fzf/master/install"
+bash "$HOME/.local/fzf-install" --all --xdg
+rm -f "$HOME/.local/fzf-install"
 printf "Now run \". ~/.bashrc\" or login again"
