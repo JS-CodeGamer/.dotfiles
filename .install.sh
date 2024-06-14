@@ -5,7 +5,6 @@ POSITIONAL_ARGS=()
 GIT_REMOTE="git@github.com:JS-CodeGamer/.dotfiles.git"
 GIT_DIR="$HOME/.cfg";
 BACKUP_DIR="$HOME/bak"
-DEFAULT=false
 PERSONAL=false
 
 ## Functions
@@ -52,10 +51,6 @@ while [[ $# -gt 0 ]]; do
 		PERSONAL=true
 		shift
 		;;
-	--default)
-		DEFAULT=true
-		shift # past argument
-		;;
 	-* | --*)
 		echo "Unknown option $1"
 		exit 1
@@ -69,24 +64,25 @@ done
 
 set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
 
+if command -v apt >/dev/null; then
+	log -i "Apt detected"
+	log -i "Debian/Ubuntu based distro"
+	log -i "trying to install git using apt"
+	PKG_MGR_CMD="apt install -y"
+elif command -v pacman >/dev/null; then
+	log -i "Pacman detected"
+	log -i "Arch based distro"
+	log -i "trying to install git using pacman"
+	PKG_MGR_CMD="pacman -Sy --needed --noconfirm"
+elif command -v yum >/dev/null; then
+	log -i "Yum detected"
+	log -i "RHEL based distro"
+	log -i "trying to install git using yum"
+	PKG_MGR_CMD="yum -y install"
+fi
+
 if ! command -v git >/dev/null; then
-	if command -v apt >/dev/null; then
-		log -i "Apt detected"
-		log -i "Debian/Ubuntu based distro"
-		log -i "trying to install git using apt"
-		PKG_MGR_CMD="apt install -y"
-	elif command -v pacman >/dev/null; then
-		log -i "Pacman detected"
-		log -i "Arch based distro"
-		log -i "trying to install git using pacman"
-		PKG_MGR_CMD="pacman -Sy --needed --noconfirm"
-	elif command -v yum >/dev/null; then
-		log -i "Yum detected"
-		log -i "RHEL based distro"
-		log -i "trying to install git using yum"
-		PKG_MGR_CMD="yum -y install"
-	fi
-	if [ ! -n "$PKG_MGR_CMD" ]; then
+	if [ -n "$PKG_MGR_CMD" ]; then
 		sudo eval -- "$PKG_MGR_CMD" git
 	fi
 	if [ -z "$PKG_MGR_CMD" ] || [ $? -ne 0 ]; then
@@ -112,10 +108,14 @@ for file in $(config ls-tree --full-tree -r --name-only HEAD); do
 done
 
 log -i "Setting up config"
+OLD_DIR="$(pwd)"
+cd "$HOME"
 config checkout --force HEAD
 config config --local status.showUntrackedFiles no
 config submodule init
 config submodule update
+cd "$OLD_DIR"
+unset OLD_DIR
 
 # Install neovim extensions
 log -i "Installing neovim extensions"
@@ -123,10 +123,22 @@ nvim --headless +Lazy sync +qa
 
 # Install common tools
 log -i "Installing common tools that I use:"
-for i in rustup cargo ripgrep eza bat alacritty tealdeer; do log -i $i; done
+pkgs=(cargo ripgrep eza bat alacritty tealdeer)
+for i in ${pkgs[@]} rustup; do log -i $i; done
 log -n "Note: please have gcc, make and cmake installed"
 # rustup and cargo
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -yq
-cargo install --locked ripgrep eza bat alacritty tealdeer
+. "$HOME/.cargo/env"
+cargo install --locked ${pkgs[@]}
+unset pkgs
 # Setup tealdeer
 tldr --update
+
+if [ -n "$PKG_MGR_CMD" ]; then
+	sudo eval -- "$PKG_MGR_CMD" fzf
+else
+	curl -Lo "$HOME/.local/fzf-install" "https://raw.githubusercontent.com/junegunn/fzf/master/install"
+ 	bash "$HOME/.local/fzf-install" --all --xdg
+  	rm -f "$HOME/.local/fzf-install"
+fi
+printf "Now run \". ~/.bashrc\" or login again"
