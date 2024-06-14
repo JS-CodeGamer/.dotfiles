@@ -83,7 +83,7 @@ fi
 
 if ! command -v git >/dev/null; then
 	if [ -n "$PKG_MGR_CMD" ]; then
-		sudo eval -- "$PKG_MGR_CMD" git
+		sudo $PKG_MGR_CMD git
 	fi
 	if [ -z "$PKG_MGR_CMD" ] || [ $? -ne 0 ]; then
 		log -e "Git not installed"
@@ -135,7 +135,7 @@ unset pkgs
 tldr --update
 
 if [ -n "$PKG_MGR_CMD" ]; then
-	sudo eval -- "$PKG_MGR_CMD" fzf
+	sudo $PKG_MGR_CMD fzf
 else
 	curl -Lo "$HOME/.local/fzf-install" "https://raw.githubusercontent.com/junegunn/fzf/master/install"
  	bash "$HOME/.local/fzf-install" --all --xdg
