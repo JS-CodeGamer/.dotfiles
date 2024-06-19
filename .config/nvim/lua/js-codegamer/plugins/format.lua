@@ -34,17 +34,21 @@ return { -- Autoformat
   opts = {
     notify_on_error = false,
     format_on_save = function(bufnr)
-      local disable_filetypes = { c = true, cpp = true }
+      -- local disable_filetypes = { c = true, cpp = true }
       return {
         timeout_ms = 500,
-        lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
+        lsp_fallback = 'first', -- not disable_filetypes[vim.bo[bufnr].filetype],
       }
     end,
     formatters_by_ft = {
       lua = { 'stylua' },
-      python = { 'isort', 'black' },
-      javascript = { { 'prettierd', 'prettier' } },
+      python = { 'ruff_format', 'ruff_organize_imports', 'ruff_fix' },
+      javascript = { 'eslint_d', { 'prettierd', 'prettier' } },
       sh = { 'shfmt' },
+      rust = { 'rustfmt' },
+      c = { 'clang-format' },
+      go = { { 'gofumpt', 'gofmt' }, 'goimports' },
+      ['*'] = { 'codespell' },
     },
   },
 }

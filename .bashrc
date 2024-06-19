@@ -33,6 +33,15 @@ export LANG=en_US.UTF-8
 ## xdg
 export XDG_CONFIG_HOME=$HOME/.config
 
+# local environment
+export PATH=~/.local/bin/:$PATH
+export WALLPAPER_FOLDER=$HOME/backgrounds
+
+# cargo bin
+if [ -d "$HOME/.cargo" ]; then
+	export PATH=$PATH:"$HOME/.cargo/bin"
+fi
+
 ## man
 export MANROFFOPT="-c"
 
@@ -44,10 +53,6 @@ check bat && {
 	alias cat='bat --style header,snip,changes'
 	alias bh='bat -pl help' # bathelp
 }
-
-# local environment
-export PATH=~/.local/bin/:$PATH
-export WALLPAPER_FOLDER=$HOME/backgrounds
 
 ## neovim
 alias n="nvim"
@@ -95,11 +100,6 @@ if [ -d "$HOME/.pyenv" ]; then
 		eval -- "$(pyenv init --path)"
 		eval -- "$(pyenv init -)"
 	}
-fi
-
-# cargo bin
-if check cargo; then
-	export PATH=$PATH:"$HOME/.cargo/bin"
 fi
 
 shopt -s histappend checkwinsize expand_aliases

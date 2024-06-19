@@ -1,0 +1,11 @@
+{
+  "pyright": {
+    "python": {
+      "executionEnvironments": [
+        {
+          "root": "src"
+        }
+      ]
+    }
+  }
+}
