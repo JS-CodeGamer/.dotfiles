@@ -38,7 +38,7 @@ template <typename... Args> void logger(string vars, Args &&...values) {
 }
 
 bool iter = false;
-void solve(int tcase){};
+void solve(int tcase) {}
 
 int main() {
   ios_base::sync_with_stdio(false);

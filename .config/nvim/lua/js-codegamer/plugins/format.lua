@@ -47,6 +47,7 @@ return { -- Autoformat
       sh = { 'shfmt' },
       rust = { 'rustfmt' },
       c = { 'clang-format' },
+      cpp = { 'clang-format' },
       go = { { 'gofumpt', 'gofmt' }, 'goimports' },
       ['*'] = { 'codespell' },
     },
