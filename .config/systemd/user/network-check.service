@@ -1,0 +1,6 @@
+[Unit]
+Description=Monitor Network
+
+[Service]
+Type=oneshot
+ExecStart=nc -z www.google.com 80

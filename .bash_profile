@@ -9,3 +9,4 @@
 [ -f /home/jagteshver/.config/.dart-cli-completion/bash-config.bash ] && . /home/jagteshver/.config/.dart-cli-completion/bash-config.bash || true
 ## [/Completion]
 
+. "$HOME/.cargo/env"

@@ -1,17 +1,15 @@
--- Document key chains
-require('which-key').register({
-  c = { name = '[C]ode', _ = 'which_key_ignore' },
-  d = { name = '[D]ocument', _ = 'which_key_ignore' },
-  r = { name = '[R]ename', _ = 'which_key_ignore' },
-  s = { name = '[S]earch', _ = 'which_key_ignore' },
-  w = { name = '[W]orkspace', _ = 'which_key_ignore' },
-  t = { name = '[T]oggle', _ = 'which_key_ignore' },
-  h = { name = 'Git [H]unk', _ = 'which_key_ignore' },
-}, { prefix = '<leader>' })
--- visual mode
-require('which-key').register({
-  ['<leader>h'] = { 'Git [H]unk' },
-}, { mode = 'v' })
+-- Groups
+require('which-key').add {
+  { '<leader>c', group = '[C]ode' },
+  { '<leader>cp', group = 'C[P]' },
+  { '<leader>d', group = '[D]ocument' },
+  { '<leader>r', group = '[R]ename' },
+  { '<leader>s', group = '[S]earch' },
+  { '<leader>w', group = '[W]orkspace' },
+  { '<leader>t', group = '[T]oggle' },
+  { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
+  { '<leader>h', group = 'Git [H]unk', mode = 'v' },
+}
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 -- Diagnostic keymaps
