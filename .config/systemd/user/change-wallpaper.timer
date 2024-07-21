@@ -3,7 +3,7 @@ Description=Run timer to change wallpaper
 
 [Timer]
 OnActiveSec=0
-OnUnitActiveSec=2m
+OnUnitActiveSec=5m
 
 [Install]
 WantedBy=timers.target
