@@ -49,7 +49,6 @@ return { -- Autoformat
       c = { 'clang-format' },
       cpp = { 'clang-format' },
       go = { { 'gofumpt', 'gofmt' }, 'goimports' },
-      ['*'] = { 'codespell' },
     },
   },
 }

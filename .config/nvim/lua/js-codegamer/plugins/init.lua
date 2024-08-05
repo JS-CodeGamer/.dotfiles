@@ -1,18 +1,16 @@
 return {
   -- Detect tabstop and shiftwidth automatically
-  'tpope/vim-sleuth',
+  { 'tpope/vim-sleuth', event = 'VimEnter' },
 
   -- Comment support
-  { 'numToStr/Comment.nvim', opts = {} },
+  { 'numToStr/Comment.nvim', event = 'VimEnter' },
 
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
-  {
-    'saecki/crates.nvim',
-    tag = 'stable',
-    config = function()
-      require('crates').setup()
-    end,
-  },
+  -- Add indentation guides even on blank lines
+  { 'lukas-reineke/indent-blankline.nvim', event = 'VimEnter', main = 'ibl', opts = {} },
+
+  -- Rust Cargo.toml show latest version of deps
+  { 'saecki/crates.nvim', event = { 'VimEnter Cargo.toml', 'BufEnter Cargo.toml' }, tag = 'stable', opts = {} },
 }
