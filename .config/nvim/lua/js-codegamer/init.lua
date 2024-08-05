@@ -15,12 +15,12 @@ vim.opt.rtp:prepend(lazypath)
 -- [[ Configure and install plugins ]]
 require('lazy').setup {
   spec = {
-    require 'kickstart.plugins.debug',
-    require 'kickstart.plugins.indent_line',
-    require 'kickstart.plugins.lint',
-    require 'kickstart.plugins.autopairs',
-    require 'kickstart.plugins.neo-tree',
-    require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
+    -- require 'kickstart.plugins.debug',
+    -- require 'kickstart.plugins.indent_line',
+    -- require 'kickstart.plugins.lint',
+    -- require 'kickstart.plugins.autopairs',
+    -- require 'kickstart.plugins.neo-tree',
+    -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
     { import = 'js-codegamer.plugins' },
   },
