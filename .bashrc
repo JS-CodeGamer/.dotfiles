@@ -3,21 +3,6 @@
 ## check for shell interactivity
 [[ $- != *i* ]] && return
 
-# Oh-My-Bash
-export OSH="$HOME/.oh-my-bash"
-OSH_THEME="nwinkler_random_colors"
-# "powerbash10k" -- good
-# "nwinkler_random_colors" -- good colors
-# "edsonarios" -- minimal
-ENABLE_CORRECTION="true"
-OMB_DEFAULT_ALIASES="check"
-OMB_USE_SUDO=true
-OMB_PROMPT_SHOW_PYTHON_VENV=true
-completions=(django git npm pip pip3 ssh tmux)
-aliases=(general chmod docker misc)
-plugins=(bashmarks git)
-. "$OSH"/oh-my-bash.sh
-
 # check if a prog exists or not
 check() {
 	if command -v $1 >/dev/null; then
@@ -118,6 +103,7 @@ alias du='du -had1'
 alias df='df -h'     # human-readable sizes
 alias free='free -m' # show sizes in MB
 alias clear='command clear; seq 1 $(tput cols) | sort -R | sparklines | lolcat'
+alias c='clear'
 
 ## ls
 check eza &&
@@ -126,6 +112,7 @@ alias la='ls -A'                                          # all files and dirs
 alias ll='ls -al'                                         # long format
 alias lt='ls -aT'                                         # tree listing using exa
 alias l.='ls -d .*'                                       # show only dotfiles
+alias l='la'
 
 ## grep
 check rg && {

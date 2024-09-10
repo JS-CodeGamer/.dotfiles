@@ -1,9 +1,0 @@
-[Unit]
-Description=Run timer to check network connection
-
-[Timer]
-OnActiveSec=0
-OnUnitActiveSec=30s
-
-[Install]
-WantedBy=timers.target
