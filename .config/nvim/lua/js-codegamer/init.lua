@@ -1,27 +1,28 @@
--- NOTE: Keymaps are set in which-key
+-- vim: ts=2 sts=2 sw=2 et
+
 -- NOTE: Load options
 require 'js-codegamer.options'
 -- NOTE: Load autocommands
 require 'js-codegamer.autocmds'
 
--- [[ Install `lazy.nvim` plugin manager ]]
+-- [[ Install `lazy.nvim` plugin manager if not exists ]]
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not vim.loop.fs_stat(lazypath) then
   local lazyrepo = 'https://github.com/folke/lazy.nvim.git'
-  vim.fn.system { 'git', 'clone', '--filter=blob:none', '--branch=stable', lazyrepo, lazypath }
+  vim.fn.system {
+    'git',
+    'clone',
+    '--filter=blob:none',
+    '--branch=stable',
+    lazyrepo,
+    lazypath,
+  }
 end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
 -- [[ Configure and install plugins ]]
 require('lazy').setup {
   spec = {
-    -- require 'kickstart.plugins.debug',
-    -- require 'kickstart.plugins.indent_line',
-    -- require 'kickstart.plugins.lint',
-    -- require 'kickstart.plugins.autopairs',
-    -- require 'kickstart.plugins.neo-tree',
-    -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
-
     { import = 'js-codegamer.plugins' },
   },
   defaults = {
@@ -31,8 +32,7 @@ require('lazy').setup {
   checker = { enabled = true },
   profiling = { loader = true },
   ui = {
-    -- If you are using a Nerd Font: set icons to an empty table which will use the
-    -- default lazy.nvim defined Nerd Font icons, otherwise define a unicode icons table
+    -- Set vim.g.have_nerd_font or use sensible unicode icons
     icons = vim.g.have_nerd_font and {} or {
       cmd = '⌘',
       config = '🛠',
@@ -50,6 +50,3 @@ require('lazy').setup {
     },
   },
 }
-
--- The line beneath this is called `modeline`. See `:help modeline`
--- vim: ts=2 sts=2 sw=2 et
