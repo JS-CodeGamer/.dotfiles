@@ -1,9 +1,22 @@
 #! /bin/bash
 
-# swww
 # change wallpaper using ~/.local/bin/random-wallpaper to get path to wallpaper
+IMAGE_PATHS=()
 if command -v swww >/dev/null; then
 	for disp in $(swww query | awk -F: '{ print $1 }'); do
-		swww img -o $disp "$(~/.local/bin/random-wallpaper)"
+    IMAGE_PATHS+=("$(~/.local/bin/random-wallpaper)")
 	done
 fi
+
+# swww
+if command -v swww >/dev/null; then
+	for disp in $(swww query | awk -F: '{ print $1 }'); do
+		swww img -o "$disp" "$IMAGE_PATHS"
+    if [[ "${@}" =~ -o ]]; then
+        printf "$(date +%d.%m_%H:%M): $IMAGE_PATHS\n" >> $HOME/.last_wallpaper
+        echo "$(tail -n 250 $HOME/.last_wallpaper)" > $HOME/.last_wallpaper
+    fi
+    IMAGE_PATHS=("${IMAGE_PATHS[@]:1}")
+	done
+fi
+

@@ -20,7 +20,6 @@ export XDG_CONFIG_HOME=$HOME/.config
 
 # local environment
 export PATH=~/.local/bin/:$PATH
-export WALLPAPER_FOLDER=$HOME/backgrounds
 
 # cargo bin
 if [ -d "$HOME/.cargo" ]; then
