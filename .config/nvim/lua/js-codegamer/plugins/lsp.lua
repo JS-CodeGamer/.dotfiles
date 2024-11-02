@@ -33,6 +33,8 @@ return {
         pyright = {},
         rust_analyzer = {},
         ts_ls = {},
+        -- ts_ls = { filetypes = { 'typescript', 'typescriptreact', 'typescript.tsx' } },
+        -- eslint = { filetypes = { 'javascript', 'javascriptreact', 'javascript.jsx', 'vue', 'svelte', 'astro' } },
         lua_ls = {
           -- cmd = {...},
           -- filetypes = { ...},

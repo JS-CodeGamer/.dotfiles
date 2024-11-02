@@ -4,14 +4,14 @@
 	"positionX": "right",
 	"positionY": "top",
 	"control-center-margin-top": 20,
-	"control-center-margin-bottom": 0,
+	"control-center-margin-bottom": 20,
 	"control-center-margin-right": 20,
 	"control-center-margin-left": 0,
 	"control-center-width": 500,
 	"control-center-height": 600,
-	"fit-to-screen": false,
+	"fit-to-screen": true,
 
-	"layer": "top",
+	"layer": "overlay",
 	"cssPriority": "user",
 	"notification-icon-size": 64,
 	"notification-body-image-height": 100,
@@ -31,11 +31,12 @@
 		"title",
 		"dnd",
 		"mpris",
-		"notifications"
+		"notifications",
+		"volume"
 	],
 	"widget-config": {
 		"title": {
-			"text": "Notifications",
+			"text": "Notification",
 			"clear-all-button": true,
 			"button-text": "Clear All"
 		},
@@ -49,6 +50,9 @@
 		"mpris": {
 			"image-size": 96,
 			"image-radius": 12
+		},
+		"volume" : {
+			"label": "Volume"
 		}
 	}
 }

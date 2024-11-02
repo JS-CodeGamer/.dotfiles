@@ -3,6 +3,43 @@
 ## check for shell interactivity
 [[ $- != *i* ]] && return
 
+## OMB
+export OSH='/home/jagteshver/.oh-my-bash'
+OSH_THEME="random" #font
+OMB_THEME_RANDOM_IGNORED=(
+  tonka
+  burunton
+  morris
+  powerline
+  powerline-icon
+  powerline-light
+  powerline-multiline
+  powerline-naked
+  powerline-plain
+  powerline-wizard
+  agnoster
+)
+COMPLETION_WAITING_DOTS="true"
+OMB_DEFAULT_ALIASES="check"
+OMB_USE_SUDO=true
+completions=(
+  defaults dirs
+  docker-compose docker
+  npm nvm
+  git
+  pip pip3
+  ssh
+)
+aliases=(
+  general
+)
+plugins=(
+  git
+  bashmarks
+)
+
+source "$OSH"/oh-my-bash.sh
+
 # check if a prog exists or not
 check() {
 	if command -v $1 >/dev/null; then
@@ -12,22 +49,10 @@ check() {
 	fi
 }
 
-# You may need to manually set your language environment
-export LANG=en_US.UTF-8
-
-## xdg
-export XDG_CONFIG_HOME=$HOME/.config
-
-# local environment
-export PATH=~/.local/bin/:$PATH
-
 # cargo bin
 if [ -d "$HOME/.cargo" ]; then
 	export PATH=$PATH:"$HOME/.cargo/bin"
 fi
-
-## man
-export MANROFFOPT="-c"
 
 ## bat -- cat replacement
 check bat && {
@@ -41,8 +66,6 @@ check bat && {
 ## neovim
 alias n="nvim"
 alias v="vim"
-check nvim && export EDITOR="nvim" \
-	VISUAL="nvim"
 
 ## nvm -- node version manager
 export NVM_DIR=$XDG_CONFIG_HOME/nvm
@@ -266,5 +289,5 @@ scriptedit() {
 complete -W "$(ls $HOME/.local/bin)" scriptedit
 
 ascii-image-converter "$HOME/Downloads/Formal.jpg" -gnd 50,25
-figlet Jagteshver\'s Shell | lolcat
-#figlet JShell | lolcat
+# figlet Jagteshver\'s Shell | lolcat
+figlet JShell | lolcat

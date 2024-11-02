@@ -1,11 +1,10 @@
-import = ["~/.config/alacritty/themes/themes/aura.toml"]
 
 [env]
 TERM="xterm-256color"
 
 [window]
 padding = { x = 1, y = 1 }
-opacity = 0.75
+opacity = 0.85
 startup_mode = "Maximized"
 
 [scrolling]
@@ -38,4 +37,7 @@ bindings = [
 
 [colors]
 draw_bold_text_with_bright_colors = true
+
+[general]
+import = ["~/.config/alacritty/themes/themes/nord.toml"]
 

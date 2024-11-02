@@ -1,0 +1,2 @@
+[filechooser]
+cmd=~/.local/bin/termfilechooser-yazi-wrapper.sh
