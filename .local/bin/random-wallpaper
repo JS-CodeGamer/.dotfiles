@@ -1,4 +1,4 @@
 #! /bin/bash
 #
 # mainly used in conjunction with other wallpaper scripts
-find -L ~/backgrounds/  -type f -ipath '*landscape*' -print | sort -R | tail -n1
+find -L ~/backgrounds/  -type d -ipath '*nsfw*' -prune -o -type f -ipath '*landscape*' -print | sort -R | tail -n1
