@@ -1,4 +1,23 @@
 #! /bin/bash
 #
-# mainly used in conjunction with other wallpaper scripts
-find -L ~/backgrounds/  -type d -ipath '*nsfw*' -prune -o -type f -ipath '*landscape*' -print | sort -R | tail -n1
+# choose random image from ~/.backgrounds randomly
+
+# A POSIX variable
+OPTIND=1 # Reset in case getopts has been used previously in the shell.
+
+while getopts "nd:" opt; do
+  case "$opt" in
+  n)
+    nsfw=true
+    ;;
+  d)
+    backgrounds_folder=$OPTARG
+    ;;
+  esac
+done
+
+if [ "${nsfw:-false}" = false ]; then
+  filter="$filter -type d -ipath *nsfw* -prune -o"
+fi
+
+find -L ${backgrounds_folder:-~/.backgrounds/} ${filter} -type f -ipath '*landscape*' -print | sort -R | tail -n1

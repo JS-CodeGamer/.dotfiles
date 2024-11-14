@@ -1,0 +1,10 @@
+[Unit]
+Description=Change Alacritty Theme
+After=graphical.target
+After=systemd-user-sessions.service
+
+[Service]
+ExecStart=%h/.local/bin/change-alacritty-theme -t d
+
+[Install]
+WantedBy=default.target

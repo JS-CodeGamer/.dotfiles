@@ -1,9 +1,8 @@
 [Unit]
-Description=Run timer to change wallpaper
+Description=Change wallpaper periodically
+After=graphical.target
+After=systemd-user-sessions.service
 
 [Timer]
 OnActiveSec=0
 OnUnitActiveSec=1m
-
-[Install]
-WantedBy=timers.target

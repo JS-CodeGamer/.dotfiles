@@ -4,7 +4,7 @@ TERM="xterm-256color"
 
 [window]
 padding = { x = 1, y = 1 }
-opacity = 0.85
+# opacity = 0.85
 startup_mode = "Maximized"
 
 [scrolling]
@@ -39,5 +39,5 @@ bindings = [
 draw_bold_text_with_bright_colors = true
 
 [general]
-import = ["~/.config/alacritty/themes/themes/nord.toml"]
+import = ['~/.config/alacritty/themes/themes/tokyo_night.toml'] #theme
 

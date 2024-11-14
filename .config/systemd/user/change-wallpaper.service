@@ -3,4 +3,4 @@ Description=Change wallpaper
 
 [Service]
 Type=oneshot
-ExecStart=%h/.local/bin/change-wallpaper -o
+ExecStart=%h/.local/bin/change-wallpaper -l
