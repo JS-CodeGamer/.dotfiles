@@ -63,6 +63,10 @@ transparent = (args.transparency == 'transparent')
 
 if args.path is not None:
     image = Image.open(args.path)
+
+    if image.format == "GIF":
+        image.seek(1)
+
     wsize, hsize = image.size
     wsize_new, hsize_new = calculate_optimal_size(wsize, hsize, args.size)
     if wsize_new < wsize or hsize_new < hsize:
@@ -99,8 +103,10 @@ elif args.scheme == 'fidelity':
     from materialyoucolor.scheme.scheme_fidelity import SchemeFidelity as Scheme
 elif args.scheme == 'content':
     from materialyoucolor.scheme.scheme_content import SchemeContent as Scheme
-else:
+elif args.scheme == 'vibrant':
     from materialyoucolor.scheme.scheme_vibrant import SchemeVibrant as Scheme
+else:
+    from schemes.scheme_morevibrant import SchemeMoreVibrant as Scheme
 
 # Generate
 scheme = Scheme(hct, darkmode, 0.0)

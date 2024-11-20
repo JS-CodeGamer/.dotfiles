@@ -1,7 +1,7 @@
 import Widget from 'resource:///com/github/Aylur/ags/widget.js';
 import Network from "resource:///com/github/Aylur/ags/service/network.js";
 import * as Utils from 'resource:///com/github/Aylur/ags/utils.js';
-const { Box, Button, Entry, Icon, Label, Revealer, Scrollable, Slider, Stack } = Widget;
+const { Box, Button, Entry, Icon, Label, Revealer, Scrollable, Slider, Stack, Overlay } = Widget;
 const { execAsync, exec } = Utils;
 import { MaterialIcon } from '../../.commonwidgets/materialicon.js';
 import { setupCursorHover } from '../../.widgetutils/cursorhover.js';
@@ -29,7 +29,7 @@ const WifiNetwork = (accessPoint) => {
             accessPoint.active ? Label({
                 hpack: 'start',
                 className: 'txt-smaller txt-subtext',
-                label: "Selected",
+                label: getString("Selected"),
             }) : null,
         ]
     });
@@ -69,7 +69,7 @@ const CurrentNetwork = () => {
             Label({
                 hpack: 'start',
                 className: 'txt-smaller txt-subtext',
-                label: "Current network",
+                label: getString("Current network"),
             }),
             Label({
                 hpack: 'start',
@@ -101,7 +101,7 @@ const CurrentNetwork = () => {
                 Label({
                     className: 'margin-left-5',
                     hpack: 'start',
-                    label: "Authentication",
+                    label: getString("Authentication"),
                 }),
                 Entry({
                     className: 'sidebar-wifinetworks-auth-entry',
@@ -161,21 +161,47 @@ export default (props) => {
     const networkList = Box({
         vertical: true,
         className: 'spacing-v-10',
-        children: [
-            Scrollable({
+        children: [Overlay({
+            passThrough: true,
+            child: Scrollable({
                 vexpand: true,
                 child: Box({
                     attribute: {
                         'updateNetworks': (self) => {
-                            self.children = Network.wifi?.access_points?.map(n => WifiNetwork(n));
+                            const accessPoints = Network.wifi?.access_points || [];
+                            self.children = Object.values(accessPoints.reduce((a, accessPoint) => {
+                                // Only keep max strength networks by ssid
+                                if (!a[accessPoint.ssid] || a[accessPoint.ssid].strength < accessPoint.strength) {
+                                    a[accessPoint.ssid] = accessPoint;
+                                    a[accessPoint.ssid].active |= accessPoint.active;
+                                }
+
+                                return a;
+                            }, {})).map(n => WifiNetwork(n));
                         },
                     },
                     vertical: true,
-                    className: 'spacing-v-5',
+                    className: 'spacing-v-5 margin-bottom-15',
                     setup: (self) => self.hook(Network, self.attribute.updateNetworks),
                 })
-            })
-        ]
+            }),
+            overlays: [Box({
+                className: 'sidebar-centermodules-scrollgradient-bottom'
+            })]
+        })]
+    });
+    const bottomBar = Box({
+        homogeneous: true,
+        children: [Button({
+            hpack: 'center',
+            className: 'txt-small txt sidebar-centermodules-bottombar-button',
+            onClicked: () => {
+                execAsync(['bash', '-c', userOptions.apps.network]).catch(print);
+                closeEverything();
+            },
+            label: getString('More'),
+            setup: setupCursorHover,
+        })],
     })
     return Box({
         ...props,
@@ -184,8 +210,7 @@ export default (props) => {
         children: [
             CurrentNetwork(),
             networkList,
-            // mainContent,
-            // status,
+            bottomBar,
         ]
     });
 }

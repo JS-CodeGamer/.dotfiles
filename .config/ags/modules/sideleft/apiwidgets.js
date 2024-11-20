@@ -19,40 +19,41 @@ import { widgetContent } from './sideleft.js';
 import { IconTabContainer } from '../.commonwidgets/tabcontainer.js';
 
 const EXPAND_INPUT_THRESHOLD = 30;
-const APIS = [
-    {
+const APILIST = {
+    'gemini': {
         name: 'Assistant (Gemini Pro)',
         sendCommand: geminiSendMessage,
         contentWidget: geminiView,
         commandBar: geminiCommands,
         tabIcon: geminiTabIcon,
-        placeholderText: 'Message Gemini...',
+        placeholderText: getString('Message Gemini...'),
     },
-    {
+    'gpt': {
         name: 'Assistant (GPTs)',
         sendCommand: chatGPTSendMessage,
         contentWidget: chatGPTView,
         commandBar: chatGPTCommands,
         tabIcon: chatGPTTabIcon,
-        placeholderText: 'Message the model...',
+        placeholderText: getString('Message the model...'),
     },
-    {
+    'waifu': {
         name: 'Waifus',
         sendCommand: waifuSendMessage,
         contentWidget: waifuView,
         commandBar: waifuCommands,
         tabIcon: waifuTabIcon,
-        placeholderText: 'Enter tags',
+        placeholderText: getString('Enter tags'),
     },
-    {
+    'booru': {
         name: 'Booru',
         sendCommand: booruSendMessage,
         contentWidget: booruView,
         commandBar: booruCommands,
         tabIcon: booruTabIcon,
-        placeholderText: 'Enter tags',
+        placeholderText: getString('Enter tags'),
     },
-];
+}
+const APIS = userOptions.sidebar.pages.apis.order.map((apiName) => APILIST[apiName]);
 let currentApiId = 0;
 
 function apiSendMessage(textView) {
@@ -82,17 +83,20 @@ export const chatEntry = TextView({
         })
         .hook(GPTService, (self) => {
             if (APIS[currentApiId].name != 'Assistant (GPTs)') return;
-            self.placeholderText = (GPTService.key.length > 0 ? 'Message the model...' : 'Enter API Key...');
+            self.placeholderText = (GPTService.key.length > 0 ? getString('Message the model...') : getString('Enter API Key...'));
         }, 'hasKey')
         .hook(Gemini, (self) => {
             if (APIS[currentApiId].name != 'Assistant (Gemini Pro)') return;
-            self.placeholderText = (Gemini.key.length > 0 ? 'Message Gemini...' : 'Enter Google AI API Key...');
+            self.placeholderText = (Gemini.key.length > 0 ? getString('Message Gemini...') : getString('Enter Google AI API Key...'));
         }, 'hasKey')
         .on("key-press-event", (widget, event) => {
             // Don't send when Shift+Enter
-            if (event.get_keyval()[1] === Gdk.KEY_Return && event.get_state()[1] == Gdk.ModifierType.MOD2_MASK) {
-                apiSendMessage(widget);
-                return true;
+            if (event.get_keyval()[1] === Gdk.KEY_Return || event.get_keyval()[1] === Gdk.KEY_KP_Enter) {
+                if (event.get_state()[1] !== 17) {// SHIFT_MASK doesn't work but 17 should be shift
+                    apiSendMessage(widget);
+                    return true;
+                }
+                return false;
             }
             // Keybinds
             if (checkKeybind(event, userOptions.keybinds.sidebar.cycleTab))

@@ -26,8 +26,13 @@ while getopts "nlt:a:" opt; do
 done
 
 new_theme=$(cat ~/.config/alacritty/prefered-themes.txt | grep "${type:-D}:" | sort -R | tail -n1 | cut -d: -f2)
+config_file=~/.config/alacritty/alacritty.toml
 
-sed "s/\(.*\[\).*\(\] #theme\)/\1'~\/.config\/alacritty\/themes\/themes\/$new_theme.toml'\2/" ~/.config/alacritty/alacritty.toml -i
+cat $config_file |
+  convfmt -ftoml -tjson |
+  jq "(.general.import[] | select(. | test(\".*theme.*\"))) = \"~/.config/alacritty/themes/themes/$new_theme.toml\"" |
+  convfmt -fjson -ttoml |
+  dd status=none of=$config_file
 
 if [ "${notification:-false}" = true ]; then
   notify-send "Alacritty Theme Change" "Changed Alacritty Theme to $new_theme" $notify_send_args

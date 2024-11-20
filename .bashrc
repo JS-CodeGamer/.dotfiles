@@ -6,19 +6,7 @@
 ## OMB
 export OSH='/home/jagteshver/.oh-my-bash'
 OSH_THEME="random" #font
-OMB_THEME_RANDOM_IGNORED=(
-  tonka
-  burunton
-  morris
-  powerline
-  powerline-icon
-  powerline-light
-  powerline-multiline
-  powerline-naked
-  powerline-plain
-  powerline-wizard
-  agnoster
-)
+OMB_THEME_RANDOM_IGNORED=(tonka burunton morris powerline powerline-icon powerline-light powerline-multiline powerline-naked powerline-plain powerline-wizard agnoster absimple dos brunton modern-t)
 COMPLETION_WAITING_DOTS="true"
 OMB_DEFAULT_ALIASES="check"
 OMB_USE_SUDO=true
@@ -36,31 +24,35 @@ aliases=(
 plugins=(
   git
   bashmarks
+  colored-man-pages
 )
 
 source "$OSH"/oh-my-bash.sh
 
 # check if a prog exists or not
 check() {
-	if command -v $1 >/dev/null; then
-		return 0
-	else
-		return 1
-	fi
+  if command -v $1 >/dev/null; then
+    return 0
+  else
+    return 1
+  fi
 }
 
 # cargo bin
 if [ -d "$HOME/.cargo" ]; then
-	export PATH=$PATH:"$HOME/.cargo/bin"
+  export PATH=$PATH:"$HOME/.cargo/bin"
 fi
 
 ## bat -- cat replacement
 check bat && {
-	export MANPAGER="sh -c 'col -bx | bat -plman'"
-	export PAGER="bat"
-	export BAT_CONFIG_PATH=$XDG_CONFIG_HOME/bat/bat.conf
-	alias cat='bat --style header,snip,changes'
-	alias bh='bat -pl help' # bathelp
+  # export MANPAGER="sh -c 'col -bx | bat -plman'"
+  # use less for man pages cuz it gives better results
+  #   with colored-man-pages oh my bash plugin
+  export MANPAGER="less"
+  export PAGER="bat"
+  export BAT_CONFIG_PATH=$XDG_CONFIG_HOME/bat/bat.conf
+  alias cat='bat --style header,snip,changes'
+  alias bh='bat -pl help' # bathelp
 }
 
 ## neovim
@@ -74,39 +66,39 @@ export NVM_DIR=$XDG_CONFIG_HOME/nvm
 
 ## fzf -- fuzy search
 if check fzf; then
-	eval "$(fzf --bash)"
-	export FZF_DEFAULT_OPTS='-m'
-	if check fd; then
-		export FZF_DEFAULT_COMMAND='fd --hidden --strip-cwd-prefix --exclude .git'
-		export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-		export FZF_ALT_C_COMMAND='fd --type=d --hidden --strip-cwd-prefix --exclude .git'
-		_fzf_compgen_path() {
-			fd --hidden --exclude .git . "$1"
-		}
-		_fzf_compgen_dir() {
-			fd --dir --hidden --exclude .git . "$1"
-		}
-	elif check rg; then
-		export FZF_DEFAULT_COMMAND='rg --files --hidden'
-	else
-		export FZF_DEFAULT_COMMAND="find . -regextype 'posix-extended' -iregex '\.(git|cache|node_modules).*' -type d -prune -o -print"
-	fi
+  eval "$(fzf --bash)"
+  export FZF_DEFAULT_OPTS='-m'
+  if check fd; then
+    export FZF_DEFAULT_COMMAND='fd --hidden --strip-cwd-prefix --exclude .git'
+    export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+    export FZF_ALT_C_COMMAND='fd --type=d --hidden --strip-cwd-prefix --exclude .git'
+    _fzf_compgen_path() {
+      fd --hidden --exclude .git . "$1"
+    }
+    _fzf_compgen_dir() {
+      fd --dir --hidden --exclude .git . "$1"
+    }
+  elif check rg; then
+    export FZF_DEFAULT_COMMAND='rg --files --hidden'
+  else
+    export FZF_DEFAULT_COMMAND="find . -regextype 'posix-extended' -iregex '\.(git|cache|node_modules).*' -type d -prune -o -print"
+  fi
 fi
 
 # bun
 if [ -d "$HOME/.bun" ]; then
-	export BUN_INSTALL="$HOME/.bun" \
-		PATH=$BUN_INSTALL/bin:$PATH
+  export BUN_INSTALL="$HOME/.bun" \
+    PATH=$BUN_INSTALL/bin:$PATH
 fi
 
 # pyenv
 if [ -d "$HOME/.pyenv" ]; then
-	export PYENV_ROOT="$HOME/.pyenv"
-	export PATH=$PYENV_ROOT/bin:$PATH
-	check pyenv && {
-		eval -- "$(pyenv init --path)"
-		eval -- "$(pyenv init -)"
-	}
+  export PYENV_ROOT="$HOME/.pyenv"
+  export PATH=$PYENV_ROOT/bin:$PATH
+  check pyenv && {
+    eval -- "$(pyenv init --path)"
+    eval -- "$(pyenv init -)"
+  }
 fi
 
 shopt -s histappend checkwinsize expand_aliases
@@ -114,11 +106,11 @@ set +o noclobber
 
 # bash-completion (aur)
 [ -f /usr/share/bash-completion/bash_completion ] &&
-	. /usr/share/bash-completion/bash_completion
+  . /usr/share/bash-completion/bash_completion
 
 # Advanced command-not-found
 [ -r /usr/share/doc/find-the-command/ftc.bash ] &&
-	. /usr/share/doc/find-the-command/ftc.bash
+  . /usr/share/doc/find-the-command/ftc.bash
 
 alias less='less -RF'
 alias du='du -had1'
@@ -129,22 +121,22 @@ alias c='clear'
 
 ## ls
 check eza &&
-	alias ls='eza --color --group-directories-first --icons' # use exa if available
-alias la='ls -A'                                          # all files and dirs
-alias ll='ls -al'                                         # long format
-alias lt='ls -aT'                                         # tree listing using exa
-alias l.='ls -d .*'                                       # show only dotfiles
+  alias ls='eza --color --group-directories-first --icons' # use exa if available
+alias la='ls -A'                                           # all files and dirs
+alias ll='ls -al'                                          # long format
+alias lt='ls -aT'                                          # tree listing using exa
+alias l.='ls -d .*'                                        # show only dotfiles
 alias l='la'
 
 ## grep
 check rg && {
-	alias grep='rg'
-	alias fgrep='rg -F'
-	alias egrep='rg'
+  alias grep='rg'
+  alias fgrep='rg -F'
+  alias egrep='rg'
 } || {
-	alias grep='grep --colour'
-	alias fgrep='grep -F'
-	alias egrep='grep -E'
+  alias grep='grep --colour'
+  alias fgrep='grep -F'
+  alias egrep='grep -E'
 }
 
 ## python
@@ -214,69 +206,69 @@ unset check
 ## colors - color lister
 ## usage: colors
 colors() (
-	printf "Color escapes are %s\n" '\e[${value};...;${value}m'
-	printf "Values 30..37 are \e[0#33mforeground colors\e[m\n"
-	printf "Values 40..47 are \e[43mbackground colors\e[m\n"
-	printf "Value  1 gives a  \e[1mbold-faced look\e[m\n\n"
+  printf "Color escapes are %s\n" '\e[${value};...;${value}m'
+  printf "Values 30..37 are \e[0#33mforeground colors\e[m\n"
+  printf "Values 40..47 are \e[43mbackground colors\e[m\n"
+  printf "Value  1 gives a  \e[1mbold-faced look\e[m\n\n"
 
-	# foreground colors
-	for fgc in {30..37}; do
-		# background colors
-		for bgc in {40..47}; do
-			fgc=${fgc#37} # white
-			bgc=${bgc#40} # black
+  # foreground colors
+  for fgc in {30..37}; do
+    # background colors
+    for bgc in {40..47}; do
+      fgc=${fgc#37} # white
+      bgc=${bgc#40} # black
 
-			vals="${fgc:+$fgc;}${bgc}"
-			vals=${vals%%;}
+      vals="${fgc:+$fgc;}${bgc}"
+      vals=${vals%%;}
 
-			seq0="${vals:+\e[${vals}m}"
-			printf "  %-9s" "${seq0:-(default)}"
-			printf " ${seq0}TEXT\e[m"
-			printf " \e[${vals:+${vals+$vals;}}1mBOLD\e[m"
-		done
-		printf "\n\n"
-	done
+      seq0="${vals:+\e[${vals}m}"
+      printf "  %-9s" "${seq0:-(default)}"
+      printf " ${seq0}TEXT\e[m"
+      printf " \e[${vals:+${vals+$vals;}}1mBOLD\e[m"
+    done
+    printf "\n\n"
+  done
 )
 
 ## ex - archive extractor
 ## usage: ex <file>
 ex() {
-	if [ $# -eq 0 ]; then
-		echo "error: no <file> provided for extraction"
-		echo "usage: ex <file>"
-	fi
-	while [ $# -ne 0 ]; do
-		if [ ! -f $1 ]; then
-			echo "'$1' is not a valid file"
-		fi
-		case $1 in
-		*.tar.bz2) tar xjf $1 ;;
-		*.tar.gz) tar xzf $1 ;;
-		*.tbz2) tar xjf $1 ;;
-		*.tgz) tar xzf $1 ;;
-		*.tar) tar xf $1 ;;
-		*.bz2) bunzip2 $1 ;;
-		*.rar) unrar x $1 ;;
-		*.gz) gunzip $1 ;;
-		*.zip) unzip $1 ;;
-		*.Z) uncompress $1 ;;
-		*.7z) 7z x $1 ;;
-		*) echo "'$1' cannot be extracted via ex()" ;;
-		esac
-		shift
-	done
+  if [ $# -eq 0 ]; then
+    echo "error: no <file> provided for extraction"
+    echo "usage: ex <file>"
+  fi
+  while [ $# -ne 0 ]; do
+    if [ ! -f $1 ]; then
+      echo "'$1' is not a valid file"
+    fi
+    case $1 in
+    *.tar.bz2) tar xjf $1 ;;
+    *.tar.gz) tar xzf $1 ;;
+    *.tbz2) tar xjf $1 ;;
+    *.tgz) tar xzf $1 ;;
+    *.tar) tar xf $1 ;;
+    *.bz2) bunzip2 $1 ;;
+    *.rar) unrar x $1 ;;
+    *.gz) gunzip $1 ;;
+    *.zip) unzip $1 ;;
+    *.Z) uncompress $1 ;;
+    *.7z) 7z x $1 ;;
+    *) echo "'$1' cannot be extracted via ex()" ;;
+    esac
+    shift
+  done
 }
 
 ## help - get help for a command
 ## usage: help <command>
 help() {
-	"$@" --help 2>&1 | bat -pl help
+  "$@" --help 2>&1 | bat -pl help
 }
 
 ## config - access dotfiles repo same as git
 ## usage: config <command>
 config() {
-	git --git-dir="$HOME/.cfg/" --work-tree="$HOME" $@
+  git --git-dir="$HOME/.cfg/" --work-tree="$HOME" $@
 }
 
 # some completions
@@ -284,7 +276,7 @@ complete -o bashdefault -o default -o nospace -F __git_wrap__git_main config
 
 ## edit my scripts
 scriptedit() {
-	$EDITOR "$HOME/.local/bin/$1"
+  $EDITOR "$HOME/.local/bin/$1"
 }
 complete -W "$(ls $HOME/.local/bin)" scriptedit
 
