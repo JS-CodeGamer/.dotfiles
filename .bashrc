@@ -6,7 +6,7 @@
 ## OMB
 export OSH='/home/jagteshver/.oh-my-bash'
 OSH_THEME="random" #font
-OMB_THEME_RANDOM_IGNORED=(tonka burunton morris powerline powerline-icon powerline-light powerline-multiline powerline-naked powerline-plain powerline-wizard agnoster absimple dos brunton modern-t)
+OMB_THEME_RANDOM_IGNORED=(tonka burunton morris powerline powerline-icon powerline-light powerline-multiline powerline-naked powerline-plain powerline-wizard agnoster absimple dos brunton modern-t hawaii50)
 COMPLETION_WAITING_DOTS="true"
 OMB_DEFAULT_ALIASES="check"
 OMB_USE_SUDO=true

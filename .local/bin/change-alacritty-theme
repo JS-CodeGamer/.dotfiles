@@ -29,9 +29,9 @@ new_theme=$(cat ~/.config/alacritty/prefered-themes.txt | grep "${type:-D}:" | s
 config_file=~/.config/alacritty/alacritty.toml
 
 cat $config_file |
-  convfmt -ftoml -tjson |
+  ~/.local/bin/convfmt -ftoml -tjson |
   jq "(.general.import[] | select(. | test(\".*theme.*\"))) = \"~/.config/alacritty/themes/themes/$new_theme.toml\"" |
-  convfmt -fjson -ttoml |
+  ~/.local/bin/convfmt -fjson -ttoml |
   dd status=none of=$config_file
 
 if [ "${notification:-false}" = true ]; then

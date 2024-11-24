@@ -1,43 +1,113 @@
+[colors]
+draw_bold_text_with_bright_colors = true
 
 [env]
-TERM="xterm-256color"
+TERM = "xterm-256color"
 
-[window]
-padding = { x = 1, y = 1 }
-# opacity = 0.85
-startup_mode = "Maximized"
+[font]
+size = 13
+
+[font.normal]
+family = "Jet Brains Mono Nerd Font Propo"
+
+[general]
+import = ["~/.config/alacritty/themes/themes/tokyo_night.toml"]
+
+[[keyboard.bindings]]
+action = "Paste"
+key = "V"
+mods = "Control|Shift"
+
+[[keyboard.bindings]]
+action = "Copy"
+key = "C"
+mods = "Control|Shift"
+
+[[keyboard.bindings]]
+action = "PasteSelection"
+key = "Insert"
+mods = "Shift"
+
+[[keyboard.bindings]]
+action = "ResetFontSize"
+key = "Key0"
+mods = "Control"
+
+[[keyboard.bindings]]
+action = "IncreaseFontSize"
+key = "Equals"
+mods = "Control"
+
+[[keyboard.bindings]]
+action = "IncreaseFontSize"
+key = "Plus"
+mods = "Control"
+
+[[keyboard.bindings]]
+action = "DecreaseFontSize"
+key = "Minus"
+mods = "Control"
+
+[[keyboard.bindings]]
+action = "ToggleFullscreen"
+key = "F"
+mods = "Control|Alt"
+
+[[keyboard.bindings]]
+action = "Paste"
+key = "Paste"
+mods = "None"
+
+[[keyboard.bindings]]
+action = "Copy"
+key = "Copy"
+mods = "None"
+
+[[keyboard.bindings]]
+action = "ClearLogNotice"
+key = "L"
+mods = "Control"
+
+[[keyboard.bindings]]
+chars = "\f"
+key = "L"
+mods = "Control"
+
+[[keyboard.bindings]]
+action = "ScrollPageUp"
+key = "PageUp"
+mode = "~Alt"
+mods = "None"
+
+[[keyboard.bindings]]
+action = "ScrollPageDown"
+key = "PageDown"
+mode = "~Alt"
+mods = "None"
+
+[[keyboard.bindings]]
+action = "ScrollToTop"
+key = "Home"
+mode = "~Alt"
+mods = "Shift"
+
+[[keyboard.bindings]]
+action = "ScrollToBottom"
+key = "End"
+mode = "~Alt"
+mods = "Shift"
+
+[[keyboard.bindings]]
+action = "Quit"
+key = "W"
+mods = "Control|Shift"
 
 [scrolling]
 history = 5000
 
-[font]
-size = 13
-normal = { family = "Jet Brains Mono Nerd Font Propo" }
+[window]
+startup_mode = "Maximized"
 
-[keyboard]
-bindings = [
-{ action = "Paste",             key = "V",          mods = "Control|Shift"               },
-{ action = "Copy",              key = "C",          mods = "Control|Shift"               },
-{ action = "PasteSelection",    key = "Insert",     mods = "Shift"                       },
-{ action = "ResetFontSize",     key = "Key0",       mods = "Control"                     },
-{ action = "IncreaseFontSize",  key = "Equals",     mods = "Control"                     },
-{ action = "IncreaseFontSize",  key = "Plus",       mods = "Control"                     },
-{ action = "DecreaseFontSize",  key = "Minus",      mods = "Control"                     },
-{ action = "ToggleFullscreen",  key = "F",          mods = "Control|Alt"                 },
-{ action = "Paste",             key = "Paste",      mods = "None"                        },
-{ action = "Copy",              key = "Copy",       mods = "None"                        },
-{ action = "ClearLogNotice",    key = "L",          mods = "Control"                     },
-{ chars = "\f",                 key = "L",          mods = "Control"                     },
-{ action = "ScrollPageUp",      key = "PageUp",     mods = "None",         mode = "~Alt" },
-{ action = "ScrollPageDown",    key = "PageDown",   mods = "None",         mode = "~Alt" },
-{ action = "ScrollToTop",       key = "Home",       mods = "Shift",        mode = "~Alt" },
-{ action = "ScrollToBottom",    key = "End",        mods = "Shift",        mode = "~Alt" },
-{ action = "Quit",              key = "W",          mods = "Control|Shift"               }
-]
-
-[colors]
-draw_bold_text_with_bright_colors = true
-
-[general]
-import = ['~/.config/alacritty/themes/themes/tokyo_night.toml'] #theme
-
+[window.padding]
+x = 1
+y = 1

@@ -1,7 +1,6 @@
 [Unit]
 Description=Change wallpaper periodically
-After=graphical.target
-After=systemd-user-sessions.service
+After=graphical-session.target
 
 [Timer]
 OnActiveSec=0

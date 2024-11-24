@@ -1,0 +1,10 @@
+[Unit]
+Description=Simple wallpaper Daemon
+After=graphical-session.target
+
+[Service]
+Restart=on-failure
+ExecStart=swww-daemon
+
+[Install]
+RequiredBy=default.target

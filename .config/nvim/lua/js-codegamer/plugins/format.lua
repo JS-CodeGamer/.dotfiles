@@ -44,6 +44,8 @@ return { -- Autoformat
       lua = { 'stylua' },
       python = { 'ruff_format', 'ruff_organize_imports', 'ruff_fix' },
       javascript = { 'eslint_d', { 'prettierd', 'prettier' } },
+      typescript = { 'eslint_d', { 'prettierd', 'prettier' } },
+      typescriptreact = { 'eslint_d', { 'prettierd', 'prettier' } },
       sh = { 'shfmt' },
       rust = { 'rustfmt' },
       c = { 'clang-format' },

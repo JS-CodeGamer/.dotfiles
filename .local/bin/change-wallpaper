@@ -28,7 +28,7 @@ fi
 # swww
 if command -v swww >/dev/null; then
   for disp in $(swww query | cut -d: -f1); do
-    swww img -o "$disp" "$IMAGE_PATHS"
+    swww img -o "$disp" "$IMAGE_PATHS" -t wave
 
     if [ "${log:-false}" = true ]; then
       printf "$(date +%d.%m_%H:%M): $IMAGE_PATHS\n" >>~/.last_wallpaper
