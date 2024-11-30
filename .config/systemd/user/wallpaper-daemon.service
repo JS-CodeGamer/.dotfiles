@@ -1,10 +1,10 @@
 [Unit]
 Description=Simple wallpaper Daemon
-After=graphical-session.target
+After=hyprland.service
 
 [Service]
 Restart=on-failure
-ExecStart=swww-daemon
+ExecStart=/usr/bin/swww-daemon
 
 [Install]
-RequiredBy=default.target
+WantedBy=graphical-session.target

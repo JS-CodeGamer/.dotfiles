@@ -11,7 +11,7 @@ size = 13
 family = "Jet Brains Mono Nerd Font Propo"
 
 [general]
-import = ["~/.config/alacritty/themes/themes/tokyo_night.toml"]
+import = ["~/.config/alacritty/themes/themes/catppuccin_mocha.toml"]
 
 [[keyboard.bindings]]
 action = "Paste"
