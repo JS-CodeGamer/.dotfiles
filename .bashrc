@@ -276,10 +276,19 @@ complete -o bashdefault -o default -o nospace -F __git_wrap__git_main config
 
 ## edit my scripts
 scriptedit() {
-  $EDITOR "$HOME/.local/bin/$1"
+  local fname
+  fname="$HOME/.local/bin"
+  if [ $# -ge 1 ]; then
+    fname="$fname/$1"
+    touch "$fname"
+  fi
+  if [ -f "$fname" ] && [ ! -x "$fname" ]; then
+    chmod 744 "$fname"
+  fi
+  $EDITOR "$fname"
 }
 complete -W "$(ls $HOME/.local/bin)" scriptedit
 
-ascii-image-converter "$HOME/Downloads/Formal.jpg" -gnd 50,25
+ascii-image-converter "$HOME/Images/Formal.jpg" -gnd 50,25
 # figlet Jagteshver\'s Shell | lolcat
 figlet JShell | lolcat

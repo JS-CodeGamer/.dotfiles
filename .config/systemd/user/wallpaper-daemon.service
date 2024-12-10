@@ -1,6 +1,6 @@
 [Unit]
 Description=Simple wallpaper Daemon
-After=hyprland.service
+After=wayland-wm@Hyprland.service
 
 [Service]
 Restart=on-failure

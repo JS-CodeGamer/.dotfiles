@@ -8,10 +8,10 @@ TERM = "xterm-256color"
 size = 13
 
 [font.normal]
-family = "Jet Brains Mono Nerd Font Propo"
+family = "MonaspiceNe Nerd Font"
 
 [general]
-import = ["~/.config/alacritty/themes/themes/catppuccin_mocha.toml"]
+import = ["~/.config/alacritty/themes/themes/tokyo_night_enhanced.toml"]
 
 [[keyboard.bindings]]
 action = "Paste"
