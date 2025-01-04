@@ -1,10 +1,11 @@
 vim.api.nvim_create_user_command('FormatDisable', function(args)
-  print 'disable format'
   if args.bang then
     -- FormatDisable! will disable formatting just for this buffer
-    vim.cmd.normal 'let g:disable_autoformat = v:true'
+    print 'disabling formatting for this buffer'
+    vim.b['autoformat'] = false
   else
-    vim.g.disable_autoformat = true
+    print 'disabling formatting'
+    vim.g['autoformat'] = false
   end
 end, {
   desc = 'Disable autoformat-on-save',
@@ -12,45 +13,85 @@ end, {
 })
 
 vim.api.nvim_create_user_command('FormatEnable', function()
-  vim.cmd.normal 'let g:disable_autoformat = v:false'
-  vim.g.disable_autoformat = false
+  vim.b['autoformat'] = true
+  vim.g['autoformat'] = true
 end, {
-  desc = 'Re-enable autoformat-on-save',
+  desc = 'Enable autoformat-on-save',
 })
 
+local js_ecosystem = function(bufnr)
+  local formatters = {
+    'eslint_d',
+  }
+  if require('conform').get_formatter_info('prettierd', bufnr).available then
+    table.insert(formatters, 'prettierd')
+  else
+    table.insert(formatters, 'prettier')
+  end
+  return formatters
+end
+
 return { -- Autoformat
-  'stevearc/conform.nvim',
-  lazy = false,
-  keys = {
-    {
-      '<leader>f',
-      function()
-        require('conform').format { async = true, lsp_fallback = true }
-      end,
-      mode = '',
-      desc = '[F]ormat buffer',
+  'zapling/mason-conform.nvim',
+  dependencies = {
+    'stevearc/conform.nvim',
+    lazy = false,
+    keys = {
+      {
+        '<leader>f',
+        function()
+          require('conform').format { async = true, lsp_fallback = true }
+        end,
+        mode = '',
+        desc = '[F]ormat buffer',
+      },
     },
-  },
-  opts = {
-    notify_on_error = false,
-    format_on_save = function(bufnr)
-      -- local disable_filetypes = { c = true, cpp = true }
-      return {
-        timeout_ms = 500,
-        lsp_fallback = 'first', -- not disable_filetypes[vim.bo[bufnr].filetype],
-      }
-    end,
-    formatters_by_ft = {
-      lua = { 'stylua' },
-      python = { 'ruff_format', 'ruff_organize_imports', 'ruff_fix' },
-      javascript = { 'eslint_d', { 'prettierd', 'prettier' } },
-      typescript = { 'eslint_d', { 'prettierd', 'prettier' } },
-      typescriptreact = { 'eslint_d', { 'prettierd', 'prettier' } },
-      sh = { 'shfmt' },
-      rust = { 'rustfmt' },
-      c = { 'clang-format' },
-      cpp = { 'clang-format' },
-      go = { { 'gofumpt', 'gofmt' }, 'goimports' },
+    opts = {
+      formatters_by_ft = {
+        lua = { 'stylua' },
+        python = function(bufnr)
+          if require('conform').get_formatter_info('ruff_format', bufnr).available then
+            return { 'ruff_format', 'ruff_organize_imports', 'ruff_fix' }
+          else
+            return { 'isort', 'black' }
+          end
+        end,
+        javascript = function(bufnr)
+          return js_ecosystem(bufnr)
+        end,
+        typescript = function(bufnr)
+          return js_ecosystem(bufnr)
+        end,
+        typescriptreact = function(bufnr)
+          return js_ecosystem(bufnr)
+        end,
+        sh = { 'shfmt' },
+        rust = { 'rustfmt' },
+        c = { 'clang-format' },
+        cpp = { 'clang-format' },
+        go = function(bufnr)
+          local formatters = { 'goimports' }
+          if require('conform').get_formatter_info('gofumpt', bufnr).available then
+            table.insert(formatters, 1, 'gofumpt')
+          else
+            table.insert(formatters, 1, 'gofmt')
+          end
+          return formatters
+        end,
+      },
+      default_format_opts = {
+        lsp_format = 'first',
+      },
+      format_on_save = function()
+        if vim.b['autoformat'] == false or vim.g['autoformat'] == false then
+          return false
+        end
+        return {
+          timeout_ms = 500,
+        }
+      end,
+      notify_on_error = false,
+      notify_no_formatters = true,
     },
   },
 }

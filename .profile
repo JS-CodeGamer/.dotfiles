@@ -23,5 +23,5 @@ fi
 
 # directly start hyprland
 if uwsm check may-start; then
-  exec uwsm start hyprland.desktop
+  exec systemd-cat -t uwsm_start uwsm start hyprland.desktop
 fi

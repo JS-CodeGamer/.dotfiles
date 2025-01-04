@@ -1,11 +1,11 @@
 [Unit]
 Description=Change wallpaper periodically
+PartOf=graphical-session.target
 After=wallpaper-daemon.service
-Requisite=wallpaper-daemon.service
 
 [Timer]
 OnActiveSec=0
-OnUnitActiveSec=2m 30s
+OnUnitActiveSec=1m
 
 [Install]
-WantedBy=graphical-session.target
+WantedBy=wallpaper-daemon.service

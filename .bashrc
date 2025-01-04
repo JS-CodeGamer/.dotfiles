@@ -193,6 +193,12 @@ alias jctl="journalctl -p 3 -xb"
 # Recent installed packages
 alias rip="expac --timefmt='%Y-%m-%d %T' '%l\t%n %v' | sort | tail -200 | nl"
 
+# config
+alias config="git --git-dir='$HOME/.cfg/' --work-tree='$HOME'"
+
+# xargs check for alias
+alias xargs='xargs '
+
 unset check
 
 #################################################
@@ -263,12 +269,6 @@ ex() {
 ## usage: help <command>
 help() {
   "$@" --help 2>&1 | bat -pl help
-}
-
-## config - access dotfiles repo same as git
-## usage: config <command>
-config() {
-  git --git-dir="$HOME/.cfg/" --work-tree="$HOME" $@
 }
 
 # some completions
