@@ -5,7 +5,7 @@
 
 ## OMB
 export OSH='/home/jagteshver/.oh-my-bash'
-OSH_THEME="random" #font
+OSH_THEME="minimal-gh" #random" #font
 OMB_THEME_RANDOM_IGNORED=(tonka burunton morris powerline powerline-icon powerline-light powerline-multiline powerline-naked powerline-plain powerline-wizard agnoster absimple dos brunton modern-t hawaii50)
 COMPLETION_WAITING_DOTS="true"
 OMB_DEFAULT_ALIASES="check"
@@ -17,6 +17,7 @@ completions=(
   git
   pip pip3
   ssh
+  tmux
 )
 aliases=(
   general
@@ -41,6 +42,11 @@ check() {
 # cargo bin
 if [ -d "$HOME/.cargo" ]; then
   export PATH=$PATH:"$HOME/.cargo/bin"
+fi
+
+# go bin
+if [ -d "$HOME/go/bin" ]; then
+  export PATH=$PATH:"$HOME/go/bin"
 fi
 
 ## bat -- cat replacement
@@ -224,13 +230,14 @@ colors() (
       fgc=${fgc#37} # white
       bgc=${bgc#40} # black
 
-      vals="${fgc:+$fgc;}${bgc}"
-      vals=${vals%%;}
+      ansi_code="${fgc};${bgc}"
+      ansi_code=${ansi_code%%;}
+      ansi_code=${ansi_code##;}
 
-      seq0="${vals:+\e[${vals}m}"
-      printf "  %-9s" "${seq0:-(default)}"
+      seq0="${ansi_code:+\e[${ansi_code}m}"
+      printf "  %-9s" "${seq0:-'(default)'}"
       printf " ${seq0}TEXT\e[m"
-      printf " \e[${vals:+${vals+$vals;}}1mBOLD\e[m"
+      printf " \e[${ansi_code};1mBOLD\e[m"
     done
     printf "\n\n"
   done
@@ -271,24 +278,52 @@ help() {
   "$@" --help 2>&1 | bat -pl help
 }
 
+complete -A builtin -A alias -A function -c help
+
 # some completions
 complete -o bashdefault -o default -o nospace -F __git_wrap__git_main config
 
 ## edit my scripts
+if [ -z "$(env | grep SCRIPT_PREF)" ]; then
+  export SCRIPT_PREF=${SCRIPT_PREF:-$HOME/.local/bin}
+fi
 scriptedit() {
-  local fname
-  fname="$HOME/.local/bin"
-  if [ $# -ge 1 ]; then
-    fname="$fname/$1"
-    touch "$fname"
+  local fname fnames
+  if [ $# -lt 1 ]; then
+    printf %s "Usage: scriptedit NAME[+NAME]"
   fi
-  if [ -f "$fname" ] && [ ! -x "$fname" ]; then
-    chmod 744 "$fname"
-  fi
-  $EDITOR "$fname"
+  for fname in "$@"; do
+    fname=${fname:+$SCRIPT_PREF/$fname}
+    touch $fname
+    chmod 744 $fname
+    fnames="${fnames:+$fnames }$fname"
+  done
+  $EDITOR "$fnames"
 }
-complete -W "$(ls $HOME/.local/bin)" scriptedit
+_scriptedit() {
+  local IFS=$'\n'
+  local LASTCHAR=' '
 
-ascii-image-converter "$HOME/Images/Formal.jpg" -gnd 50,25
+  COMPREPLY=($(compgen -o filenames -f \
+    -- "$SCRIPT_PREF/${COMP_WORDS[COMP_CWORD]}"))
+
+  if [ ${#COMPREPLY[@]} = 1 ]; then
+    [ -d "$COMPREPLY" ] && LASTCHAR=/
+    COMPREPLY=$(printf %q%s "${COMPREPLY#$SCRIPT_PREF/}" "$LASTCHAR")
+  else
+    for ((i = 0; i < ${#COMPREPLY[@]}; i++)); do
+      [ -d "${COMPREPLY[$i]}" ] && COMPREPLY[$i]=${COMPREPLY[$i]}/
+      COMPREPLY[$i]=${COMPREPLY[$i]#$SCRIPT_PREF/}
+    done
+  fi
+
+  return 0
+}
+complete -o nospace -F _scriptedit scriptedit
+
+ascii-image-converter "$HOME/images/Formal.jpg" -gnd 50,25
 # figlet Jagteshver\'s Shell | lolcat
 figlet JShell | lolcat
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/home/jagteshver/.lmstudio/bin"

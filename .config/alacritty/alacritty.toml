@@ -1,3 +1,7 @@
+[general]
+# theme
+import = ["~/.config/alacritty/theme.toml"]
+
 [colors]
 draw_bold_text_with_bright_colors = true
 
@@ -9,9 +13,6 @@ size = 13
 
 [font.normal]
 family = "MonaspiceNe Nerd Font"
-
-[general]
-import = ["~/.config/alacritty/themes/themes/dracula.toml"]
 
 [[keyboard.bindings]]
 action = "Paste"
@@ -107,6 +108,7 @@ history = 5000
 
 [window]
 startup_mode = "Maximized"
+title = "terminal"
 
 [window.padding]
 x = 1

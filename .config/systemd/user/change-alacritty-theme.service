@@ -1,8 +1,0 @@
-[Unit]
-Description=Change Alacritty Theme
-
-[Service]
-ExecStart=%h/.local/bin/change-alacritty-theme -t d
-
-[Install]
-WantedBy=default.target

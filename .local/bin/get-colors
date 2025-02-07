@@ -1,3 +1,0 @@
-#!/bin/bash
-
-cat ~/.config/assets/color-schemes/$1.json | jq -r ".$2"

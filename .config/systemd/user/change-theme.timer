@@ -1,5 +1,5 @@
 [Unit]
-Description=Change wallpaper periodically
+Description=Change wallpaper and themes periodically
 PartOf=graphical-session.target
 After=wallpaper-daemon.service
 

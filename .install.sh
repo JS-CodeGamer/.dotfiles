@@ -120,8 +120,8 @@ cd "$OLD_DIR"
 unset OLD_DIR
 
 # Install neovim extensions
-# log -i "Installing neovim extensions"
-# nvim --headless +Lazy sync +qa
+log -i "Installing neovim extensions"
+nvim --headless '+Lazy! sync' +qa
 
 # Install common tools
 log -i "Installing common tools that I use:"

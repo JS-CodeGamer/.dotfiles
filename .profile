@@ -6,7 +6,8 @@ export XDG_CACHE_HOME=$HOME/.cache
 export XDG_DATA_HOME=$HOME/.local/share
 export XDG_STATE_HOME=$HOME/.local/state
 
-export PATH=~/.local/bin/:$PATH
+export SCRIPT_PREF=$HOME/.local/bin
+export PATH=$SCRIPT_PREF:$PATH
 
 export MANROFFOPT="-c"
 
@@ -25,3 +26,6 @@ fi
 if uwsm check may-start; then
   exec systemd-cat -t uwsm_start uwsm start hyprland.desktop
 fi
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/home/jagteshver/.lmstudio/bin"

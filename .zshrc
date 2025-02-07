@@ -12,3 +12,6 @@ zstyle :compinstall filename '/home/jagteshver/.zshrc'
 autoload -Uz compinit
 compinit
 # End of lines added by compinstall
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/home/jagteshver/.lmstudio/bin"

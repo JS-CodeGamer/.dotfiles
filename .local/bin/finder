@@ -1,0 +1,15 @@
+#!/bin/bash
+
+programname=$0
+function usage {
+  echo "usage: $programname [search location] [mime/file type]"
+  exit 1
+}
+
+if [ "$#" -ne 2 ]; then
+  usage
+fi
+
+FINDPATH="$1"
+
+find "$FINDPATH" -type f | file -i -F "::" -f - | awk -v FILETYPE="$2" -F"::" '$2 ~ FILETYPE { print $1 }'

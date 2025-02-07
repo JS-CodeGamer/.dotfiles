@@ -28,20 +28,20 @@ save="$3"
 path="$4"
 out="$5"
 cmd="/usr/bin/yazi"
-termcmd="${TERMCMD:-/usr/bin/alacritty}"
+termcmd="${TERMCMD:-/usr/bin/alacritty -e }"
 
 if [ "$save" = "1" ]; then
-    ARGS=--chooser-file="$out"
+  ARGS=--chooser-file="$out"
 elif [ "$directory" = "1" ]; then
-    ARGS=--cwd-file="$out"
+  ARGS=--cwd-file="$out"
 elif [ "$multiple" = "1" ]; then
-    ARGS=--chooser-file="$out"
+  ARGS=--chooser-file="$out"
 else
-    ARGS=--chooser-file="$out"
+  ARGS=--chooser-file="$out"
 fi
 
 $termcmd $cmd $ARGS
 
 if [ "$save" = "1" ] && [ ! -s "$out" ]; then
-    /usr/bin/rm "$path"
-f
+  /usr/bin/rm "$path"
+fi

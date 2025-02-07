@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+check() {
+  COMMAND=$1
+  if command -v "$COMMAND" >/dev/null 2>&1; then
+    RESULT="OK"
+  else
+    RESULT="NOT FOUND"
+  fi
+  echo "   $COMMAND: $RESULT"
+}
+
+ACTION=${1:-usage}
+
+if [ "$ACTION" = "usage" ]; then
+  echo "Usage:"
+  echo "  im2txt capture"
+  echo "  grimblast check"
+  echo "  grimblast usage"
+  echo ""
+  echo "Commands:"
+  echo "  capture: OCR text in screenshot to clipboard"
+  echo "  check: Verify if required tools are installed and exit."
+  echo "  usage: Show this message and exit."
+  exit
+elif [ "$ACTION" = "check" ]; then
+  echo "Checking if required tools are installed. If something is missing, install it to your system and make it available in PATH..."
+  check grim
+  check slurp
+  check wl-copy
+  check tesseract
+  exit
+fi
+
+# take screenshot
+FILE="$(mktemp --suffix='.png')"
+grim -g "$(slurp $SLURP_ARGS)" "$FILE"
+
+tesseract -l "$(
+  tesseract --list-langs |
+    tail -n +2 |
+    tofi
+)" "$FILE" - |
+  wl-copy --type text/plain

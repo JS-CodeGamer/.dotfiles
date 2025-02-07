@@ -1,0 +1,32 @@
+#!/bin/bash
+
+SESSION_NAME="fs-sync"
+PROJECT_DIR="$HOME/dev/fs-sync"
+
+# Check if the session already exists
+tmux has-session -t "$SESSION_NAME" 2>/dev/null
+
+# If session doesn't exist, create a new one
+if [ $? != 0 ]; then
+  # Create a new tmux session
+  tmux new-session -d -s "$SESSION_NAME" -c "$PROJECT_DIR"
+
+  # First window (main) - Neovim
+  tmux rename-window -t 1 'editor'
+  tmux send-keys -t "$SESSION_NAME:1" "nvim" ENTER
+  tmux send-keys -t "$SESSION_NAME:1" ":Lazy Update" ENTER
+
+  # Second window - Go server
+  tmux new-window -t "$SESSION_NAME" -c "$PROJECT_DIR" -n 'server'
+  tmux send-keys -t "$SESSION_NAME:2" "scripts/watch.sh run"
+
+  # Third window - Testing
+  tmux new-window -t "$SESSION_NAME" -c "$PROJECT_DIR" -n 'test'
+  tmux send-keys -t "$SESSION_NAME:3" "scripts/watch.sh test"
+
+  # Fourth window - Terminal
+  tmux new-window -t "$SESSION_NAME" -c "$PROJECT_DIR" -n 'terminal'
+fi
+
+# Attach to the session
+tmux attach-session -t "$SESSION_NAME"
