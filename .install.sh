@@ -98,7 +98,7 @@ fi
 # Use ssh and fallback to http
 if [ -d "$GIT_DIR" ]; then backup $GIT_DIR; fi
 if ! $PERSONAL; then
-  GIT_REMOTE = "${GIT_REMOTE/git@github.com:/https://github.com/}"
+  GIT_REMOTE="${GIT_REMOTE/git@github.com:/https://github.com/}"
 fi
 log -i "Cloning dotfiles from github repo: $GIT_REMOTE"
 git clone --bare -q "$GIT_REMOTE" "$GIT_DIR"

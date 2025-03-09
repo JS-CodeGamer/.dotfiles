@@ -20,5 +20,5 @@ image/x-portable-pixmap=imv-dir.desktop
 image/x-tga=imv-dir.desktop
 image/x-xbitmap=imv-dir.desktop
 x-scheme-handler/postman=Postman.desktop
-x-scheme-handler/magnet=firefox.desktop
+x-scheme-handler/magnet=librewolf.desktop
 
