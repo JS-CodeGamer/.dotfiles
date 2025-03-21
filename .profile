@@ -13,20 +13,11 @@ export MANROFFOPT="-c"
 
 export EDITOR="nvim" VISUAL="nvim"
 
-if [ "$BASH" ]; then
+if [ ! -z "$BASH" ]; then
   [[ -f ~/.bashrc ]] && . ~/.bashrc
 fi
-
-# # compositor selection
-# if uwsm check may-start && uwsm select; then
-#   exec systemd-cat -t uwsm_start uwsm start default
-# fi
 
 # directly start hyprland
 if uwsm check may-start; then
   exec systemd-cat -t uwsm_start uwsm start hyprland.desktop
 fi
-
-# Added by LM Studio CLI (lms)
-export PATH="$PATH:/home/jagteshver/.lmstudio/bin"
-. "$HOME/.cargo/env"

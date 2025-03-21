@@ -324,6 +324,3 @@ complete -o nospace -F _scriptedit scriptedit
 ascii-image-converter "$HOME/images/Formal.jpg" -gnd 50,25
 # figlet Jagteshver\'s Shell | lolcat
 figlet JShell | lolcat
-
-# Added by LM Studio CLI (lms)
-export PATH="$PATH:/home/jagteshver/.lmstudio/bin"
