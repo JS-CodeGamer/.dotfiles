@@ -1,3 +1,6 @@
 [submodule ".oh-my-bash"]
 	path = .oh-my-bash
 	url = https://github.com/ohmybash/oh-my-bash.git
+[submodule "local-hostings"]
+	path = local-hostings
+	url = git@github.com:JS-CodeGamer/local-hostings.git

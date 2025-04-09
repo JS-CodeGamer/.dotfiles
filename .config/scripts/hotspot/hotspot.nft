@@ -1,0 +1,23 @@
+#!/usr/bin/nft -f
+# vim:set ts=2 sw=2 et:
+
+include "/etc/nftables.conf"
+
+table inet filter {
+  chain input {
+    iif "$WIFI_INTERFACE" accept comment "allow hotspot traffic"
+  }
+
+  chain nat {
+    type nat hook postrouting priority srcnat; policy accept;
+    oifname "$ETH_INTERFACE" counter masquerade
+  }
+
+  chain forward {
+    iif "$WIFI_INTERFACE" oif "$ETH_INTERFACE" counter accept
+    iif "$ETH_INTERFACE" oif "$WIFI_INTERFACE" ct state related,established counter accept
+    iif "$WIFI_INTERFACE" counter accept
+  }
+}
+
+

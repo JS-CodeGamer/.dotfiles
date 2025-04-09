@@ -5,7 +5,7 @@
 
 ## OMB
 export OSH='/home/jagteshver/.oh-my-bash'
-OSH_THEME="minimal-gh" #random" #font
+OSH_THEME=rainbowbrite # "minimal-gh" #random" #font #rainbowbrite
 OMB_THEME_RANDOM_IGNORED=(tonka burunton morris powerline powerline-icon powerline-light powerline-multiline powerline-naked powerline-plain powerline-wizard agnoster absimple dos brunton modern-t hawaii50)
 COMPLETION_WAITING_DOTS="true"
 OMB_DEFAULT_ALIASES="check"
@@ -21,6 +21,7 @@ completions=(
 )
 aliases=(
   general
+  docker
 )
 plugins=(
   git
@@ -135,15 +136,15 @@ alias l.='ls -d .*'                                        # show only dotfiles
 alias l='la'
 
 ## grep
-check rg && {
-  alias grep='rg'
-  alias fgrep='rg -F'
-  alias egrep='rg'
-} || {
-  alias grep='grep --colour'
-  alias fgrep='grep -F'
-  alias egrep='grep -E'
-}
+# check rg && {
+#   alias grep='rg'
+#   alias fgrep='rg -F'
+#   alias egrep='rg'
+# } || {
+alias grep='grep --colour'
+alias fgrep='grep -F'
+alias egrep='grep -E'
+# }
 
 ## python
 alias py='python'
@@ -324,3 +325,8 @@ complete -o nospace -F _scriptedit scriptedit
 ascii-image-converter "$HOME/images/Formal.jpg" -gnd 50,25
 # figlet Jagteshver\'s Shell | lolcat
 figlet JShell | lolcat
+
+[ -f "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.bash ] && source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.bash
+
+# Tensorflow fix
+export XLA_FLAGS=--xla_gpu_cuda_data_dir=/opt/cuda

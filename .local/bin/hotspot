@@ -1,0 +1,59 @@
+#!/bin/bash
+
+set -x # Enable debugging
+
+export WIFI_INTERFACE="wlp3s0"
+export ETH_INTERFACE="enp2s0"
+export HOTSPOT_NAME="hotspot"
+export HOTSPOT_SSID="js-hotspot"
+export HOTSPOT_PASS="123456789"
+export NFT_RULESET=~/.config/scripts/hotspot/hotspot.nft
+
+off() {
+  sudo systemctl stop dnsmasq
+  sudo systemctl stop kea-dhcp4
+
+  # sudo nft delete table inet hotspot
+  # reload firewall blocking rules
+  sudo nft -f /etc/nftables.conf
+
+  nmcli con down "$HOTSPOT_NAME"
+}
+
+on() {
+  # Check if the hotspot exists, else create it
+  if nmcli con show | rg "$HOTSPOT_NAME" >/dev/null; then
+    nmcli con up "$HOTSPOT_NAME" ifname "$WIFI_INTERFACE"
+  else
+    nmcli connection add type wifi \
+      ifname "$WIFI_INTERFACE" \
+      con-name "$HOTSPOT_NAME" \
+      autoconnect no \
+      ssid "$HOTSPOT_SSID" \
+      mode ap \
+      802-11-wireless-security.key-mgmt wpa-psk \
+      802-11-wireless-security.psk "$HOTSPOT_PASS" \
+      802-11-wireless-security.proto rsn \
+      802-11-wireless-security.pairwise ccmp \
+      802-11-wireless-security.group ccmp \
+      ipv4.addresses 192.168.255.1/24 \
+      ipv4.method manual
+    nmcli con up "$HOTSPOT_NAME"
+  fi
+
+  envsubst '$WIFI_INTERFACE,$ETH_INTERFACE' <"$NFT_RULESET" | sudo nft -f -
+
+  sudo systemctl start kea-dhcp4
+  sudo systemctl start dnsmasq
+}
+
+if [ "$1" = "on" ]; then
+  on
+elif [ "$1" = "off" ]; then
+  off
+elif [ "$1" = "restart" ]; then
+  off
+  on
+else
+  echo "usage: $0 [on | off | restart]"
+fi
