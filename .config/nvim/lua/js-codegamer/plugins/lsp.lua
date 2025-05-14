@@ -1,48 +1,27 @@
-local servers = {
-  ast_grep = {},
-  bashls = {},
-  gopls = {},
-  clangd = {},
-  jsonls = {},
-  jedi_language_server = {},
-  rust_analyzer = {},
-  ts_ls = {},
-  lua_ls = {
-    settings = {
-      Lua = {
-        completion = {
-          callSnippet = 'Replace',
-        },
-      },
-    },
-  },
-}
-
-return { -- LSP Configuration & Plugins
-  'williamboman/mason-lspconfig.nvim',
-  name = 'mason-lspconfig',
+return {
+  'neovim/nvim-lspconfig',
+  event = { 'BufReadPre', 'BufNewFile' },
   dependencies = {
-    'neovim/nvim-lspconfig',
-    'mason',
     { 'j-hui/fidget.nvim', opts = {} },
     { 'folke/lazydev.nvim', opts = {} },
+    'hrsh7th/cmp-nvim-lsp',
   },
-  opts = function()
+  config = function()
+    local lspconfig = require 'lspconfig'
     local capabilities = vim.lsp.protocol.make_client_capabilities()
     capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
-    return {
-      ensure_installed = servers,
-      handlers = {
-        function(server_name)
-          local server = servers[server_name] or {}
+    local servers = require('js-codegamer.tooling').GetLSPServers()
+    for server, conf in pairs(servers) do
+      local server_config = {
+        capabilities = capabilities,
+      }
 
-          --  Extend nvim lsp capabilities with nvim cmp
-          server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+      if conf then
+        server_config = vim.tbl_deep_extend('force', server_config, conf)
+      end
 
-          require('lspconfig')[server_name].setup(server)
-        end,
-      },
-    }
+      lspconfig[server].setup(server_config)
+    end
   end,
 }

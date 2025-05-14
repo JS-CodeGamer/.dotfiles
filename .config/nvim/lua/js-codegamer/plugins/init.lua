@@ -15,4 +15,10 @@ return {
 
   -- Rust Cargo.toml show latest version of deps
   { 'saecki/crates.nvim', event = { 'VimEnter Cargo.toml', 'BufEnter Cargo.toml' }, tag = 'stable', opts = {} },
+
+  { 'nvim-tree/nvim-web-devicons', lazy = true },
+
+  {
+    'folke/which-key.nvim',
+  },
 }

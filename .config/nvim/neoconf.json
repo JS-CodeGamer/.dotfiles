@@ -1,10 +1,209 @@
 {
-  "pyright": {
-    "python": {
-      "executionEnvironments": [
-        {
-          "root": "src"
+  "lspconfig": {
+    "ast_grep": {
+      "autostart": false
+    },
+    "bashls": {
+      "autostart": false
+    },
+    "gopls": {
+      "autostart": false,
+      "settings": {
+        "gopls": {
+          "analyses": {
+            "unusedparams": true,
+            "shadow": true
+          },
+          "staticcheck": true,
+          "gofumpt": true,
+          "usePlaceholders": true,
+          "completeUnimported": true
         }
+      }
+    },
+    "clangd": {
+      "autostart": false,
+      "cmd": [
+        "clangd",
+        "--background-index",
+        "--clang-tidy",
+        "--header-insertion=iwyu",
+        "--completion-style=detailed",
+        "--function-arg-placeholders"
+      ],
+      "init_options": {
+        "clangdFileStatus": true,
+        "usePlaceholders": true,
+        "completeUnimported": true
+      }
+    },
+    "jsonls": {
+      "autostart": false,
+      "settings": {
+        "json": {
+          "schemas": "require('schemastore').json.schemas()",
+          "validate": {
+            "enable": true
+          }
+        }
+      }
+    },
+    "ruff_lsp": {
+      "autostart": false,
+      "settings": {
+        "ruff": {
+          "hover": true,
+          "completion": true,
+          "lint": {
+            "run": "onSave"
+          },
+          "organizeImports": true
+        }
+      },
+      "capabilities": {
+        "hoverProvider": true,
+        "completionProvider": {
+          "triggerCharacters": [".", " "]
+        },
+        "definitionProvider": true,
+        "referencesProvider": true
+      }
+    },
+    "rust_analyzer": {
+      "autostart": false,
+      "settings": {
+        "rust-analyzer": {
+          "checkOnSave": {
+            "command": "clippy"
+          },
+          "cargo": {
+            "allFeatures": true
+          },
+          "procMacro": {
+            "enable": true
+          },
+          "inlayHints": {
+            "typeHints": {
+              "enable": true
+            },
+            "parameterHints": {
+              "enable": true
+            }
+          }
+        }
+      }
+    },
+    "tsserver": {
+      "autostart": false,
+      "settings": {
+        "typescript": {
+          "inlayHints": {
+            "includeInlayParameterNameHints": "all",
+            "includeInlayParameterNameHintsWhenArgumentMatchesName": false,
+            "includeInlayFunctionParameterTypeHints": true,
+            "includeInlayVariableTypeHints": true,
+            "includeInlayVariableTypeHintsWhenTypeMatchesName": false,
+            "includeInlayPropertyDeclarationTypeHints": true,
+            "includeInlayFunctionLikeReturnTypeHints": true,
+            "includeInlayEnumMemberValueHints": true
+          }
+        },
+        "javascript": {
+          "inlayHints": {
+            "includeInlayParameterNameHints": "all",
+            "includeInlayParameterNameHintsWhenArgumentMatchesName": false,
+            "includeInlayFunctionParameterTypeHints": true,
+            "includeInlayVariableTypeHints": true,
+            "includeInlayVariableTypeHintsWhenTypeMatchesName": false,
+            "includeInlayPropertyDeclarationTypeHints": true,
+            "includeInlayFunctionLikeReturnTypeHints": true,
+            "includeInlayEnumMemberValueHints": true
+          }
+        }
+      }
+    },
+    "lua_ls": {
+      "autostart": false,
+      "settings": {
+        "Lua": {
+          "runtime": {
+            "version": "LuaJIT"
+          },
+          "diagnostics": {
+            "globals": ["vim"]
+          },
+          "workspace": {
+            "library": [
+              "vim.env.VIMRUNTIME",
+              "${3rd}/luv/library",
+              "${3rd}/busted/library"
+            ],
+            "checkThirdParty": false
+          },
+          "telemetry": {
+            "enable": false
+          },
+          "completion": {
+            "callSnippet": "Replace"
+          }
+        }
+      }
+    },
+    "pyright": {
+      "autostart": false,
+      "settings": {
+        "python": {
+          "analysis": {
+            "autoSearchPaths": true,
+            "diagnosticMode": "workspace",
+            "useLibraryCodeForTypes": true
+          },
+          "executionEnvironments": [
+            {
+              "root": "src"
+            }
+          ]
+        }
+      }
+    },
+    "yamlls": {
+      "autostart": false,
+      "settings": {
+        "yaml": {
+          "validate": true,
+          "format": {
+            "enable": true
+          },
+          "hover": true,
+          "completion": true
+        }
+      }
+    },
+    "marksman": {
+      "autostart": false
+    },
+    "html": {
+      "autostart": false
+    },
+    "cssls": {
+      "autostart": false
+    },
+    "eslint": {
+      "autostart": false
+    },
+    "tailwindcss": {
+      "autostart": false
+    },
+    "emmet_ls": {
+      "autostart": false,
+      "filetypes": [
+        "html",
+        "css",
+        "scss",
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact"
       ]
     }
   }

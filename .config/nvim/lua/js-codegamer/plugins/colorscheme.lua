@@ -1,6 +1,7 @@
 return {
   {
     'rose-pine/neovim',
+    lazy = false,
     name = 'rose-pine',
     -- priority = 1000, -- Make sure to load this before all the other start plugins.
     -- init = function()
@@ -9,17 +10,19 @@ return {
   },
   {
     'catppuccin/nvim',
+    lazy = false,
     name = 'catppuccin',
-    priority = 1000, -- Make sure to load this before all the other start plugins.
-    init = function()
-      vim.cmd.colorscheme 'catppuccin-mocha'
-    end,
+    -- priority = 1000, -- Make sure to load this before all the other start plugins.
+    -- init = function()
+    --   vim.cmd.colorscheme 'catppuccin-mocha'
+    -- end,
   },
   {
     'folke/tokyonight.nvim',
-    -- priority = 1000, -- Make sure to load this before all the other start plugins.
-    -- init = function()
-    --   vim.cmd.colorscheme 'tokyonight'
-    -- end,
+    lazy = false,
+    priority = 1000, -- Make sure to load this before all the other start plugins.
+    init = function()
+      vim.cmd.colorscheme 'tokyonight'
+    end,
   },
 }

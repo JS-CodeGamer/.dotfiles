@@ -56,7 +56,10 @@ end
 
 vim.opt['whichwrap']:append '<,>,[,],h,l'
 vim.opt['iskeyword']:append '-'
-vim.opt['formatoptions']:remove 'cro'
+vim.opt['formatoptions']:remove 'c'
+vim.opt['formatoptions']:remove 'r'
+vim.opt['formatoptions']:remove 'o'
+
 
 -- use c syntax for h files instead of cpp
 vim.g.c_syntax_for_h = 1

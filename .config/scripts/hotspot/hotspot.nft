@@ -5,7 +5,7 @@ include "/etc/nftables.conf"
 
 table inet filter {
   chain input {
-    iif "$WIFI_INTERFACE" accept comment "allow hotspot traffic"
+    iif "$WIFI_INTERFACE" counter accept comment "allow hotspot traffic"
   }
 
   chain nat {

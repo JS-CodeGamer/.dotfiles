@@ -11,13 +11,14 @@ COMPLETION_WAITING_DOTS="true"
 OMB_DEFAULT_ALIASES="check"
 OMB_USE_SUDO=true
 completions=(
-  defaults dirs
-  docker-compose docker
-  npm nvm
-  git
-  pip pip3
-  ssh
   tmux
+  ssh
+  pip3 pip
+  nvm npm
+  minikube kubectl
+  makefile
+  go
+  docker docker-compose
 )
 aliases=(
   general
@@ -33,7 +34,7 @@ source "$OSH"/oh-my-bash.sh
 
 # check if a prog exists or not
 check() {
-  if command -v $1 >/dev/null; then
+  if command -v "$1" >/dev/null; then
     return 0
   else
     return 1
@@ -94,8 +95,8 @@ fi
 
 # bun
 if [ -d "$HOME/.bun" ]; then
-  export BUN_INSTALL="$HOME/.bun" \
-    PATH=$BUN_INSTALL/bin:$PATH
+  export BUN_INSTALL="$HOME/.bun"
+  export PATH=$BUN_INSTALL/bin:$PATH
 fi
 
 # pyenv
@@ -235,10 +236,12 @@ colors() (
       ansi_code=${ansi_code%%;}
       ansi_code=${ansi_code##;}
 
-      seq0="${ansi_code:+\e[${ansi_code}m}"
+      if [ -n "$ansi_code" ]; then
+        seq0="\e[${ansi_code}m"
+      fi
       printf "  %-9s" "${seq0:-'(default)'}"
-      printf " ${seq0}TEXT\e[m"
-      printf " \e[${ansi_code};1mBOLD\e[m"
+      printf " %sTEXT\e[m" "${seq0}"
+      printf " \e[%s;1mBOLD\e[m" "${ansi_code}"
     done
     printf "\n\n"
   done
@@ -252,21 +255,21 @@ ex() {
     echo "usage: ex <file>"
   fi
   while [ $# -ne 0 ]; do
-    if [ ! -f $1 ]; then
+    if [ ! -f "$1" ]; then
       echo "'$1' is not a valid file"
     fi
     case $1 in
-    *.tar.bz2) tar xjf $1 ;;
-    *.tar.gz) tar xzf $1 ;;
-    *.tbz2) tar xjf $1 ;;
-    *.tgz) tar xzf $1 ;;
-    *.tar) tar xf $1 ;;
-    *.bz2) bunzip2 $1 ;;
-    *.rar) unrar x $1 ;;
-    *.gz) gunzip $1 ;;
-    *.zip) unzip $1 ;;
-    *.Z) uncompress $1 ;;
-    *.7z) 7z x $1 ;;
+    *.tar.bz2) tar xjf "$1" ;;
+    *.tar.gz) tar xzf "$1" ;;
+    *.tbz2) tar xjf "$1" ;;
+    *.tgz) tar xzf "$1" ;;
+    *.tar) tar xf "$1" ;;
+    *.bz2) bunzip2 "$1" ;;
+    *.rar) unrar x "$1" ;;
+    *.gz) gunzip "$1" ;;
+    *.zip) unzip "$1" ;;
+    *.Z) uncompress "$1" ;;
+    *.7z) 7z x "$1" ;;
     *) echo "'$1' cannot be extracted via ex()" ;;
     esac
     shift
@@ -295,8 +298,8 @@ scriptedit() {
   fi
   for fname in "$@"; do
     fname=${fname:+$SCRIPT_PREF/$fname}
-    touch $fname
-    chmod 744 $fname
+    touch "$fname"
+    chmod 744 "$fname"
     fnames="${fnames:+$fnames }$fname"
   done
   $EDITOR "$fnames"
@@ -310,11 +313,11 @@ _scriptedit() {
 
   if [ ${#COMPREPLY[@]} = 1 ]; then
     [ -d "$COMPREPLY" ] && LASTCHAR=/
-    COMPREPLY=$(printf %q%s "${COMPREPLY#$SCRIPT_PREF/}" "$LASTCHAR")
+    COMPREPLY=$(printf %q%s "${COMPREPLY#"$SCRIPT_PREF"/}" "$LASTCHAR")
   else
     for ((i = 0; i < ${#COMPREPLY[@]}; i++)); do
-      [ -d "${COMPREPLY[$i]}" ] && COMPREPLY[$i]=${COMPREPLY[$i]}/
-      COMPREPLY[$i]=${COMPREPLY[$i]#$SCRIPT_PREF/}
+      [ -d "${COMPREPLY[$i]}" ] && COMPREPLY[i]=${COMPREPLY[$i]}/
+      COMPREPLY[i]=${COMPREPLY[$i]#$SCRIPT_PREF/}
     done
   fi
 
@@ -322,11 +325,17 @@ _scriptedit() {
 }
 complete -o nospace -F _scriptedit scriptedit
 
-ascii-image-converter "$HOME/images/Formal.jpg" -gnd 50,25
-# figlet Jagteshver\'s Shell | lolcat
-figlet JShell | lolcat
+if command -v ascii-image-converter >/dev/null; then
+  ascii-image-converter "$HOME/images/Formal.jpg" -gnd 50,25
+fi
+
+if command -v figlet >/dev/null; then
+  if command -v lolcat >/dev/null; then
+    # figlet Jagteshver\'s Shell | lolcat
+    figlet JShell | lolcat
+  fi
+fi
 
 [ -f "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.bash ] && source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.bash
 
-# Tensorflow fix
-export XLA_FLAGS=--xla_gpu_cuda_data_dir=/opt/cuda
+alias psudo='sudo env PATH="$PATH"'

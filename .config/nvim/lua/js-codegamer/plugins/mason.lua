@@ -1,7 +1,7 @@
 return {
   {
     'williamboman/mason.nvim',
-    name = 'mason',
+    dependencies = 'WhoIsSethDaniel/mason-tool-installer.nvim',
     opts = {
       ui = {
         icons = {
@@ -16,9 +16,8 @@ return {
     'WhoIsSethDaniel/mason-tool-installer.nvim',
     name = 'mason-tool-installer',
     dependencies = {
-      'mason',
-      'mason-lspconfig',
-      'mason-nvim-dap',
+      'williamboman/mason.nvim',
+      'williamboman/mason-lspconfig.nvim',
     },
     opts = {
       ensure_installed = { 'stylua' },

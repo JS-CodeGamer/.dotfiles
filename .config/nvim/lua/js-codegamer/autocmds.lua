@@ -1,14 +1,11 @@
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
--- Highlight when yanking (copying) text
---  Try it with `yap` in normal mode
---  See `:help vim.highlight.on_yank()`
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
   group = vim.api.nvim_create_augroup('highlight-yank', { clear = true }),
   callback = function()
-    vim.highlight.on_yank()
+    vim.hl.on_yank()
   end,
 })
 
@@ -27,15 +24,8 @@ vim.api.nvim_create_autocmd('LspAttach', {
     map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
     map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
     map('K', vim.lsp.buf.hover, 'Hover Documentation')
-
-    -- WARN: This is not Goto Definition, this is Goto Declaration.
-    --  For example, in C this would take you to the header.
     map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
 
-    -- The following two autocommands are used to highlight references of the
-    -- word under your cursor when your cursor rests there for a little while.
-    --
-    -- When you move your cursor, the highlights will be cleared (the second autocommand).
     local client = vim.lsp.get_client_by_id(event.data.client_id)
     if client and client.server_capabilities.documentHighlightProvider then
       local highlight_augroup = vim.api.nvim_create_augroup('lsp-highlight', { clear = false })
@@ -60,14 +50,61 @@ vim.api.nvim_create_autocmd('LspAttach', {
       })
     end
 
-    -- The following autocommand is used to enable inlay hints in your
-    -- code, if the language server you are using supports them
-    --
-    -- This may be unwanted, since they displace some of your code
     if client and client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
       map('<leader>th', function()
         vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
       end, '[T]oggle Inlay [H]ints')
+    end
+  end,
+})
+
+local mason_packages = {}
+
+function AddPackages(pkgs)
+  for k, v in pairs(pkgs) do
+    if type(v) == 'string' then
+      v = { v }
+    end
+
+    if not mason_packages[k] then
+      mason_packages[k] = v
+    else
+      for _, vi in ipairs(v) do
+        table.insert(mason_packages[k], vi)
+      end
+    end
+  end
+end
+
+vim.api.nvim_create_autocmd('FileType', {
+  group = vim.api.nvim_create_augroup('InstallTooling', { clear = true }),
+  callback = function(args)
+    local ft = args.match
+    local tooling = require 'js-codegamer.tooling'
+
+    local packages = tooling.GetMasonToolsForFT(ft)
+    local starpkgs = tooling.GetMasonToolsForFT '*'
+    if starpkgs then
+      for _, pkg in ipairs(starpkgs) do
+        table.insert(packages, pkg)
+      end
+    end
+    if not packages then
+      return
+    end
+
+    for _, pacakge in ipairs(packages) do
+      local mason_registry = require 'mason-registry'
+      local pkg = mason_registry.get_package(pacakge)
+      if not pkg:is_installed() then
+        vim.notify('Installing pacakge for ' .. ft .. ': ' .. pacakge, vim.log.levels.INFO)
+        pkg:install()
+      end
+    end
+
+    local server = tooling.filetype_to_server[ft]
+    if server then
+      require('lspconfig')[server].setup(tooling.registry.lsp[server])
     end
   end,
 })
