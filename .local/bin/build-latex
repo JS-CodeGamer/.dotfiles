@@ -1,0 +1,44 @@
+#!/bin/bash
+
+TEMP=$(getopt -o o:c --long compress,outdir:,output-directory: \
+  -n 'build-latex' -- "$@")
+
+if [ $? != 0 ]; then
+  echo "Terminating..." >&2
+  exit 1
+fi
+
+eval set -- "$TEMP"
+
+OUTDIR="build"
+COMPRESS=false
+while true; do
+  case "$1" in
+  -o | --outdir | --output-directory)
+    OUTDIR="$2"
+    shift 2
+    ;;
+  -c | --compress)
+    COMPRESS=true
+    shift
+    ;;
+  --)
+    shift
+    break
+    ;;
+  *) break ;;
+  esac
+done
+
+mkdir -p "$OUTDIR"
+
+latexmk -pdf \
+  -file-line-error \
+  -output-directory="$OUTDIR" \
+  -bibtex-cond \
+  -shell-escape \
+  $@
+
+if [ "$COMPRESS" = "true" ]; then
+  fd . build/ -tf -epdf -x ghostscript -sDEVICE=pdfwrite -dCompatibilityLevel=1.5 -dNOPAUSE -dQUIET -dBATCH -dPrinted=false -sOutputFile=./{/.}-compressed.pdf {}
+fi

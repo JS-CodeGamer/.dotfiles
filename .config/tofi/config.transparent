@@ -16,3 +16,4 @@ background-color = #000A
 exclusive-zone = 0
 require-match = false
 terminal = alacritty -e
+fuzzy-match = true

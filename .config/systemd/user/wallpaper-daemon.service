@@ -1,14 +1,13 @@
 [Unit]
-Description=Swww Wallpaper Daemon
-Documentation=man:swww-daemon(1)
+Description=Wallpaper Daemon
+Documentation=man:wpaperd(1)
 After=graphical-session.target
 
 [Service]
 Type=exec
-ExecCondition=/lib/systemd/systemd-xdg-autostart-condition "Hyprland" ""
-ExecStart=/usr/bin/swww-daemon
-Restart=always
-Slice=background-graphical.slice
+ExecStart=/usr/bin/wpaperd
+Restart=on-failure
+Slice=session-graphical.slice
 
 [Install]
 WantedBy=graphical-session.target

@@ -33,9 +33,12 @@ return {
     compile_command = {
       c = { exec = 'clang', args = { '-Wall', '../$(FNAME)', '-o', '$(FNOEXT)' } },
       cpp = { exec = 'clang++', args = { '-Wall', '../$(FNAME)', '-o', '$(FNOEXT)' } },
+      rust = {
+        exec = 'bash',
+        args = { '-c', 'rustc \'../$(FNAME)\' -o \'$(FNOEXT)\' --crate-name $()( echo $(FNOEXT) | tr " " "_")' },
+      },
     },
     running_directory = 'build',
-    view_output_diff = true,
     testcases_directory = '.tc',
     testcases_use_single_file = true,
     template_file = '$(HOME)/dev/cp/.templates/template.$(FEXT)',

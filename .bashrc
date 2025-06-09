@@ -3,34 +3,12 @@
 ## check for shell interactivity
 [[ $- != *i* ]] && return
 
-## OMB
-export OSH='/home/jagteshver/.oh-my-bash'
-OSH_THEME=rainbowbrite # "minimal-gh" #random" #font #rainbowbrite
-OMB_THEME_RANDOM_IGNORED=(tonka burunton morris powerline powerline-icon powerline-light powerline-multiline powerline-naked powerline-plain powerline-wizard agnoster absimple dos brunton modern-t hawaii50)
-COMPLETION_WAITING_DOTS="true"
-OMB_DEFAULT_ALIASES="check"
-OMB_USE_SUDO=true
-completions=(
-  tmux
-  ssh
-  pip3 pip
-  nvm npm
-  minikube kubectl
-  makefile
-  go
-  docker docker-compose
-)
-aliases=(
-  general
-  docker
-)
-plugins=(
-  git
-  bashmarks
-  colored-man-pages
-)
+export HISTFILESIZE=100000 # 100k
 
-source "$OSH"/oh-my-bash.sh
+# go bin
+if [ -d "$HOME/go/bin" ]; then
+  export PATH=$PATH:"$HOME/go/bin"
+fi
 
 # check if a prog exists or not
 check() {
@@ -41,15 +19,7 @@ check() {
   fi
 }
 
-# cargo bin
-if [ -d "$HOME/.cargo" ]; then
-  export PATH=$PATH:"$HOME/.cargo/bin"
-fi
-
-# go bin
-if [ -d "$HOME/go/bin" ]; then
-  export PATH=$PATH:"$HOME/go/bin"
-fi
+export SELECTOR="fuzzel -d"
 
 ## bat -- cat replacement
 check bat && {
@@ -74,7 +44,10 @@ export NVM_DIR=$XDG_CONFIG_HOME/nvm
 
 ## fzf -- fuzy search
 if check fzf; then
+  # [ -f "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.bash ] &&
+  #   source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.bash ||
   eval "$(fzf --bash)"
+
   export FZF_DEFAULT_OPTS='-m'
   if check fd; then
     export FZF_DEFAULT_COMMAND='fd --hidden --strip-cwd-prefix --exclude .git'
@@ -89,31 +62,24 @@ if check fzf; then
   elif check rg; then
     export FZF_DEFAULT_COMMAND='rg --files --hidden'
   else
-    export FZF_DEFAULT_COMMAND="find . -regextype 'posix-extended' -iregex '\.(git|cache|node_modules).*' -type d -prune -o -print"
+    export FZF_DEFAULT_COMMAND="find . -regextype 'posix-extended' -iregex '\.(git|node_modules).*' -type d -prune -o -print"
   fi
 fi
 
-# bun
-if [ -d "$HOME/.bun" ]; then
-  export BUN_INSTALL="$HOME/.bun"
-  export PATH=$BUN_INSTALL/bin:$PATH
-fi
-
 # pyenv
-if [ -d "$HOME/.pyenv" ]; then
-  export PYENV_ROOT="$HOME/.pyenv"
-  export PATH=$PYENV_ROOT/bin:$PATH
-  check pyenv && {
-    eval -- "$(pyenv init --path)"
-    eval -- "$(pyenv init -)"
-  }
+if command -v pyenv 1>/dev/null 2>&1; then
+  eval "$(pyenv init - bash)"
 fi
 
 shopt -s histappend checkwinsize expand_aliases
 set +o noclobber
 
-# bash-completion (aur)
-[ -f /usr/share/bash-completion/bash_completion ] &&
+if check app2unit-open; then
+  alias xdg-open=app2unit-open
+fi
+
+# Use bash-completion, if available
+[[ $PS1 && -f /usr/share/bash-completion/bash_completion ]] &&
   . /usr/share/bash-completion/bash_completion
 
 # Advanced command-not-found
@@ -137,15 +103,9 @@ alias l.='ls -d .*'                                        # show only dotfiles
 alias l='la'
 
 ## grep
-# check rg && {
-#   alias grep='rg'
-#   alias fgrep='rg -F'
-#   alias egrep='rg'
-# } || {
 alias grep='grep --colour'
 alias fgrep='grep -F'
 alias egrep='grep -E'
-# }
 
 ## python
 alias py='python'
@@ -158,6 +118,7 @@ alias ys='pacman -S'
 alias yu='pacman -Syu'
 alias yq='pacman -Q'
 alias yr='pacman -R'
+alias yf='pacman -F'
 alias rmpkg="sudo pacman -Rdd"
 alias fixpacman="sudo rm /var/lib/pacman/db.lck"
 
@@ -168,9 +129,25 @@ alias mirrors="sudo reflector -l 50 -n 20 --sort score --save /etc/pacman.d/mirr
 alias mirrora="sudo reflector -l 50 -n 20 --sort age --save /etc/pacman.d/mirrorlist"
 
 ## git
+source /usr/share/bash-completion/completions/git
 alias glog='git log --oneline --graph'
-alias ga='git add' gcm='git commit' gco='git checkout'
-alias gs='git status -sb' gsh='git stash' gus='git stash pop'
+alias ga='git add'
+alias gcm='git commit'
+alias gco='git checkout'
+alias gs='git status -sb'
+alias gsh='git stash'
+alias gus='git stash pop'
+__git_complete glog git_log
+__git_complete ga git_add
+__git_complete gcm git_commit
+__git_complete gco git_checkout
+__git_complete gs git_status
+__git_complete gsh git_stash
+__git_complete gus git_stash
+
+# config
+alias config="git --git-dir='$HOME/.cfg/' --work-tree='$HOME'"
+__git_complete config git
 
 # iptables
 alias ipt='sudo iptables -nvL --line-numbers'
@@ -200,9 +177,6 @@ alias jctl="journalctl -p 3 -xb"
 
 # Recent installed packages
 alias rip="expac --timefmt='%Y-%m-%d %T' '%l\t%n %v' | sort | tail -200 | nl"
-
-# config
-alias config="git --git-dir='$HOME/.cfg/' --work-tree='$HOME'"
 
 # xargs check for alias
 alias xargs='xargs '
@@ -284,9 +258,6 @@ help() {
 
 complete -A builtin -A alias -A function -c help
 
-# some completions
-complete -o bashdefault -o default -o nospace -F __git_wrap__git_main config
-
 ## edit my scripts
 if [ -z "$(env | grep SCRIPT_PREF)" ]; then
   export SCRIPT_PREF=${SCRIPT_PREF:-$HOME/.local/bin}
@@ -325,6 +296,23 @@ _scriptedit() {
 }
 complete -o nospace -F _scriptedit scriptedit
 
+torrentsearch() {
+  if ! rg -i "$1.*1080" /media/data/qxr_20220613/; then
+    rg -i "$1" /media/data/qxr_20220613/
+  fi
+}
+
+temphist() {
+  if [ "$1" = 'setup' ]; then
+    export HISTFILE=$(mktemp)
+  elif [ "$1" = 'cleanup' ] && [[ $HISTFILE =~ ^/tmp/.*$ ]]; then
+    rm "$HISTFILE"
+    export HISTFILE=~/.bash_history
+  else
+    printf 'temphist [-h|setup|cleanup]'
+  fi
+}
+
 if command -v ascii-image-converter >/dev/null; then
   ascii-image-converter "$HOME/images/Formal.jpg" -gnd 50,25
 fi
@@ -336,6 +324,54 @@ if command -v figlet >/dev/null; then
   fi
 fi
 
-[ -f "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.bash ] && source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.bash
-
 alias psudo='sudo env PATH="$PATH"'
+
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk
+export PATH=$PATH:$JAVA_HOME/bin
+
+# PROMPT
+# Colors
+RED='\[\033[0;31m\]'
+GREEN='\[\033[0;32m\]'
+YELLOW='\[\033[0;33m\]'
+BLUE='\[\033[0;34m\]'
+WHITE='\[\033[1;37m\]'
+GRAY='\[\033[0;37m\]'
+BOLD='\[\033[1m\]'
+RESET='\[\033[0m\]'
+
+# Git branch + dirty state
+parse_git_branch() {
+  git rev-parse --is-inside-work-tree &>/dev/null || return
+  local branch
+  branch=$(git symbolic-ref --short HEAD 2>/dev/null || git describe --tags --exact-match 2>/dev/null)
+  local status
+  status=$(git status --porcelain 2>/dev/null)
+  if [[ -n $status ]]; then
+    echo " (${YELLOW}${branch}${RED}✗${RESET})"
+  else
+    echo " (${GREEN}${branch}${RESET})"
+  fi
+}
+
+# Python venv or Conda env
+show_venv() {
+  if [[ -n "$VIRTUAL_ENV" ]]; then
+    echo "(${VIRTUAL_ENV##*/}) "
+  elif [[ -n "$CONDA_DEFAULT_ENV" ]]; then
+    echo "(${CONDA_DEFAULT_ENV}) "
+  fi
+}
+
+# Set PS1 prompt
+set_prompt() {
+  local EXIT="$?"
+  local STATUS_COLOR
+  [[ $EXIT -eq 0 ]] && STATUS_COLOR=$GREEN || STATUS_COLOR=$RED
+
+  PROMPT_DIRTRIM=2
+  PS1="\n${WHITE}\t $(show_venv)${BOLD}\u@\h${RESET}:${BLUE}\w${RESET}$(parse_git_branch)\n${STATUS_COLOR}→${RESET} "
+}
+
+PROMPT_COMMAND=set_prompt
+export GPG_TTY=$(tty)

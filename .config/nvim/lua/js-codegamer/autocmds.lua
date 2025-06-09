@@ -93,6 +93,7 @@ vim.api.nvim_create_autocmd('FileType', {
       return
     end
 
+    local server_installed = false
     for _, pacakge in ipairs(packages) do
       local mason_registry = require 'mason-registry'
       local pkg = mason_registry.get_package(pacakge)
@@ -100,11 +101,18 @@ vim.api.nvim_create_autocmd('FileType', {
         vim.notify('Installing pacakge for ' .. ft .. ': ' .. pacakge, vim.log.levels.INFO)
         pkg:install()
       end
+
+      local server = tooling.filetype_to_server[ft]
+      if server then
+        local mason_name = tooling.tool_to_mason[server] or server
+        if mason_name == package then
+          server_installed = server
+        end
+      end
     end
 
-    local server = tooling.filetype_to_server[ft]
-    if server then
-      require('lspconfig')[server].setup(tooling.registry.lsp[server])
+    if server_installed ~= false then
+      require('lspconfig')[server_installed].setup(tooling.registry.lsp[server_installed])
     end
   end,
 })

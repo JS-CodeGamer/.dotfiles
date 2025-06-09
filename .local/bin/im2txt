@@ -39,6 +39,6 @@ grim -g "$(slurp $SLURP_ARGS)" "$FILE"
 tesseract -l "$(
   tesseract --list-langs |
     tail -n +2 |
-    tofi
+    $SELECTOR
 )" "$FILE" - |
   wl-copy --type text/plain

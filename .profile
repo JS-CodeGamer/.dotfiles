@@ -17,8 +17,4 @@ if [ ! -z "$BASH" ]; then
   [[ -f ~/.bashrc ]] && . ~/.bashrc
 fi
 
-# directly start hyprland
-# if uwsm check may-start; then
-#   exec systemd-cat -t uwsm_start uwsm start hyprland.desktop
-# fi
 . "$HOME/.cargo/env"

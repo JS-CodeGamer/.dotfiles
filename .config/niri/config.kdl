@@ -1,0 +1,362 @@
+input {
+    keyboard {
+        xkb {
+            layout "us"
+        }
+        numlock
+    }
+
+    touchpad {
+        tap
+        natural-scroll
+        scroll-method "two-finger"
+    }
+
+    mouse {
+    }
+}
+
+
+output "eDP-1" {
+    mode "1920x1080@144"
+
+    scale 1.2
+
+    position x=1920 y=0
+}
+
+output "HDMI-A-1" {
+    mode "1920x1080@144"
+
+    scale 1
+
+    // Transform allows to rotate the output counter-clockwise, valid values are:
+    // normal, 90, 180, 270, flipped, flipped-90, flipped-180 and flipped-270.
+    transform "normal"
+
+    position x=0 y=0
+}
+
+
+layout {
+    gaps 16
+
+    // center-focused-column "always"
+
+    preset-column-widths {
+        proportion 0.5
+        proportion 0.33333
+        proportion 0.66667
+    }
+
+    preset-window-heights {
+        proportion 0.5
+        proportion 0.33333
+        proportion 0.66667
+    }
+
+    default-column-width { proportion 0.5; }
+
+    // By default focus ring and border are rendered as a solid background rectangle
+    // behind windows. That is, they will show up through semitransparent windows.
+    // This is because windows using client-side decorations can have an arbitrary shape.
+    //
+    // If you don't like that, you should uncomment `prefer-no-csd` below.
+    // Niri will draw focus ring and border *around* windows that agree to omit their
+    // client-side decorations.
+    //
+    // Alternatively, you can override it with a window rule called
+    // `draw-border-with-background`.
+
+    // You can change how the focus ring looks.
+    focus-ring {
+        // off
+        width 1
+        active-color "#7fc8ff"
+        inactive-color "#505050"
+    }
+
+    border {
+        off
+    }
+}
+
+cursor {
+    xcursor-theme "Bibata-Modern-Classic"
+    xcursor-size 24
+}
+
+spawn-at-startup "wl-paste" "--watch" "cliphist" "store"
+
+prefer-no-csd
+
+screenshot-path "~/images/Screenshots/%FT%T%z.png"
+
+animations {
+    // Uncomment to turn off all animations.
+    // You can also put "off" into each individual animation to disable it.
+    // off
+
+    // Slow down all animations by this factor. Values below 1 speed them up instead.
+    // slowdown 3.0
+
+    // Individual animations.
+
+    workspace-switch {
+        spring damping-ratio=1.0 stiffness=1000 epsilon=0.0001
+    }
+
+    window-open {
+        duration-ms 150
+        curve "ease-out-expo"
+    }
+
+    window-close {
+        duration-ms 150
+        curve "ease-out-quad"
+    }
+
+    horizontal-view-movement {
+        spring damping-ratio=1.0 stiffness=800 epsilon=0.0001
+    }
+
+    window-movement {
+        spring damping-ratio=1.0 stiffness=800 epsilon=0.0001
+    }
+
+    window-resize {
+        spring damping-ratio=1.0 stiffness=800 epsilon=0.0001
+    }
+
+    config-notification-open-close {
+        spring damping-ratio=0.6 stiffness=1000 epsilon=0.001
+    }
+
+    screenshot-ui-open {
+        duration-ms 200
+        curve "ease-out-quad"
+    }
+
+    overview-open-close {
+        spring damping-ratio=1.0 stiffness=800 epsilon=0.0001
+    }
+}
+
+binds {
+    // Application bindings
+    Mod+T hotkey-overlay-title="Open a Terminal: ghostty" { spawn "app2unit" "--" "ghostty" "--class=term.ghostty"; }
+    Mod+D hotkey-overlay-title="Run an Application: launcher" { spawn "launcher" "-p" "app2unit --"; }
+    Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "app2unit" "--" "swaylock"; }
+    Mod+W hotkey-overlay-title="Open Browser: firefox" { spawn "app2unit" "--" "firefox"; }
+    Mod+E hotkey-overlay-title="Open File Manager: yazi" { spawn "app2unit" "-T" "--" "yazi"; }
+    Mod+X hotkey-overlay-title="Open Text Editor: neovim" { spawn "app2unit" "-T" "--" "nvim"; }
+
+    // Script Bindings
+    Mod+S hotkey-overlay-title="Open Notification Panel" { spawn "swaync-client" "-t" "-sw"; }
+    Mod+Ctrl+T hotkey-overlay-title="Change Wallpaper" { spawn "wpaperctl" "next"; }
+    Mod+Insert { spawn "fuzzel-emoji"; }
+    Mod+V { spawn "bash" "-c" "cliphist list | $SELECTOR | cliphist decode | wl-copy"; }
+    Mod+Shift+P { spawn "passmenu"; }
+
+    // Mod+Shift+Alt+S { spawn "grim -g "$(slurp)" - | swappy -f -"; }
+    // +Print { spawn "~/.local/bin/grimblast.sh copy area"; }
+    // Mod+Ctrl+Shift+S { spawn "~/.local/bin/grimblast.sh copysave screen"; }
+    // Mod+Shift+S { spawn "~/.local/bin/grimblast.sh --freeze copy area"; }
+    // Mod+Alt+R { spawn "~/.local/bin/record-script.sh"; }
+    // Ctrl+Alt+R { spawn "~/.local/bin/record-script.sh --fullscreen"; }
+    // Mod+Shift+Alt+R { spawn "~/.local/bin/record-script.sh --fullscreen-sound"; }
+    // Ctrl+Mod+Shift+T { spawn "~/.local/bin/im2txt"; }
+
+    // Audio
+    XF86AudioMute { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
+    XF86AudioRaiseVolume { spawn "bash" "-c" "mediactl vol inc 2%"; }
+    XF86AudioLowerVolume { spawn "bash" "-c" "mediactl vol dec 2%"; }
+
+    // Media Controls
+    XF86AudioPlay { spawn "playerctl" "play-pause"; }
+    XF86AudioStop { spawn "playerctl" "pause"; }
+    XF86AudioNext { spawn "bash" "-c" "mediactl next"; }
+    XF86AudioPrev { spawn "bash" "-c" "mediactl prev"; }
+    Mod+N { spawn "bash" "-c" "mediactl next"; }
+    Mod+Space { spawn "bash" "-c" "mediactl toggle"; }
+    Mod+P { spawn "bash" "-c" "mediactl prev"; }
+    Mod+M { spawn "bash" "-c" "mediactl mute"; }
+    Mod+Ctrl+P { spawn "bash" "-c" "mediactl seek -5"; }
+    Mod+Ctrl+N { spawn "bash" "-c" "mediactl seek +5"; }
+
+    Mod+I { spawn "bash" "-c" "notify-send \"Now Playing\" \"$(playerctl metadata artist) - $(playerctl metadata title)\""; }
+
+    // Brightness Controls
+    XF86MonBrightnessUp { spawn "brightnessctl" "set" "12.75+"; }
+    XF86MonBrightnessDown { spawn "brightnessctl" "set" "12.75-"; }
+
+    // Some spl keys
+    XF86Mail { spawn "app2unit" "--" "firefox" "gmail.com"; }
+    XF86Search { spawn "app2unit" "--" "firefox"; }
+
+    // Compositor bindings
+    Mod+Shift+Slash { show-hotkey-overlay; }
+    Mod+O repeat=false { toggle-overview; }
+
+    Mod+Q { close-window; }
+
+    Mod+Left  { focus-column-left; }
+    Mod+Down  { focus-window-down; }
+    Mod+Up    { focus-window-up; }
+    Mod+Right { focus-column-right; }
+    Mod+H     { focus-column-left; }
+    Mod+J     { focus-window-up; }
+    Mod+K     { focus-window-up; }
+    Mod+L     { focus-column-right; }
+
+    Mod+Shift+Left  { move-column-left; }
+    Mod+Shift+Down  { move-window-down; }
+    Mod+Shift+Up    { move-window-up; }
+    Mod+Shift+Right { move-column-right; }
+    Mod+Shift+H     { move-column-left; }
+    Mod+Shift+J     { move-window-down; }
+    Mod+Shift+K     { move-window-up; }
+    Mod+Shift+L     { move-column-right; }
+
+    Mod+Home { focus-column-first; }
+    Mod+End  { focus-column-last; }
+    Mod+Shift+Home { move-column-to-first; }
+    Mod+Shift+End  { move-column-to-last; }
+
+    Mod+Ctrl+Left  { focus-monitor-left; }
+    // Mod+Ctrl+Down  { focus-monitor-down; }
+    // Mod+Ctrl+Up    { focus-monitor-up; }
+    Mod+Ctrl+Right { focus-monitor-right; }
+    Mod+Ctrl+H     { focus-monitor-left; }
+    // Mod+Ctrl+J     { focus-monitor-down; }
+    // Mod+Ctrl+K     { focus-monitor-up; }
+    Mod+Ctrl+L     { focus-monitor-right; }
+
+    Mod+Shift+Ctrl+Left  { move-column-to-monitor-left; }
+    // Mod+Shift+Ctrl+Down  { move-column-to-monitor-down; }
+    // Mod+Shift+Ctrl+Up    { move-column-to-monitor-up; }
+    Mod+Shift+Ctrl+Right { move-column-to-monitor-right; }
+    Mod+Shift+Ctrl+H     { move-column-to-monitor-left; }
+    // Mod+Shift+Ctrl+J     { move-column-to-monitor-down; }
+    // Mod+Shift+Ctrl+K     { move-column-to-monitor-up; }
+    Mod+Shift+Ctrl+L     { move-column-to-monitor-right; }
+
+    Mod+Ctrl+Down       { focus-workspace-down; }
+    Mod+Ctrl+Up         { focus-workspace-up; }
+    Mod+Ctrl+J       { focus-workspace-down; }
+    Mod+Ctrl+K         { focus-workspace-up; }
+    Mod+Ctrl+Shift+Down { move-window-to-workspace-down; }
+    Mod+Ctrl+Shift+Up   { move-window-to-workspace-up; }
+    Mod+Ctrl+Shift+J { move-window-to-workspace-down; }
+    Mod+Ctrl+Shift+K   { move-window-to-workspace-up; }
+
+    Mod+Shift+Page_Down { move-workspace-down; }
+    Mod+Shift+Page_Up   { move-workspace-up; }
+    Mod+Shift+U         { move-workspace-down; }
+    Mod+Shift+I         { move-workspace-up; }
+
+    Mod+Ctrl+WheelScrollDown      cooldown-ms=150 { focus-workspace-down; }
+    Mod+Ctrl+WheelScrollUp        cooldown-ms=150 { focus-workspace-up; }
+    Mod+Ctrl+Shift+WheelScrollDown cooldown-ms=150 { move-column-to-workspace-down; }
+    Mod+Ctrl+Shift+WheelScrollUp   cooldown-ms=150 { move-column-to-workspace-up; }
+
+    Mod+WheelScrollDown      { focus-column-right; }
+    Mod+WheelScrollUp        { focus-column-left; }
+    Mod+Shift+WheelScrollDown { move-column-right; }
+    Mod+Shift+WheelScrollUp   { move-column-left; }
+
+    Mod+TouchpadScrollDown { spawn "bash" "-c" "mediactl vol inc 0.02"; }
+    Mod+TouchpadScrollUp   { spawn "bash" "-c" "mediactl vol dec 0.02"; }
+
+    Mod+1 { focus-workspace 1; }
+    Mod+2 { focus-workspace 2; }
+    Mod+3 { focus-workspace 3; }
+    Mod+4 { focus-workspace 4; }
+    Mod+5 { focus-workspace 5; }
+    Mod+6 { focus-workspace 6; }
+    Mod+7 { focus-workspace 7; }
+    Mod+8 { focus-workspace 8; }
+    Mod+9 { focus-workspace 9; }
+    Mod+Shift+1 { move-window-to-workspace 1; }
+    Mod+Shift+2 { move-window-to-workspace 2; }
+    Mod+Shift+3 { move-window-to-workspace 3; }
+    Mod+Shift+4 { move-window-to-workspace 4; }
+    Mod+Shift+5 { move-window-to-workspace 5; }
+    Mod+Shift+6 { move-window-to-workspace 6; }
+    Mod+Shift+7 { move-window-to-workspace 7; }
+    Mod+Shift+8 { move-window-to-workspace 8; }
+    Mod+Shift+9 { move-window-to-workspace 9; }
+
+
+    // The following binds move the focused window in and out of a column.
+    // If the window is alone, they will consume it into the nearby column to the side.
+    // If the window is already in a column, they will expel it out.
+    Mod+BracketLeft  { consume-or-expel-window-left; }
+    Mod+BracketRight { consume-or-expel-window-right; }
+
+    Mod+Comma  { consume-window-into-column; }
+    Mod+Period { expel-window-from-column; }
+
+    Mod+R { switch-preset-column-width; }
+    Mod+Shift+R { switch-preset-window-height; }
+    Mod+Ctrl+R { reset-window-height; }
+    Mod+F { maximize-column; }
+    Mod+Shift+F { fullscreen-window; }
+
+    Mod+Ctrl+F { expand-column-to-available-width; }
+
+    Mod+C { center-column; }
+
+    // Center all fully visible columns on screen.
+    Mod+Ctrl+C { center-visible-columns; }
+
+    Mod+Minus { set-column-width "-10%"; }
+    Mod+Equal { set-column-width "+10%"; }
+
+    Mod+Shift+Minus { set-window-height "-10%"; }
+    Mod+Shift+Equal { set-window-height "+10%"; }
+
+    // Move the focused window between the floating and the tiling layout.
+    Mod+Ctrl+V       { toggle-window-floating; }
+    Mod+Shift+V { switch-focus-between-floating-and-tiling; }
+
+    // Toggle tabbed column display mode.
+    // Windows in this column will appear as vertical tabs,
+    // rather than stacked on top of each other.
+    Mod+Shift+T { toggle-column-tabbed-display; }
+
+    Print { screenshot; }
+    Ctrl+Print { screenshot-screen; }
+    Alt+Print { screenshot-window; }
+
+    Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
+
+    Mod+Shift+E { quit; }
+
+    Mod+Shift+Ctrl+P { power-off-monitors; }
+}
+
+window-rule {
+  match app-id="steam"
+  match app-id="matplotlib"
+  match app-id=r#"float$"#
+  match app-id=r#"firefox$"# title="^Picture-in-Picture$"
+  open-floating true
+}
+
+window-rule {
+  match app-id=r#"term.ghostty"#
+  opacity 0.89
+}
+
+window-rule {
+  match app-id="term.ghostty.invoke" title=r#"nmtui|blueman-manager|yazi"#
+  match app-id="xdg" title=r#"(f|F)(ile|older)"#
+  match title=r#"Save As"#
+  match app-id=r#"firefox$"# title="Library"
+  match app-id=r#"firefox$"# title="Extension.*Bitwarden.*"
+  match app-id="blueman-manager"
+  default-column-width { proportion 0.5; }
+  default-window-height { proportion 0.5; }
+  open-floating true
+}

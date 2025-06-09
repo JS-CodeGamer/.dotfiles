@@ -1,0 +1,13 @@
+[Unit]
+Description=Playerctl Daemon
+After=sound.target
+Wants=sound.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/playerctld daemon
+Restart=on-failure
+Slice=background.slice
+
+[Install]
+WantedBy=default.target

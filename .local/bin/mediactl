@@ -1,0 +1,43 @@
+#!/bin/bash
+
+COMMAND="$1"
+ARGS=("${@:2}")
+
+if [ "$(playerctl -l 2>&1)" != "No players found" ] && [ "$(mpc status %state%)" = "playing" ]; then
+  mpc pause
+fi
+
+case $COMMAND in
+vol)
+  if [[ ${ARGS[0]} =~ ^inc(rease)?$ ]]; then ARGS[0]="${ARGS[1]}+"; fi
+  if [[ ${ARGS[0]} =~ ^dec(rease)?$ ]]; then ARGS[0]="${ARGS[1]}-"; fi
+  wpctl set-mute @DEFAULT_AUDIO_SINK@ 0
+  wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ "${ARGS[0]}"
+  ;;
+toggle)
+  if [ "${#ARGS[@]}" -eq 0 ]; then
+    playerctl play-pause || mpc toggle
+  elif [ "${ARGS[0]}" = "mute" ]; then
+    wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+  fi
+  ;;
+play) playerctl play || mpc play ;;
+pause) playerctl pause || mpc pause ;;
+next) playerctl position 100% || mpc seek 100% ;;
+prev)
+  if [ "$(playerctl -l 2>&1)" = "No players found" ]; then
+    if [ "$(mpc status %percenttime% | cut -d% -f1)" -lt 5 ]; then
+      mpc prev
+    else
+      mpc seek 0%
+    fi
+  else
+    if [ "$(playerctl metadata --format "scale=6; ({{position}}  / {{mpris:length}})*100" | bc)" -lt 5 ]; then
+      playerctl previous
+    else
+      playerctl position 0%
+    fi
+  fi
+  ;;
+seek) playerctl position "${ARGS[0]}" || mpc seek "${ARGS[0]}%" ;;
+esac

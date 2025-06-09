@@ -6,10 +6,10 @@ vim.g.maplocalleader = ' '
 vim.g.have_nerd_font = true
 
 local options = {
-  backup = false, -- creates a backup file
+  backup = false,
   breakindent = true, -- wrapped text starts with same indent
-  clipboard = 'unnamedplus', -- allows neovim to access the system clipboard
-  cmdheight = 2, -- more space in the neovim command line for displaying messages
+  clipboard = 'unnamedplus',
+  cmdheight = 0,
   completeopt = { 'menuone', 'noselect' }, -- mostly just for cmp
   conceallevel = 0, -- so that `` is visible in markdown files
   fileencoding = 'utf-8', -- the encoding written to a file
@@ -18,7 +18,7 @@ local options = {
   mouse = 'a', -- allow the mouse to be used in neovim
   pumheight = 10, -- pop up menu height
   showmode = false, -- we don't need to see things like -- INSERT -- anymore
-  showtabline = 2, -- always show tabs
+  showtabline = 1, -- always show tabs
   smartcase = true, -- smart case
   smartindent = true, -- make indenting smarter again
   splitbelow = true, -- force all horizontal splits to go below current window
@@ -39,7 +39,7 @@ local options = {
   signcolumn = 'yes', -- always show the sign column, otherwise it would shift the text each time
   wrap = true,
   linebreak = true, -- companion to wrap, don't split words
-  scrolloff = 10, -- is one of my fav
+  scrolloff = 0, -- is one of my fav
   sidescrolloff = 0,
   guifont = 'monospace:h17', -- the font used in graphical neovim applications
   virtualedit = 'block',
@@ -59,7 +59,6 @@ vim.opt['iskeyword']:append '-'
 vim.opt['formatoptions']:remove 'c'
 vim.opt['formatoptions']:remove 'r'
 vim.opt['formatoptions']:remove 'o'
-
 
 -- use c syntax for h files instead of cpp
 vim.g.c_syntax_for_h = 1

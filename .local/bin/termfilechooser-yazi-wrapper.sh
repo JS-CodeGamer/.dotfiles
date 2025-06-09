@@ -28,7 +28,7 @@ save="$3"
 path="$4"
 out="$5"
 cmd="/usr/bin/yazi"
-termcmd="${TERMCMD:-/usr/bin/alacritty -e }"
+termcmd="${TERMCMD:-/usr/bin/ghostty --title="yazi" -e }"
 
 if [ "$save" = "1" ]; then
   ARGS=--chooser-file="$out"

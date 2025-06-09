@@ -52,10 +52,16 @@ local hyper_config = {
       end,
       key = 's',
     },
+    {
+      desc = ' Quit',
+      group = 'Error',
+      action = 'quit',
+      key = 'q',
+    },
   },
   packages = { enable = true },
   project = { enable = true, limit = 3, icon = ' ', label = 'Recent Projects', action = 'Telescope find_files cwd=' },
-  mru = { limit = 10, icon = ' ', label = 'Recent Files', action = 'e' },
+  mru = { limit = 20, icon = ' ', label = 'Recent Files', action = 'e' },
   footer = {},
 }
 

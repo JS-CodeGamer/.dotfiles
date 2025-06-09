@@ -36,39 +36,46 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-help() {
-  printf "Usage: %s <ACTION> [-w|--worspace] <WORSPACE|WORKSPACE_OFFSET>"
+show_help() {
+  printf "Usage: %s <ACTION> [-w|--worspace] <WORSPACE|WORKSPACE_OFFSET>" "${0##*/}"
 }
 
-set -x
-if [ "$SPECIAL" = false ]; then
-  WORKSPACE=${WORKSPACE:-${POSITIONAL_ARGS[1]}}
-  if [ -z "$WORKSPACE" ]; then
-    help
-    exit 1
-  fi
-
-  curr_workspace=$(hyprctl activeworkspace -j | jq -r .id)
-  if [[ "$WORKSPACE" =~ "(+|-).*" ]]; then
-    WORKSPACE=$(($curr_workspace + "$WORKSPACE"))
-  else
-    WORKSPACE=$((($curr_workspace - 1) / 10 * 10 + $WORKSPACE))
-  fi
-else
+parse_spl_workspace() {
   if [ -z "$WORKSPACE" ]; then
     WORKSPACE=$(hyprctl workspaces -j |
       jq -r '.[].name |
       capture("(?<n>special:.*)") |
       .n / ":" |
       .[1:] | join(":")' |
-      tofi)
+      $SELECTOR)
   fi
   if [ -z "$WORKSPACE" ]; then
     exit 1
-  fi
-  if [ "$PREFIX" = true ]; then
+  elif [ "$PREFIX" = true ]; then
     WORKSPACE=special:$WORKSPACE
   fi
+}
+
+parse_workspace() {
+  WORKSPACE=${WORKSPACE:-${POSITIONAL_ARGS[1]}}
+  if [ -z "$WORKSPACE" ]; then
+    show_help
+    exit 1
+  fi
+
+  local curr_workspace
+  curr_workspace=$(hyprctl activeworkspace -j | jq -r .id)
+  if [ -z "$BATCH" ]; then BATCH=$(((curr_workspace - 1) / 10)); fi
+  case "${WORKSPACE:0:1}" in
+  + | -) WORKSPACE=$((curr_workspace + WORKSPACE)) ;;
+  *) WORKSPACE=$((BATCH * 10 + WORKSPACE)) ;;
+  esac
+}
+
+if [ "$SPECIAL" = false ]; then
+  parse_workspace
+else
+  parse_spl_workspace
 fi
 
 hyprctl dispatch "${POSITIONAL_ARGS[0]}" "$WORKSPACE"

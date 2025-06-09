@@ -13,6 +13,9 @@ using namespace std;
 #define il inline
 typedef long int l;
 typedef long long int ll;
+typedef vector<int> vi;
+typedef vector<vi> vvi;
+typedef pair<int, int> pii;
 #define VARGS_(_10, _9, _8, _7, _6, _5, _4, _3, _2, _1, N, ...) N
 #define COUNT(...) VARGS_(__VA_ARGS__, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
 #define CONCAT_(a, b) a##b
@@ -24,9 +27,8 @@ typedef long long int ll;
 #define repv_2(var, it) for (auto var : it)
 #define repv_1(it) repv_2(i, it)
 #define repv(args...) CONCAT(repv_, COUNT(args))(args)
-#define pii pair<int, int>
 #define dbg(...) logger(#__VA_ARGS__, __VA_ARGS__)
-#define sortv(vec) sort(vec.begin(), vec.end())
+#define all(vec) vec.begin(), vec.end()
 const int MOD = 1e9 + 7;
 template <typename T> T mod(T a, T b) { return (a + b) % MOD; }
 /* TEMPLATE END */

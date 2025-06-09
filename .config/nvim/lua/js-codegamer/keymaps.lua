@@ -12,10 +12,7 @@ require('which-key').add { -- Top level groups
   { '<leader>w', group = '[W]orkspace' },
   { '<leader>t', group = '[T]oggle' },
   { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
-  {
-    '<leader>cp',
-    group = 'C[P]',
-  },
+  { '<leader>cp', group = 'C[P]' },
 
   -- Search Group with nested mappings
   {
@@ -38,16 +35,12 @@ require('which-key').add { -- Top level groups
         { 'b', telescope_builtin 'buffers', desc = '[S]earch existing [B]uffers' },
         {
           'n',
-          function()
-            require('telescope.builtin').find_files { cwd = vim.fn.stdpath 'config' }
-          end,
+          telescope_builtin('find_files', { cwd = vim.fn.stdpath 'config' }),
           desc = '[S]earch [N]eovim config',
         },
         {
           '/',
-          function()
-            require('telescope.builtin').live_grep { grep_open_files = true, prompt_title = 'Live Grep in Open Files' }
-          end,
+          telescope_builtin('live_grep', { grep_open_files = true, prompt_title = 'Live Grep in Open Files' }),
           desc = '[S]earch [/] in Open Buffers',
         },
         { 'l', telescope_builtin 'loclist', desc = '[S]earch [L]oclist' },
@@ -72,22 +65,30 @@ require('which-key').add { -- Top level groups
   -- CompetiTest nested group
   {
     '<leader>cp',
-    group = 'C[P]',
+    group = '[CP]',
     expand = function()
       return {
         {
-          'rt',
-          function()
-            vim.cmd 'CompetiTest receive testcases'
+          'r',
+          group = '[CP]: [R]eceive',
+          expand = function()
+            return {
+              {
+                't',
+                function()
+                  vim.cmd 'CompetiTest receive testcases'
+                end,
+                desc = 'CompetiTest: receive testcases',
+              },
+              {
+                'p',
+                function()
+                  vim.cmd 'CompetiTest receive problem'
+                end,
+                desc = 'CompetiTest: receive problem',
+              },
+            }
           end,
-          desc = 'CompetiTest: receive testcases',
-        },
-        {
-          'rp',
-          function()
-            vim.cmd 'CompetiTest receive problem'
-          end,
-          desc = 'CompetiTest: receive problem',
         },
         {
           't',

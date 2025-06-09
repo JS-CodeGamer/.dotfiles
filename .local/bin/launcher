@@ -1,0 +1,63 @@
+#!/bin/bash
+
+OPTS=$(getopt -o bftp: --long bemenu,fzf,tofi,launch-prefix: -n "$0" -- "$@")
+
+if [ $? != 0 ]; then
+  echo "Terminating..." >&2
+  exit 1
+fi
+
+eval set -- "$OPTS"
+
+COMMAND="fzf --color=bw --reverse --border"
+PROG="fzf"
+LAUNCH_PREFIX="exec"
+while true; do
+  case "$1" in
+  -b | --bemenu)
+    PROG="bemenu"
+    shift
+    ;;
+  -t | --tofi)
+    PROG="tofi"
+    COMMAND="tofi-run"
+    shift
+    ;;
+  -f | --fzf) shift ;;
+  -p | --launch-prefix)
+    LAUNCH_PREFIX="$2"
+    shift 2
+    ;;
+  --)
+    shift
+    break
+    ;;
+  *) break ;;
+  esac
+done
+
+if [ $PROG = "bemenu" ]; then
+  COMMAND="bemenu-run \
+  --fn 'MonaspiceNe NFM 12' \
+  --no-exec -iH30 -W1 -B2 -R5"
+fi
+
+if [ $PROG = "fzf" ]; then
+  read -r -d '' COMMAND <<EOL
+  echo -n \$PATH |
+    xargs -d: -I{} -r find -L {} \\
+      -maxdepth 1 -mindepth 1 -type f \\
+      -executable -printf '[bin] %P\n' \\
+      2>/dev/null | sort -u | $COMMAND |
+    cut -d' ' -f2-
+EOL
+
+  COMMANDFILE=$(mktemp)
+  ghostty --command="$COMMAND >$COMMANDFILE" --class=term.ghostty.float
+  COMMAND=$(cat "$COMMANDFILE")
+  rm "$COMMANDFILE"
+else
+  COMMAND="$($COMMAND)"
+fi
+
+$LAUNCH_PREFIX $COMMAND
