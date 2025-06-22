@@ -303,14 +303,17 @@ torrentsearch() {
 }
 
 temphist() {
-  if [ "$1" = 'setup' ]; then
-    export HISTFILE=$(mktemp)
-  elif [ "$1" = 'cleanup' ] && [[ $HISTFILE =~ ^/tmp/.*$ ]]; then
+  set -x
+  if [ "$HISTFILE" = ~/.bash_history ]; then
+    HISTFILE=$(mktemp)
+    export HISTFILE
+    trap temphist EXIT
+  else
     rm "$HISTFILE"
     export HISTFILE=~/.bash_history
-  else
-    printf 'temphist [-h|setup|cleanup]'
+    trap - EXIT
   fi
+  set +x
 }
 
 if command -v ascii-image-converter >/dev/null; then
@@ -374,4 +377,3 @@ set_prompt() {
 }
 
 PROMPT_COMMAND=set_prompt
-export GPG_TTY=$(tty)
