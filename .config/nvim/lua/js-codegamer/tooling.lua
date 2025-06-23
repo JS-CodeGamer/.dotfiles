@@ -1,103 +1,86 @@
 -- tools.lua: Centralized management for LSP servers, formatters, and linters
 local M = {}
 
--- Registry of all available tools by type
-M.registry = {
-  lsp = {
-    -- Map from LSP server name to setup configuration
-    -- These names must match those in nvim-lspconfig
-    ast_grep = {},
-    bashls = {},
-    gopls = {},
-    clangd = {},
-    jsonls = {},
-    ruff = {},
-    rust_analyzer = {},
-    ts_ls = {},
-    html = {},
-    cssls = {},
-    marksman = {},
-    yamlls = {},
-    texlab = {},
-    dockerls = {},
-    lua_ls = {},
+local lsp_settings = {
+  pyright = {
+    settings = {
+      pyright = {
+        disableOrganizeImports = true,
+      },
+      python = {
+        analysis = {
+          ignore = { '*' },
+        },
+      },
+    },
   },
-
-  -- Map from formatter tool to configuration
-  -- Only include standalone formatters not handled by LSP
-  formatter = {
-    stylua = {},
-    prettierd = {},
-    shfmt = {},
-    ['clang-format'] = {},
-    prettier = {},
-    latexindent = {},
-    goimports = {},
-    gofumpt = {},
-  },
-
-  -- Map from linter tool to configuration
-  -- Only include standalone linters not handled by LSP
-  linter = {
-    markdownlint = {},
-    eslint_d = {},
-    shellcheck = {},
-    hadolint = {},
+  ruff = {
+    init_options = {
+      settings = {
+        logLevel = 'debug',
+      },
+    },
   },
 }
 
 -- Maps filetypes to LSP server names
-M.filetype_to_server = {
+local filetype_to_server = {
   -- AST-grep for multiple languages
-  ['*'] = 'ast_grep',
+  ['*'] = { 'ast_grep' },
   -- Bash
-  ['sh'] = 'bashls',
-  ['bash'] = 'bashls',
+  ['sh'] = { 'bashls' },
+  ['bash'] = { 'bashls' },
   -- Go
-  ['go'] = 'gopls',
-  ['gomod'] = 'gopls',
-  ['gowork'] = 'gopls',
-  ['gotmpl'] = 'gopls',
+  ['go'] = { 'gopls' },
+  ['gomod'] = { 'gopls' },
+  ['gowork'] = { 'gopls' },
+  ['gotmpl'] = { 'gopls' },
   -- C/C++
-  ['c'] = 'clangd',
-  ['cpp'] = 'clangd',
-  ['objc'] = 'clangd',
-  ['objcpp'] = 'clangd',
+  ['c'] = { 'clangd' },
+  ['cpp'] = { 'clangd' },
+  ['objc'] = { 'clangd' },
+  ['objcpp'] = { 'clangd' },
   -- JSON
-  ['json'] = 'jsonls',
-  ['jsonc'] = 'jsonls',
+  ['json'] = { 'jsonls' },
+  ['jsonc'] = { 'jsonls' },
   -- Python
-  ['python'] = 'ruff',
+  ['python'] = { 'pyright', 'ruff' },
   -- Rust
-  ['rust'] = 'rust_analyzer',
+  ['rust'] = { 'rust_analyzer' },
   -- TypeScript/JavaScript
-  ['typescript'] = 'ts_ls',
-  ['javascript'] = 'ts_ls',
-  ['typescriptreact'] = 'ts_ls',
-  ['javascriptreact'] = 'ts_ls',
-  ['jsx'] = 'ts_ls',
-  ['tsx'] = 'ts_ls',
+  ['typescript'] = { 'ts_ls' },
+  ['javascript'] = { 'ts_ls' },
+  ['typescriptreact'] = { 'ts_ls' },
+  ['javascriptreact'] = { 'ts_ls' },
+  ['tsx'] = { 'ts_ls' },
+  ['jsx'] = { 'ts_ls' },
   -- HTML/CSS
-  ['html'] = 'html',
-  ['css'] = 'cssls',
+  ['html'] = { 'html' },
+  ['css'] = { 'cssls' },
   -- Markdown
-  ['markdown'] = 'marksman',
-  ['md'] = 'marksman',
+  ['markdown'] = { 'marksman' },
+  ['md'] = { 'marksman' },
   -- YAML
-  ['yaml'] = 'yamlls',
-  ['yml'] = 'yamlls',
+  ['yaml'] = { 'yamlls' },
+  ['yml'] = { 'yamlls' },
   -- LaTeX
-  ['tex'] = 'texlab',
-  ['latex'] = 'texlab',
+  ['tex'] = { 'texlab' },
+  ['latex'] = { 'texlab' },
   -- Docker
-  ['dockerfile'] = 'dockerls',
+  ['dockerfile'] = { 'dockerls' },
   -- Lua
-  ['lua'] = 'lua_ls',
+  ['lua'] = { 'lua_ls' },
+  -- angular: comment when not using angular to use the defaults
+  -- ['typescript'] = { 'angularls' },
+  -- ['html'] = { 'angularls' },
+  -- ['typescriptreact'] = { 'angularls' },
+  -- ['tsx'] = { 'angularls' },
+  -- ['htmlangular'] = { 'angularls' },
 }
 
 -- Maps filetypes to formatters
 -- Only include standalone formatters not handled by LSP
-M.filetype_to_formatter = {
+local filetype_to_formatter = {
   -- Lua
   ['lua'] = { 'stylua' },
   -- JavaScript/TypeScript
@@ -131,7 +114,7 @@ M.filetype_to_formatter = {
 }
 
 -- Maps filetypes to linters
-M.filetype_to_linter = {
+local filetype_to_linter = {
   -- Markdown
   ['markdown'] = { 'markdownlint' },
   ['md'] = { 'markdownlint' },
@@ -150,7 +133,7 @@ M.filetype_to_linter = {
 }
 
 -- Mapping from tool names to Mason package names
-M.tool_to_mason = {
+local tool_to_mason = {
   -- LSP Servers
   ast_grep = 'ast-grep',
   bashls = 'bash-language-server',
@@ -164,74 +147,64 @@ M.tool_to_mason = {
   lua_ls = 'lua-language-server',
 }
 
-M.mason_exclude = {
-  'rust-analyzer',
-  'ast-grep',
-  'clangd',
-  'clang-format',
+local mason_exclude = {
+  ['rust-analyzer'] = true,
+  ['ast-grep'] = true,
+  ['clangd'] = true,
+  ['clang-format'] = true,
 }
 
+function M.GetLSPConfig(lsp)
+  if lsp == nil then
+    return vim.deepcopy(lsp_settings)
+  else
+    return vim.deepcopy(lsp_settings[lsp])
+  end
+end
+
 -- Get LSP servers with their configurations
-function M.GetLSPServers()
-  return vim.deepcopy(M.registry.lsp)
+function M.GetLSPServers(filetype)
+  if filetype == nil then
+    return vim.deepcopy(filetype_to_server)
+  else
+    return filetype_to_server[filetype]
+  end
 end
 
 -- Get formatters for each filetype
-function M.GetFormatters()
-  return vim.deepcopy(M.filetype_to_formatter)
+function M.GetFormatters(filetype)
+  if filetype == nil then
+    return vim.deepcopy(filetype_to_formatter)
+  else
+    return filetype_to_formatter[filetype]
+  end
 end
 
 -- Get linters for each filetype
-function M.GetLinters()
-  return vim.deepcopy(M.filetype_to_linter)
-end
-
-local function subtract(table1, table2)
-  local exclude_set = {}
-  for _, value in ipairs(table2) do
-    exclude_set[value] = true
+function M.GetLinters(filetype)
+  if filetype == nil then
+    return vim.deepcopy(filetype_to_linter)
+  else
+    return filetype_to_linter[filetype]
   end
-
-  local result = {}
-  for _, value in ipairs(table1) do
-    if not exclude_set[value] then
-      table.insert(result, value)
-    end
-  end
-
-  return result
 end
 
 -- Get all Mason tools required for a specific filetype
 function M.GetMasonToolsForFT(filetype)
   local tools = {}
 
-  -- Check if this filetype needs an LSP server
-  local server = M.filetype_to_server[filetype]
-  if server then
-    local mason_name = M.tool_to_mason[server] or server
-    table.insert(tools, mason_name)
-  end
-
-  -- Check for formatters
-  local formatters = M.filetype_to_formatter[filetype]
-  if formatters then
-    for _, formatter in ipairs(formatters) do
-      local mason_name = M.tool_to_mason[formatter] or formatter
-      table.insert(tools, mason_name)
+  local function register_to_tools(itools)
+    itools = itools or {}
+    for _, tool in ipairs(itools) do
+      if not mason_exclude[tool] then
+        table.insert(tools, tool_to_mason[tool] or tool)
+      end
     end
   end
 
-  -- Check for linters
-  local linters = M.filetype_to_linter[filetype]
-  if linters then
-    for _, linter in ipairs(linters) do
-      local mason_name = M.tool_to_mason[linter] or linter
-      table.insert(tools, mason_name)
-    end
-  end
-
-  tools = subtract(tools, M.mason_exclude)
+  register_to_tools(filetype_to_server[filetype])
+  register_to_tools(filetype_to_formatter[filetype])
+  register_to_tools(filetype_to_linter[filetype])
 
   return tools
 end

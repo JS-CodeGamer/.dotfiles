@@ -9,72 +9,82 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+local function createLSPHighlight(event)
+  local highlight_augroup = vim.api.nvim_create_augroup('lsp-highlight', { clear = false })
+
+  vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
+    buffer = event.buf,
+    group = highlight_augroup,
+    callback = vim.lsp.buf.document_highlight,
+  })
+
+  vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI' }, {
+    buffer = event.buf,
+    group = highlight_augroup,
+    callback = vim.lsp.buf.clear_references,
+  })
+
+  vim.api.nvim_create_autocmd('LspDetach', {
+    group = vim.api.nvim_create_augroup('lsp-detach', { clear = true }),
+    callback = function(event2)
+      vim.lsp.buf.clear_references()
+      vim.api.nvim_clear_autocmds { group = 'lsp-highlight', buffer = event2.buf }
+    end,
+  })
+end
+
 vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup('lsp-attach', { clear = true }),
   callback = function(event)
-    local map = function(keys, func, desc)
-      vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
-    end
-    map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
-    map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
-    map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
-    map('<leader>D', require('telescope.builtin').lsp_type_definitions, 'Type [D]efinition')
-    map('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
-    map('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
-    map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
-    map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
-    map('K', vim.lsp.buf.hover, 'Hover Documentation')
-    map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+    local client = assert(vim.lsp.get_client_by_id(event.data.client_id))
 
-    local client = vim.lsp.get_client_by_id(event.data.client_id)
-    if client and client.server_capabilities.documentHighlightProvider then
-      local highlight_augroup = vim.api.nvim_create_augroup('lsp-highlight', { clear = false })
-      vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
-        buffer = event.buf,
-        group = highlight_augroup,
-        callback = vim.lsp.buf.document_highlight,
-      })
-
-      vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI' }, {
-        buffer = event.buf,
-        group = highlight_augroup,
-        callback = vim.lsp.buf.clear_references,
-      })
-
-      vim.api.nvim_create_autocmd('LspDetach', {
-        group = vim.api.nvim_create_augroup('lsp-detach', { clear = true }),
-        callback = function(event2)
-          vim.lsp.buf.clear_references()
-          vim.api.nvim_clear_autocmds { group = 'lsp-highlight', buffer = event2.buf }
-        end,
-      })
+    local map = function(keys, func, desc, method_str)
+      if not method_str or client:supports_method(method_str) then
+        vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
+      end
     end
 
-    if client and client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
-      map('<leader>th', function()
-        vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
-      end, '[T]oggle Inlay [H]ints')
+    local builtin = require 'telescope.builtin'
+
+    -- Definitions / references / declarations
+    map('gd', builtin.lsp_definitions, '[G]oto [D]efinition', 'textDocument/definition')
+    map('gr', builtin.lsp_references, '[G]oto [R]eferences', 'textDocument/references')
+    map('gI', builtin.lsp_implementations, '[G]oto [I]mplementation', 'textDocument/implementation')
+    map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration', 'textDocument/declaration')
+
+    -- Type info
+    map('<leader>D', builtin.lsp_type_definitions, 'Type [D]efinition', 'textDocument/typeDefinition')
+
+    -- Symbols
+    map('<leader>ds', builtin.lsp_document_symbols, '[D]ocument [S]ymbols', 'textDocument/documentSymbol')
+    map('<leader>ws', builtin.lsp_workspace_symbols, '[W]orkspace [S]ymbols', 'workspace/symbol')
+
+    -- Code actions / rename
+    map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame', 'textDocument/rename')
+    map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction', 'textDocument/codeAction')
+
+    -- Hover / signature help
+    map('K', vim.lsp.buf.hover, 'Hover Documentation', 'textDocument/hover')
+    map('<C-k>', vim.lsp.buf.signature_help, 'Signature Help', 'textDocument/signatureHelp')
+
+    -- Code lens
+    map('<leader>cl', vim.lsp.codelens.run, '[C]ode [L]ens', 'textDocument/codeLens')
+
+    -- Call hierarchy
+    map('<leader>ci', vim.lsp.buf.incoming_calls, 'Call [I]ncoming', 'callHierarchy/incomingCalls')
+    map('<leader>co', vim.lsp.buf.outgoing_calls, 'Call [O]utgoing', 'callHierarchy/outgoingCalls')
+
+    -- Inlay hints toggle
+    map('<leader>th', function()
+      vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
+    end, '[T]oggle Inlay [H]ints', 'textDocument/inlayHint')
+
+    -- Highlights
+    if client:supports_method 'textDocument/documentHighlight' then
+      createLSPHighlight(event)
     end
   end,
 })
-
-local mason_packages = {}
-
-function AddPackages(pkgs)
-  for k, v in pairs(pkgs) do
-    if type(v) == 'string' then
-      v = { v }
-    end
-
-    if not mason_packages[k] then
-      mason_packages[k] = v
-    else
-      for _, vi in ipairs(v) do
-        table.insert(mason_packages[k], vi)
-      end
-    end
-  end
-end
 
 vim.api.nvim_create_autocmd('FileType', {
   group = vim.api.nvim_create_augroup('InstallTooling', { clear = true }),
@@ -83,36 +93,19 @@ vim.api.nvim_create_autocmd('FileType', {
     local tooling = require 'js-codegamer.tooling'
 
     local packages = tooling.GetMasonToolsForFT(ft)
-    local starpkgs = tooling.GetMasonToolsForFT '*'
-    if starpkgs then
-      for _, pkg in ipairs(starpkgs) do
-        table.insert(packages, pkg)
-      end
+    for _, pkg in ipairs(tooling.GetMasonToolsForFT '*') do
+      table.insert(packages, pkg)
     end
     if not packages then
       return
     end
 
-    local server_installed = false
     for _, pacakge in ipairs(packages) do
       local mason_registry = require 'mason-registry'
       local pkg = mason_registry.get_package(pacakge)
-      if not pkg:is_installed() then
-        vim.notify('Installing pacakge for ' .. ft .. ': ' .. pacakge, vim.log.levels.INFO)
+      if not pkg:is_installed() or not pkg:is_installing() then
         pkg:install()
       end
-
-      local server = tooling.filetype_to_server[ft]
-      if server then
-        local mason_name = tooling.tool_to_mason[server] or server
-        if mason_name == package then
-          server_installed = server
-        end
-      end
-    end
-
-    if server_installed ~= false then
-      require('lspconfig')[server_installed].setup(tooling.registry.lsp[server_installed])
     end
   end,
 })

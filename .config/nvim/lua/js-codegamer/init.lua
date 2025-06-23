@@ -1,5 +1,11 @@
 -- vim: ts=2 sts=2 sw=2 et
 
+function TBuiltin(name, args)
+  return function()
+    require('telescope.builtin')[name](args or {})
+  end
+end
+
 -- [[ Load options ]]
 require 'js-codegamer.options'
 -- [[ Load autocommands ]]

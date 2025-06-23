@@ -7,21 +7,26 @@ return {
     'hrsh7th/cmp-nvim-lsp',
   },
   config = function()
-    local lspconfig = require 'lspconfig'
     local capabilities = vim.lsp.protocol.make_client_capabilities()
     capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
+    vim.lsp.config('*', {
+      capabilities,
+      root_markers = { '.git' },
+    })
 
-    local servers = require('js-codegamer.tooling').GetLSPServers()
-    for server, conf in pairs(servers) do
-      local server_config = {
-        capabilities = capabilities,
-      }
-
-      if conf then
-        server_config = vim.tbl_deep_extend('force', server_config, conf)
+    local servers = {}
+    local tooling = require 'js-codegamer.tooling'
+    local server_info = tooling.GetLSPServers()
+    for _, servers_ft in pairs(server_info) do
+      for _, server in ipairs(servers_ft) do
+        table.insert(servers, server)
       end
+    end
 
-      lspconfig[server].setup(server_config)
+    vim.lsp.enable(servers)
+
+    for serv, conf in pairs(tooling.GetLSPConfig()) do
+      vim.lsp.config(serv, conf)
     end
   end,
 }
