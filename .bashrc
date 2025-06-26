@@ -20,17 +20,20 @@ check() {
 }
 
 export SELECTOR="fuzzel -d"
+export PAGER=less
+export MANPAGER=less
 
 ## bat -- cat replacement
 check bat && {
   # export MANPAGER="sh -c 'col -bx | bat -plman'"
   # use less for man pages cuz it gives better results
   #   with colored-man-pages oh my bash plugin
-  export MANPAGER="less"
-  export PAGER="bat"
   export BAT_CONFIG_PATH=$XDG_CONFIG_HOME/bat/bat.conf
   alias cat='bat --style header,snip,changes'
   alias bh='bat -pl help' # bathelp
+  if check fzf; then
+    export FZF_CTRL_T_OPTS="--preview 'bat --color=always --line-range :50 {}'"
+  fi
 }
 
 ## neovim
@@ -130,20 +133,8 @@ alias mirrora="sudo reflector -l 50 -n 20 --sort age --save /etc/pacman.d/mirror
 
 ## git
 source /usr/share/bash-completion/completions/git
-alias glog='git log --oneline --graph'
-alias ga='git add'
-alias gcm='git commit'
-alias gco='git checkout'
-alias gs='git status -sb'
-alias gsh='git stash'
-alias gus='git stash pop'
-__git_complete glog git_log
-__git_complete ga git_add
-__git_complete gcm git_commit
-__git_complete gco git_checkout
-__git_complete gs git_status
-__git_complete gsh git_stash
-__git_complete gus git_stash
+alias g='git'
+__git_complete g git
 
 # config
 alias config="git --git-dir='$HOME/.cfg/' --work-tree='$HOME'"

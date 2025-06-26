@@ -1,14 +1,70 @@
+[alias]
+  a = add
+  aa = add .
+  au = add --update
+	d = diff
+	dt = difftool
+	s = status
+	sh = show
+  c = commit
+  ca = commit --all
+  co = checkout
+	b = branch
+	rb = rebase -i
+	l = log --oneline --graph --all --decorate
+	amend = commit --amend --no-edit
 [user]
 	email = 85994817+JS-CodeGamer@users.noreply.github.com
 	name = Jagteshver Singh
 [init]
 	defaultBranch = main
+[core]
+	editor = nvim
+	autocrlf = input
+[pager]
+	branch = false
+	diff = delta
+	log = delta
+	reflog = delta
+	show = delta
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	file-decoration-style = auto ul
+	file-style = auto
+	hunk-header-decoration-style = auto box
+	hunk-header-line-number-style = auto
+	line-numbers = true
+	line-numbers-left-format = {nm:>3}│
+	line-numbers-left-style = auto
+	line-numbers-minus-style = auto
+	line-numbers-plus-style = auto
+	line-numbers-right-format = {np:>3}│
+	line-numbers-right-style = auto
+	line-numbers-zero-style = auto
+	minus-emph-style = red bold
+	minus-empty-line-marker-style = omit
+	minus-style = red
+	navigate = false
+	plus-emph-style = green bold
+	plus-empty-line-marker-style = omit
+	plus-style = green
+	side-by-side = false
+	syntax-theme = base16-ocean.dark
+	true-color = auto
+	zero-style = auto
 [diff]
-  tool = nvimdiff
+	tool = nvimdiff
 [difftool]
-  prompt = true
+	prompt = true
 [difftool "nvimdiff"]
-    cmd = "nvim -d \"$LOCAL\" \"$REMOTE\""
+	cmd = "nvim -d \"$LOCAL\" \"$REMOTE\""
+[merge]
+	tool = nvimdiff
+	conflictstyle = zdiff3
+[mergetool]
+  prompt = false
+  keepBackup = false
 [push]
 	autoSetupRemote = true
 [rerere]
@@ -19,3 +75,11 @@
 	sort = -committerdate
 [color]
 	ui = auto
+[credential]
+	helper = store
+[fetch]
+	prune = true
+[pull]
+	rebase = true
+[rebase]
+	autoStash = true
