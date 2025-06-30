@@ -93,7 +93,8 @@ alias less='less -RF'
 alias du='du -had1'
 alias df='df -h'     # human-readable sizes
 alias free='free -m' # show sizes in MB
-alias clear='command clear; seq 1 $(tput cols) | sort -R | sparklines | lolcat'
+check sparklines && check lolcat &&
+  alias clear='command clear; seq 1 $(tput cols) | sort -R | sparklines | lolcat'
 alias c='clear'
 
 ## ls
@@ -171,6 +172,9 @@ alias rip="expac --timefmt='%Y-%m-%d %T' '%l\t%n %v' | sort | tail -200 | nl"
 
 # xargs check for alias
 alias xargs='xargs '
+
+check uv &&
+  eval "$(uv generate-shell-completion bash)"
 
 unset check
 
@@ -320,7 +324,7 @@ fi
 
 alias psudo='sudo env PATH="$PATH"'
 
-export JAVA_HOME=/usr/lib/jvm/java-8-openjdk
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 export PATH=$PATH:$JAVA_HOME/bin
 
 # PROMPT
