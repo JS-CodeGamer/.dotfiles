@@ -69,11 +69,6 @@ if check fzf; then
   fi
 fi
 
-# pyenv
-if command -v pyenv 1>/dev/null 2>&1; then
-  eval "$(pyenv init - bash)"
-fi
-
 shopt -s histappend checkwinsize expand_aliases
 set +o noclobber
 
@@ -138,8 +133,7 @@ alias g='git'
 __git_complete g git
 
 # config
-alias config="git --git-dir='$HOME/.cfg/' --work-tree='$HOME'"
-__git_complete config git
+alias stowc="stow -t $HOME -d $HOME/.dotfiles"
 
 # iptables
 alias ipt='sudo iptables -nvL --line-numbers'

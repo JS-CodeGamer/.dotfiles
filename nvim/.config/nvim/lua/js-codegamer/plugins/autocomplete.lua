@@ -23,48 +23,38 @@ return {
         updateevents = 'TextChanged,TextChangedI',
         enable_autosnippets = true,
       }
+      local snip_expander = function(args)
+        luasnip.lsp_expand(args.body)
+      end
+
+      local lspkind_format = lspkind.cmp_format {
+        mode = 'symbol_text',
+        menu = {
+          buffer = '[Buffer]',
+          nvim_lsp = '[LSP]',
+          luasnip = '[Snippet]',
+          path = '[Path]',
+          cmdline = '[Cmd]',
+        },
+      }
 
       cmp.setup {
-        snippet = {
-          expand = function(args)
-            luasnip.lsp_expand(args.body)
-          end,
-        },
+        enabled = function()
+          return not require('cmp.config.context').in_treesitter_capture 'comment'
+        end,
+        snippet = { expand = snip_expander },
         window = {
           completion = cmp.config.window.bordered {
             winhighlight = 'Normal:CmpNormal',
             border = 'rounded',
           },
-          documentation = cmp.config.window.bordered {
-            winhighlight = 'Normal:CmpDocNormal',
-            border = 'rounded',
-          },
         },
-        completion = {
-          completeopt = 'menu,menuone,noinsert',
-          keyword_length = 1,
-        },
-        formatting = {
-          format = lspkind.cmp_format {
-            mode = 'symbol_text',
-            maxwidth = 50,
-            ellipsis_char = '...',
-            menu = {
-              buffer = '[Buffer]',
-              nvim_lsp = '[LSP]',
-              luasnip = '[Snippet]',
-              path = '[Path]',
-              cmdline = '[Cmd]',
-            },
-          },
-        },
+        completion = { keyword_length = 1 },
+        formatting = { format = lspkind_format },
         mapping = cmp.mapping.preset.insert {
-          ['<C-n>'] = cmp.mapping.select_next_item(),
-          ['<C-p>'] = cmp.mapping.select_prev_item(),
           ['<C-b>'] = cmp.mapping.scroll_docs(-4),
           ['<C-f>'] = cmp.mapping.scroll_docs(4),
-          ['<C-y>'] = cmp.mapping.confirm { select = true },
-          ['<C-Space>'] = cmp.mapping.complete {},
+          ['<C-Space>'] = cmp.mapping.complete(),
           ['<C-l>'] = cmp.mapping(function()
             if luasnip.expand_or_locally_jumpable() then
               luasnip.expand_or_jump()
@@ -82,32 +72,16 @@ return {
           { name = 'path', priority = 500 },
           { name = 'buffer', priority = 250, keyword_length = 3, max_item_count = 10 },
         },
-        -- sorting = {
-        --   comparators = {
-        --     cmp.config.compare.offset,
-        --     cmp.config.compare.exact,
-        --     cmp.config.compare.score,
-        --     cmp.config.compare.kind,
-        --     cmp.config.compare.sort_text,
-        --     cmp.config.compare.length,
-        --     cmp.config.compare.order,
-        --   },
-        -- },
-        experimental = {
-          ghost_text = true,
-        },
+        experimental = { ghost_text = true },
       }
 
       cmp.setup.cmdline(':', {
         mapping = cmp.mapping.preset.cmdline(),
-        sources = {
-          { name = 'cmdline' },
-          { name = 'path' },
-        },
+        sources = { { name = 'cmdline' }, { name = 'path' } },
       })
 
-      local cmp_autopairs = require 'nvim-autopairs.completion.cmp'
-      cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
+      local autopairs_cmp = require 'nvim-autopairs.completion.cmp'
+      cmp.event:on('confirm_done', autopairs_cmp.on_confirm_done())
     end,
   },
   {

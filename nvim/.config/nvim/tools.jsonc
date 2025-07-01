@@ -1,0 +1,195 @@
+{
+	"tools": {
+		"bash": {
+			"lsp-server": ["bashls"],
+			"formatter": ["shfmt"],
+			"linter": ["shellcheck"]
+		},
+		"sh": {
+			"lsp-server": ["bashls"],
+			"formatter": ["shfmt"],
+			"linter": ["shellcheck"]
+		},
+		"c": {
+			"lsp-server": ["clangd"],
+			"formatter": ["clang-format"]
+		},
+		"cpp": {
+			"lsp-server": ["clangd"],
+			"formatter": ["clang-format"]
+		},
+		"dockerfile": {
+			"lsp-server": ["dockerls"],
+			"linter": ["hadolint"]
+		},
+		"go": {
+			"lsp-server": ["gopls"],
+			"formatter": ["goimports", "gofumpt"]
+		},
+		"gomod": {
+			"lsp-server": ["gopls"],
+			"formatter": ["goimports", "gofumpt"]
+		},
+		"gowork": {
+			"lsp-server": ["gopls"],
+			"formatter": ["goimports", "gofumpt"]
+		},
+		"gotmpl": {
+			"lsp-server": ["gopls"]
+		},
+		// without biome
+		// "html": { "lsp-server": [ "html" ], "formatter": [ "prettier" ] },
+		// "javascript": { "lsp-server": [ "ts_ls" ], "formatter": [ "prettier" ], "linter": [ "eslint_d" ] },
+		// "javascriptreact": { "lsp-server": [ "ts_ls" ], "formatter": [ "prettier" ], "linter": [ "eslint_d" ] },
+		// "tsx": { "lsp-server": [ "angular_ls" ], "formatter": [ "prettier" ], "linter": [ "eslint_d" ] },
+		// "typescript": { "lsp-server": [ "angular_ls" ], "formatter": [ "prettier" ], "linter": [ "eslint_d" ] },
+		// "typescriptreact": { "lsp-server": [ "angular_ls" ], "formatter": [ "prettier" ], "linter": [ "eslint_d" ] },
+		// "htmlangular": { "lsp-server": [ "angular_ls" ], "formatter": [ "prettier" ] },
+		// "css": { "lsp-server": [ "cssls" ], "formatter": [ "prettier" ] },
+		// "jsx": { "lsp-server": [ "ts_ls" ], "formatter": [ "prettier" ], "linter": [ "eslint_d" ] },
+		// with biome
+		"html": {
+			"lsp-server": ["html", "biome"]
+		},
+		"htmlangular": {
+			"lsp-server": ["angular_ls", "biome"]
+		},
+		// "javascript": {
+		// 	"lsp-server": ["ts_ls", "biome"]
+		// },
+		// "javascriptreact": {
+		// 	"lsp-server": ["ts_ls", "biome"]
+		// },
+		// "jsx": {
+		// 	"lsp-server": ["ts_ls", "biome"]
+		// },
+		"typescript": {
+			"lsp-server": ["angular_ls", "biome"]
+		},
+		"typescriptreact": {
+			"lsp-server": ["angular_ls", "biome"]
+		},
+		"tsx": {
+			"lsp-server": ["angular_ls", "biome"]
+		},
+		"css": {
+			"lsp-server": ["cssls", "biome"]
+		},
+		"latex": {
+			"lsp-server": ["texlab"],
+			"formatter": ["latexindent"]
+		},
+		"lua": {
+			"lsp-server": ["lua_ls"],
+			"formatter": ["stylua"]
+		},
+		"python": {
+			"lsp-server": ["pyright", "ruff"]
+		},
+		"rust": {
+			"lsp-server": ["rust_analyzer"]
+		},
+		"tex": {
+			"lsp-server": ["texlab"],
+			"formatter": ["latexindent"]
+		},
+		"yaml": {
+			"lsp-server": ["yamlls"],
+			"formatter": ["prettier"]
+		},
+		"yml": {
+			"lsp-server": ["yamlls"],
+			"formatter": ["prettier"]
+		},
+		"json": {
+			"lsp-server": ["jsonls", "biome"]
+		},
+		"jsonc": {
+			"lsp-server": ["jsonls", "biome"]
+		},
+		"markdown": {
+			"lsp-server": ["marksman"],
+			"formatter": ["prettier"],
+			"linter": ["markdownlint"]
+		},
+		"md": {
+			"lsp-server": ["marksman"],
+			"formatter": ["prettier"],
+			"linter": ["markdownlint"]
+		},
+		"*": {
+			"lsp-server": ["ast_grep"]
+		}
+	},
+	"tool-to-mason": {
+		"ast_grep": "ast-grep",
+		"bashls": "bash-language-server",
+		"jsonls": "json-lsp",
+		"rust_analyzer": "rust-analyzer",
+		"ts_ls": "typescript-language-server",
+		"html": "html-lsp",
+		"cssls": "css-lsp",
+		"yamlls": "yaml-language-server",
+		"dockerls": "dockerfile-language-server",
+		"angular_ls": "angular-language-server",
+		"lua_ls": "lua-language-server"
+	},
+	"mason-exclude": ["rust-analyzer", "ast-grep", "clangd", "clang-format"],
+	"lsp-action-autoexec": {
+		"ruff": ["source.fixAll.ruff", "source.organizeImports.ruff"],
+		"ts_ls": [
+			"source.fixAll.ts",
+			"source.removeUnused.ts",
+			"source.addMissingImports.ts",
+			"source.removeUnusedImports.ts",
+			"source.sortImports.ts",
+			"source.organizeImports.ts"
+		],
+		"angular_ls": ["source.fixAll.angular", "source.organizeImports.angular"]
+	},
+	"lsp-settings": {
+		"pyright": {
+			"settings": {
+				"pyright": {
+					"disableOrganizeImports": true
+				},
+				"python": {
+					"analysis": {
+						"ignore": ["*"]
+					}
+				}
+			}
+		},
+		"ruff": {
+			"init_options": {
+				"settings": {
+					"logLevel": "trace",
+					"configurationPreference": "filesystemFirst",
+					"lint": {
+						"select": [
+							"F",
+							"E",
+							"W",
+							"C90",
+							"I",
+							"N",
+							"UP",
+							"YTT",
+							"S",
+							"B",
+							"A",
+							"COM",
+							"TID",
+							"Q",
+							"RUF"
+						],
+						"ignore": ["E501"],
+						"format": {
+							"preview": true
+						}
+					}
+				}
+			}
+		}
+	}
+}

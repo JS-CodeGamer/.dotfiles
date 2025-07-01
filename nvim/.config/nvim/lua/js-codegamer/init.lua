@@ -8,8 +8,6 @@ end
 
 -- [[ Load options ]]
 require 'js-codegamer.options'
--- [[ Load autocommands ]]
-require 'js-codegamer.autocmds'
 
 -- [[ Install `lazy.nvim` plugin manager if not exists ]]
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -30,6 +28,11 @@ vim.opt.rtp:prepend(lazypath)
 -- [[ Configure and install plugins ]]
 require('lazy').setup {
   spec = {
+    {
+      'vhyrro/luarocks.nvim',
+      priority = 1000,
+      opts = { rocks = { 'lua-cjson' } },
+    },
     { import = 'js-codegamer.plugins' },
   },
   defaults = {
@@ -60,3 +63,5 @@ require('lazy').setup {
 
 -- [[ Load keymaps ]]
 require 'js-codegamer.keymaps'
+-- [[ Load autocommands ]]
+require 'js-codegamer.autocmds'

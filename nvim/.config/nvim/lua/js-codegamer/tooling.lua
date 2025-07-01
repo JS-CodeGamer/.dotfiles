@@ -1,164 +1,90 @@
 -- tools.lua: Centralized management for LSP servers, formatters, and linters
-local M = {}
+local cjson_imported, cjson = pcall(require, 'cjson')
 
-local lsp_settings = {
-  pyright = {
-    settings = {
-      pyright = {
-        disableOrganizeImports = true,
-      },
-      python = {
-        analysis = {
-          ignore = { '*' },
+local config_path = vim.fn.stdpath 'config' .. '/tools.jsonc'
+
+local function read_json(path)
+  local file = io.open(path, 'r')
+  if not file then
+    vim.print('Failed to read: ' .. path)
+  end
+  local content = ''
+  for line in file:lines() do
+    if line:find '//' then
+      line = ''
+    end
+    content = content .. line .. '\n'
+  end
+  file:close()
+  local ok, parsed = pcall(cjson.decode, content)
+  if not ok then
+    vim.print('Failed to decode JSON: ' .. parsed)
+  end
+  return parsed
+end
+
+local data = {}
+if cjson_imported then
+  data = read_json(config_path)
+end
+
+local filetypes = {}
+local filetype_to_server = {}
+local filetype_to_formatter = {}
+local filetype_to_linter = {}
+local tool_to_mason = {}
+local mason_exclude = {}
+local lsp_actions_autoexec = {}
+local lsp_settings_ = {}
+
+if cjson_imported then
+  for ft, ft_data in pairs(data.tools or {}) do
+    if not vim.tbl_contains({ '*' }, ft) then
+      table.insert(filetypes, ft)
+    end
+
+    if ft_data['lsp-server'] then
+      filetype_to_server[ft] = ft_data['lsp-server']
+    end
+    if ft_data['formatter'] then
+      filetype_to_formatter[ft] = ft_data['formatter']
+    end
+    if ft_data['linter'] then
+      filetype_to_linter[ft] = ft_data['linter']
+    end
+  end
+
+  tool_to_mason = data['tool-to-mason'] or {}
+  mason_exclude = data['mason-exclude'] or {}
+  lsp_actions_autoexec = data['lsp-action-autoexec'] or {}
+
+  lsp_settings_ = data['lsp-settings'] or {}
+end
+
+local function lsp_settings()
+  local dynamic_settings = {
+    jsonls = {
+      settings = {
+        json = {
+          schemas = require('schemastore').json.schemas(),
+          validate = {
+            enable = true,
+          },
         },
       },
     },
-  },
-  ruff = {
-    init_options = {
-      settings = {
-        logLevel = 'debug',
-      },
-    },
-  },
-}
+  }
+  vim.tbl_deep_extend('force', lsp_settings_, dynamic_settings)
+  return lsp_settings_
+end
 
--- Maps filetypes to LSP server names
-local filetype_to_server = {
-  -- AST-grep for multiple languages
-  ['*'] = { 'ast_grep' },
-  -- Bash
-  ['sh'] = { 'bashls' },
-  ['bash'] = { 'bashls' },
-  -- Go
-  ['go'] = { 'gopls' },
-  ['gomod'] = { 'gopls' },
-  ['gowork'] = { 'gopls' },
-  ['gotmpl'] = { 'gopls' },
-  -- C/C++
-  ['c'] = { 'clangd' },
-  ['cpp'] = { 'clangd' },
-  ['objc'] = { 'clangd' },
-  ['objcpp'] = { 'clangd' },
-  -- JSON
-  ['json'] = { 'jsonls' },
-  ['jsonc'] = { 'jsonls' },
-  -- Python
-  ['python'] = { 'pyright', 'ruff' },
-  -- Rust
-  ['rust'] = { 'rust_analyzer' },
-  -- TypeScript/JavaScript
-  ['typescript'] = { 'ts_ls' },
-  ['javascript'] = { 'ts_ls' },
-  ['typescriptreact'] = { 'ts_ls' },
-  ['javascriptreact'] = { 'ts_ls' },
-  ['tsx'] = { 'ts_ls' },
-  ['jsx'] = { 'ts_ls' },
-  -- HTML/CSS
-  ['html'] = { 'html' },
-  ['css'] = { 'cssls' },
-  -- Markdown
-  ['markdown'] = { 'marksman' },
-  ['md'] = { 'marksman' },
-  -- YAML
-  ['yaml'] = { 'yamlls' },
-  ['yml'] = { 'yamlls' },
-  -- LaTeX
-  ['tex'] = { 'texlab' },
-  ['latex'] = { 'texlab' },
-  -- Docker
-  ['dockerfile'] = { 'dockerls' },
-  -- Lua
-  ['lua'] = { 'lua_ls' },
-  -- angular: comment when not using angular to use the defaults
-  -- ['typescript'] = { 'angularls' },
-  -- ['html'] = { 'angularls' },
-  -- ['typescriptreact'] = { 'angularls' },
-  -- ['tsx'] = { 'angularls' },
-  -- ['htmlangular'] = { 'angularls' },
-}
-
--- Maps filetypes to formatters
--- Only include standalone formatters not handled by LSP
-local filetype_to_formatter = {
-  -- Lua
-  ['lua'] = { 'stylua' },
-  -- JavaScript/TypeScript
-  ['javascript'] = { 'prettierd' },
-  ['typescript'] = { 'prettierd' },
-  ['typescriptreact'] = { 'prettierd' },
-  ['javascriptreact'] = { 'prettierd' },
-  ['html'] = { 'prettierd' },
-  ['css'] = { 'prettierd' },
-  ['jsx'] = { 'prettierd' },
-  ['tsx'] = { 'prettierd' },
-  -- Shell
-  ['sh'] = { 'shfmt' },
-  ['bash'] = { 'shfmt' },
-  -- C/C++
-  ['c'] = { 'clang-format' },
-  ['cpp'] = { 'clang-format' },
-  ['objc'] = { 'clang-format' },
-  ['objcpp'] = { 'clang-format' },
-  -- Markdown/YAML
-  ['markdown'] = { 'prettier' },
-  ['yaml'] = { 'prettier' },
-  ['yml'] = { 'prettier' },
-  -- LaTeX
-  ['tex'] = { 'latexindent' },
-  ['latex'] = { 'latexindent' },
-  -- Go
-  ['go'] = { 'goimports', 'gofumpt' },
-  ['gomod'] = { 'goimports', 'gofumpt' },
-  ['gowork'] = { 'goimports', 'gofumpt' },
-}
-
--- Maps filetypes to linters
-local filetype_to_linter = {
-  -- Markdown
-  ['markdown'] = { 'markdownlint' },
-  ['md'] = { 'markdownlint' },
-  -- JavaScript/TypeScript
-  ['javascript'] = { 'eslint_d' },
-  ['typescript'] = { 'eslint_d' },
-  ['javascriptreact'] = { 'eslint_d' },
-  ['typescriptreact'] = { 'eslint_d' },
-  ['jsx'] = { 'eslint_d' },
-  ['tsx'] = { 'eslint_d' },
-  -- Shell
-  ['sh'] = { 'shellcheck' },
-  ['bash'] = { 'shellcheck' },
-  -- Dockerfile
-  ['dockerfile'] = { 'hadolint' },
-}
-
--- Mapping from tool names to Mason package names
-local tool_to_mason = {
-  -- LSP Servers
-  ast_grep = 'ast-grep',
-  bashls = 'bash-language-server',
-  jsonls = 'json-lsp',
-  rust_analyzer = 'rust-analyzer',
-  ts_ls = 'typescript-language-server',
-  html = 'html-lsp',
-  cssls = 'css-lsp',
-  yamlls = 'yaml-language-server',
-  dockerls = 'dockerfile-language-server',
-  lua_ls = 'lua-language-server',
-}
-
-local mason_exclude = {
-  ['rust-analyzer'] = true,
-  ['ast-grep'] = true,
-  ['clangd'] = true,
-  ['clang-format'] = true,
-}
+local M = {}
 
 function M.GetLSPConfig(lsp)
   if lsp == nil then
-    return vim.deepcopy(lsp_settings)
+    return vim.deepcopy(lsp_settings())
   else
-    return vim.deepcopy(lsp_settings[lsp])
+    return vim.deepcopy(lsp_settings()[lsp])
   end
 end
 
@@ -207,6 +133,14 @@ function M.GetMasonToolsForFT(filetype)
   register_to_tools(filetype_to_linter[filetype])
 
   return tools
+end
+
+function M.getTSFileTypes()
+  return vim.deepcopy(filetypes)
+end
+
+function M.GetLspActionToExec(tool)
+  return lsp_actions_autoexec[tool]
 end
 
 return M

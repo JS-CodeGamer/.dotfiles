@@ -1,6 +1,3 @@
--- [[ Basic Autocommands ]]
---  See `:help lua-guide-autocommands`
-
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
   group = vim.api.nvim_create_augroup('highlight-yank', { clear = true }),
@@ -74,10 +71,31 @@ vim.api.nvim_create_autocmd('LspAttach', {
     map('<leader>ci', vim.lsp.buf.incoming_calls, 'Call [I]ncoming', 'callHierarchy/incomingCalls')
     map('<leader>co', vim.lsp.buf.outgoing_calls, 'Call [O]utgoing', 'callHierarchy/outgoingCalls')
 
-    -- Inlay hints toggle
+    -- Toggle inlay hints
+    if client:supports_method 'textDocument/inlayHint' then
+      vim.lsp.inlay_hint.enable(true)
+    end
     map('<leader>th', function()
       vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
     end, '[T]oggle Inlay [H]ints', 'textDocument/inlayHint')
+
+    -- Auto Execute code actions on save
+    local tooling = require 'js-codegamer.tooling'
+    local actions = tooling.GetLspActionToExec(client.name)
+    if actions and #actions > 0 then
+      vim.api.nvim_create_autocmd('BufWritePre', {
+        buffer = event.buf,
+        group = vim.api.nvim_create_augroup('lsp-auto-actions', { clear = true }),
+        callback = function()
+          for _, action in ipairs(actions) do
+            vim.lsp.buf.code_action {
+              context = { only = { action } },
+              apply = true,
+            }
+          end
+        end,
+      })
+    end
 
     -- Highlights
     if client:supports_method 'textDocument/documentHighlight' then
@@ -90,22 +108,57 @@ vim.api.nvim_create_autocmd('FileType', {
   group = vim.api.nvim_create_augroup('InstallTooling', { clear = true }),
   callback = function(args)
     local ft = args.match
+
     local tooling = require 'js-codegamer.tooling'
+    local ok, mason_registry = pcall(require, 'mason-registry')
 
     local packages = tooling.GetMasonToolsForFT(ft)
     for _, pkg in ipairs(tooling.GetMasonToolsForFT '*') do
       table.insert(packages, pkg)
     end
-    if not packages then
+    if not (ok and packages) then
       return
     end
 
     for _, pacakge in ipairs(packages) do
-      local mason_registry = require 'mason-registry'
       local pkg = mason_registry.get_package(pacakge)
-      if not pkg:is_installed() or not pkg:is_installing() then
+      if not (pkg:is_installed() or pkg:is_installing()) then
         pkg:install()
       end
+    end
+  end,
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = require('js-codegamer.tooling').getTSFileTypes(),
+  group = vim.api.nvim_create_augroup('SetupTreeSitter', { clear = true }),
+  callback = function(args)
+    local ft = args.match
+
+    local ok, ts = pcall(require, 'nvim-treesitter')
+    if not ok then
+      return
+    end
+
+    if not InstalledTSParsers then
+      InstalledTSParsers = {}
+      for _, parser in ipairs(ts.get_installed()) do
+        InstalledTSParsers[parser] = 'n'
+      end
+    end
+
+    if not InstalledTSParsers[ft] then
+      ts.install(ft):wait(12000)
+      InstalledTSParsers[ft] = 'y'
+    elseif InstalledTSParsers[ft] == 'n' then
+      ts.update(ft):wait(12000)
+      InstalledTSParsers[ft] = 'y'
+    end
+
+    if vim.tbl_contains(ts.get_installed(), ft) then
+      vim.treesitter.start()
+      vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+      vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
     end
   end,
 })

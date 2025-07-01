@@ -9,8 +9,8 @@ local options = {
   backup = false,
   breakindent = true, -- wrapped text starts with same indent
   clipboard = 'unnamedplus',
-  cmdheight = 0,
-  completeopt = { 'menuone', 'noselect' }, -- mostly just for cmp
+  cmdheight = 2,
+  -- completeopt set in cmp
   conceallevel = 0, -- so that `` is visible in markdown files
   fileencoding = 'utf-8', -- the encoding written to a file
   hlsearch = true, -- highlight all matches on previous search pattern

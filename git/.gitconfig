@@ -4,13 +4,18 @@
   au = add --update
 	d = diff
 	dt = difftool
-	s = status
-	sh = show
+  s = status
+  st = stash
+  sp = stash pop
+  sh = show
+  shn = show --name-status
   c = commit
   ca = commit --all
+  cam = commit --amend
+  caam = commit --amend --all
   co = checkout
 	b = branch
-	rb = rebase -i
+  rb = rebase -i
 	l = log --oneline --graph --all --decorate
 	amend = commit --amend --no-edit
 [user]

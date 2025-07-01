@@ -89,6 +89,8 @@ cursor {
 
 spawn-at-startup "wl-paste" "--watch" "cliphist" "store"
 
+spawn-at-startup "xwayland-satelite"
+
 prefer-no-csd
 
 screenshot-path "~/images/Screenshots/%FT%T%z.png"

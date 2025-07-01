@@ -8,46 +8,31 @@ vim.api.nvim_create_user_command('FormatDisable', function(args)
     vim.notify('Formatting disabled globally', vim.log.levels.INFO)
     vim.g.autoformat = false
   end
-end, {
-  desc = 'Disable autoformat-on-save',
-  bang = true,
-})
+end, { desc = 'Disable autoformat-on-save', bang = true })
 
 vim.api.nvim_create_user_command('FormatEnable', function()
   vim.b.autoformat = true
   vim.g.autoformat = true
   vim.notify('Formatting enabled', vim.log.levels.INFO)
-end, {
-  desc = 'Enable autoformat-on-save',
-})
+end, { desc = 'Enable autoformat-on-save' })
 
 return {
   'stevearc/conform.nvim',
-  dependencies = {
-    'williamboman/mason.nvim',
-  },
+  dependencies = { 'williamboman/mason.nvim' },
   event = { 'BufWritePre' },
   cmd = { 'ConformInfo' },
-  opts = function()
-    local formatters = require('js-codegamer.tooling').GetFormatters()
+  opts = {
+    formatters_by_ft = require('js-codegamer.tooling').GetFormatters(),
+    default_format_opts = { lsp_format = 'fallback' },
 
-    return {
-      formatters_by_ft = formatters,
-      default_format_opts = {
-        lsp_format = 'first',
-      },
+    format_on_save = function()
+      if vim.b.autoformat == false or vim.g.autoformat == false then
+        return nil
+      end
+      return { timeout_ms = 5000 }
+    end,
 
-      format_on_save = function()
-        if vim.b.autoformat == false or vim.g.autoformat == false then
-          return nil
-        end
-        return {
-          timeout_ms = 500,
-        }
-      end,
-
-      notify_on_error = false,
-      notify_no_formatters = true,
-    }
-  end,
+    notify_on_error = false,
+    notify_no_formatters = true,
+  },
 }
