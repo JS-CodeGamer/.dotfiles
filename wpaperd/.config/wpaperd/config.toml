@@ -5,6 +5,4 @@ transition-time = 300
 queue-size = 5
 
 [any]
-path = "/home/jagteshver/images/backgrounds/Wallpapers/Landscape"
-# path = "/home/jagteshver/images/backgrounds/AnimeWallpapers/Landscape"
-# path = "/home/jagteshver/images/backgrounds/NSFW-Wallpapers/Landscape"
+path = "/home/jagteshver/images/wallpapers"

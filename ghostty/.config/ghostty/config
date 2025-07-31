@@ -5,3 +5,4 @@ theme = Aura
 font-family = MonaspiceNe NFM
 
 class = term.ghostty.invoke
+keybind = shift+enter=text:\n

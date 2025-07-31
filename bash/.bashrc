@@ -3,7 +3,7 @@
 ## check for shell interactivity
 [[ $- != *i* ]] && return
 
-export HISTFILESIZE=100000 # 100k
+export HISTFILESIZE=1000000 # 1M
 
 # go bin
 if [ -d "$HOME/go/bin" ]; then

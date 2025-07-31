@@ -190,8 +190,8 @@ binds {
     Mod+I { spawn "bash" "-c" "notify-send \"Now Playing\" \"$(playerctl metadata artist) - $(playerctl metadata title)\""; }
 
     // Brightness Controls
-    XF86MonBrightnessUp { spawn "brightnessctl" "set" "12.75+"; }
-    XF86MonBrightnessDown { spawn "brightnessctl" "set" "12.75-"; }
+    XF86MonBrightnessUp { spawn "brightnessctl" "set" "2%+"; }
+    XF86MonBrightnessDown { spawn "brightnessctl" "set" "2%-"; }
 
     // Some spl keys
     XF86Mail { spawn "app2unit" "--" "firefox" "gmail.com"; }
