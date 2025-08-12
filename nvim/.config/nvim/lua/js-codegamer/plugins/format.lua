@@ -24,14 +24,7 @@ return {
   opts = {
     formatters_by_ft = require('js-codegamer.tooling').GetFormatters(),
     default_format_opts = { lsp_format = 'fallback' },
-
-    format_on_save = function()
-      if vim.b.autoformat == false or vim.g.autoformat == false then
-        return nil
-      end
-      return { timeout_ms = 5000 }
-    end,
-
+    format_on_save = false,
     notify_on_error = false,
     notify_no_formatters = true,
   },

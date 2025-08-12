@@ -61,7 +61,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
     map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction', 'textDocument/codeAction')
 
     -- Hover / signature help
-    map('K', vim.lsp.buf.hover, 'Hover Documentation', 'textDocument/hover')
     map('<C-k>', vim.lsp.buf.signature_help, 'Signature Help', 'textDocument/signatureHelp')
 
     -- Code lens
@@ -78,24 +77,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
     map('<leader>th', function()
       vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
     end, '[T]oggle Inlay [H]ints', 'textDocument/inlayHint')
-
-    -- Auto Execute code actions on save
-    local tooling = require 'js-codegamer.tooling'
-    local actions = tooling.GetLspActionToExec(client.name)
-    if actions and #actions > 0 then
-      vim.api.nvim_create_autocmd('BufWritePre', {
-        buffer = event.buf,
-        group = vim.api.nvim_create_augroup('lsp-auto-actions', { clear = true }),
-        callback = function()
-          for _, action in ipairs(actions) do
-            vim.lsp.buf.code_action {
-              context = { only = { action } },
-              apply = true,
-            }
-          end
-        end,
-      })
-    end
 
     -- Highlights
     if client:supports_method 'textDocument/documentHighlight' then
@@ -160,6 +141,32 @@ vim.api.nvim_create_autocmd('FileType', {
       vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
       vim.wo.foldmethod = 'expr'
       vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+    end
+  end,
+})
+
+-- Auto Execute code actions on save
+local tooling = require 'js-codegamer.tooling'
+vim.api.nvim_create_autocmd('BufWritePre', {
+  group = vim.api.nvim_create_augroup('PreWriteTooling', { clear = true }),
+  callback = function(event)
+    for _, client in ipairs(vim.lsp.get_clients { bufnr = event.buf }) do
+      local actions = tooling.GetLspActionToExec(client.name)
+      if actions and #actions > 0 then
+        for _, action in ipairs(actions) do
+          vim.lsp.buf.code_action {
+            ---@diagnostic disable-next-line: missing-fields
+            context = { only = { action } },
+            apply = true,
+          }
+          vim.wait(100)
+        end
+      end
+    end
+
+    -- Now format using conform.nvim
+    if not (vim.b.autoformat == false or vim.g.autoformat == false) then
+      require('conform').format { timeout_ms = 5000 }
     end
   end,
 })

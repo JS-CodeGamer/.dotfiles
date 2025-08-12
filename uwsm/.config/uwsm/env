@@ -1,6 +1,6 @@
 export SELECTOR="fuzzel -d"
 export APP2UNIT_SLICES='a=app-graphical.slice b=background-graphical.slice s=session-graphical.slice'
-export DISPLAY=':0'
+export DISPLAY=:0
 export GDK_BACKEND=wayland,x11,*
 export QT_QPA_PLATFORM=wayland;xcb
 export SDL_VIDEODRIVER=wayland

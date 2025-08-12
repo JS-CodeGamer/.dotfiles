@@ -89,7 +89,9 @@ cursor {
 
 spawn-at-startup "wl-paste" "--watch" "cliphist" "store"
 
-spawn-at-startup "xwayland-satelite"
+environment {
+    DISPLAY ":0"
+}
 
 prefer-no-csd
 
