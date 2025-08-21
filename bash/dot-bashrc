@@ -19,10 +19,6 @@ check() {
   fi
 }
 
-export SELECTOR="fuzzel -d"
-export PAGER=less
-export MANPAGER=less
-
 ## bat -- cat replacement
 check bat && {
   # export MANPAGER="sh -c 'col -bx | bat -plman'"
@@ -133,7 +129,7 @@ alias g='git'
 __git_complete g git
 
 # config
-alias stowc="stow -t $HOME -d $HOME/.dotfiles"
+alias stowc="stow -t $HOME -d $HOME/.dotfiles --dotfiles"
 
 # iptables
 alias ipt='sudo iptables -nvL --line-numbers'
@@ -366,3 +362,20 @@ set_prompt() {
 }
 
 PROMPT_COMMAND=set_prompt
+
+if [ ! -r /run/docker.sock ]; then
+  export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock
+fi
+
+if [ ! -f "/run/user/$(id -u)/gpg-ok.sock" ]; then
+  gpg-connect-agent reloadagent updatestartuptty /bye >/dev/null
+  touch "/run/user/$(id -u)/gpg-ok.sock"
+fi
+
+if [ -d "$HOME/.local/share/custom" ]; then
+  for file in "$HOME/.local/share/custom/"*.sh; do
+    if [ -f "$file" ]; then
+      source "$file"
+    fi
+  done
+fi

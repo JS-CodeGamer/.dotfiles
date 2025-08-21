@@ -1,6 +1,3 @@
-[submodule "app2unit"]
-	path = scripts/.local/share/app2unit
+[submodule "scripts/dot-local/share/app2unit"]
+	path = scripts/dot-local/share/app2unit
 	url = https://github.com/Vladimir-csp/app2unit
-[submodule "hostings"]
-	path = local-hostings/local-hostings
-	url = git@github.com:JS-CodeGamer/local-hostings.git

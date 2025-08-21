@@ -1,7 +1,8 @@
 Host github.com
-	IdentityFile ~/.ssh/github
+	IdentityFile ~/.ssh/github.pub
 	IdentitiesOnly yes
-	AddKeysToAgent yes
+  AddKeysToAgent yes
+  User git
 
 Host ssh.js-codegamer.net
   ProxyCommand /usr/bin/cloudflared access ssh --hostname %h

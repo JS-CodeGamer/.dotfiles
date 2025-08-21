@@ -170,3 +170,9 @@ vim.api.nvim_create_autocmd('BufWritePre', {
     end
   end,
 })
+
+vim.api.nvim_create_autocmd('BufRead', {
+  callback = function()
+    vim.cmd 'normal zR'
+  end,
+})

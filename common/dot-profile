@@ -11,7 +11,12 @@ export PATH=$SCRIPT_PREF:$PATH
 
 export MANROFFOPT="-c"
 
-export EDITOR="nvim" VISUAL="nvim"
+export EDITOR="nvim"
+export VISUAL="nvim"
+
+export SELECTOR="fuzzel -d"
+export PAGER=less
+export MANPAGER=less
 
 if [ ! -z "$BASH" ]; then
   [[ -f ~/.bashrc ]] && . ~/.bashrc
