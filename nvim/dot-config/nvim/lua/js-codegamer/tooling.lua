@@ -7,6 +7,7 @@ local function read_json(path)
   local file = io.open(path, 'r')
   if not file then
     vim.print('Failed to read: ' .. path)
+    return
   end
   local content = ''
   for line in file:lines() do
@@ -122,7 +123,7 @@ function M.GetMasonToolsForFT(filetype)
   local function register_to_tools(itools)
     itools = itools or {}
     for _, tool in ipairs(itools) do
-      if not mason_exclude[tool] then
+      if not vim.tbl_contains(mason_exclude, tool) then
         table.insert(tools, tool_to_mason[tool] or tool)
       end
     end

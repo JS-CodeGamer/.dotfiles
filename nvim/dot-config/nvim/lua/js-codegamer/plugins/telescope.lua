@@ -15,29 +15,17 @@ return {
 
       telescope.setup {
         pickers = {
-          find_files = themes.get_dropdown {
-            previewer = false,
-          },
-          git_files = themes.get_dropdown {
-            previewer = false,
-            show_untracked = true,
-          },
+          find_files = themes.get_dropdown { previewer = false },
+          git_files = themes.get_dropdown { previewer = false, show_untracked = true },
           live_grep = themes.get_ivy {},
           grep_string = themes.get_ivy {},
-          buffers = themes.get_dropdown {
-            previewer = false,
-            sort_lastused = true,
-          },
+          buffers = themes.get_dropdown { previewer = false, sort_lastused = true },
           help_tags = themes.get_cursor {},
           oldfiles = themes.get_dropdown {},
           marks = themes.get_cursor {},
           keymaps = themes.get_ivy {},
-          man_pages = themes.get_dropdown {
-            previewer = true,
-          },
-          colorscheme = themes.get_dropdown {
-            enable_preview = true,
-          },
+          man_pages = themes.get_dropdown { previewer = true },
+          colorscheme = themes.get_dropdown { enable_preview = true },
           diagnostics = themes.get_ivy {},
           lsp_references = themes.get_ivy {},
           lsp_definitions = themes.get_ivy {},

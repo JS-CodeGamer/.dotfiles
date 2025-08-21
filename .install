@@ -12,6 +12,8 @@ while getopts ":s:" opt; do
   esac
 done
 
+GIT_URL=git@github.com:js-codegamer/.dotfiles
+
 git clone "$GIT_URL" --depth 1 --single-branch ~/.config/dotfiles
 
 STOW_C="stow -t $HOME -d $HOME/.config/dotfiles"

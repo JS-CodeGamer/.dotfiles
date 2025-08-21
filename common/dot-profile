@@ -18,14 +18,16 @@ export SELECTOR="fuzzel -d"
 export PAGER=less
 export MANPAGER=less
 
+if [ -r "$HOME/.cargo/env" ]; then
+  . "$HOME/.cargo/env"
+elif [ -d "$HOME/.cargo" ]; then
+  export PATH="$HOME/.cargo/bin:$PATH"
+fi
+
 if [ ! -z "$BASH" ]; then
   [[ -f ~/.bashrc ]] && . ~/.bashrc
 fi
 
-. "$HOME/.cargo/env"
-
 unset SSH_AGENT_PID
-if [ "${gnupg_SSH_AUTH_SOCK_by:-0}" -ne $$ ]; then
-  export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
-  gpg-connect-agent /bye
-fi
+export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
+gpg-connect-agent /bye

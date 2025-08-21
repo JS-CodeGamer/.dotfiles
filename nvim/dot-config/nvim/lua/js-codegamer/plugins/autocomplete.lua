@@ -40,7 +40,7 @@ return {
 
       cmp.setup {
         enabled = function()
-          return not require('cmp.config.context').in_treesitter_capture 'comment'
+          return not (require('cmp.config.context').in_treesitter_capture 'comment' or (vim.bo.buftype ~= nil and vim.bo.buftype ~= ''))
         end,
         snippet = { expand = snip_expander },
         window = {

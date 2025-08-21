@@ -1,229 +1,110 @@
 {
   "tools": {
+    "php": {
+      "formatter": ["php_cs_fixer"]
+    },
     "bash": {
-      "lsp-server": [
-        "bashls"
-      ],
-      "formatter": [
-        "shfmt"
-      ],
-      "linter": [
-        "shellcheck"
-      ]
+      "lsp-server": ["bashls"],
+      "formatter": ["shfmt"],
+      "linter": ["shellcheck"]
     },
     "sh": {
-      "lsp-server": [
-        "bashls"
-      ],
-      "formatter": [
-        "shfmt"
-      ],
-      "linter": [
-        "shellcheck"
-      ]
+      "lsp-server": ["bashls"],
+      "formatter": ["shfmt"],
+      "linter": ["shellcheck"]
     },
     "c": {
-      "lsp-server": [
-        "clangd"
-      ],
-      "formatter": [
-        "clang-format"
-      ]
+      "lsp-server": ["clangd"],
+      "formatter": ["clang-format"]
     },
     "cpp": {
-      "lsp-server": [
-        "clangd"
-      ],
-      "formatter": [
-        "clang-format"
-      ]
+      "lsp-server": ["clangd"],
+      "formatter": ["clang-format"]
     },
     "dockerfile": {
-      "lsp-server": [
-        "dockerls"
-      ],
-      "linter": [
-        "hadolint"
-      ]
+      "lsp-server": ["dockerls"],
+      "linter": ["hadolint"]
     },
     "go": {
-      "lsp-server": [
-        "gopls"
-      ],
-      "formatter": [
-        "goimports",
-        "gofumpt"
-      ]
+      "lsp-server": ["gopls"],
+      "formatter": ["goimports", "gofumpt"]
     },
     "gomod": {
-      "lsp-server": [
-        "gopls"
-      ],
-      "formatter": [
-        "goimports",
-        "gofumpt"
-      ]
+      "lsp-server": ["gopls"],
+      "formatter": ["goimports", "gofumpt"]
     },
     "gowork": {
-      "lsp-server": [
-        "gopls"
-      ],
-      "formatter": [
-        "goimports",
-        "gofumpt"
-      ]
+      "lsp-server": ["gopls"],
+      "formatter": ["goimports", "gofumpt"]
     },
     "gotmpl": {
-      "lsp-server": [
-        "gopls"
-      ]
+      "lsp-server": ["gopls"]
     },
     "html": {
-      "lsp-server": [
-        "html"
-      ],
-      "formatter": [
-        "prettier"
-      ]
+      "lsp-server": ["html"],
+      "formatter": ["prettier"]
     },
     "typescript": {
-      "lsp-server": [
-        "angular_ls"
-      ],
-      "formatter": [
-        "prettier"
-      ],
-      "linter": [
-        "eslint_d"
-      ]
+      "lsp-server": ["angular_ls", "ts_ls"],
+      "formatter": ["prettier", "eslint_d"],
+      "linter": ["eslint_d"]
     },
     "typescriptreact": {
-      "lsp-server": [
-        "angular_ls"
-      ],
-      "formatter": [
-        "prettier"
-      ],
-      "linter": [
-        "eslint_d"
-      ]
+      "lsp-server": ["angular_ls", "ts_ls"],
+      "formatter": ["prettier", "eslint_d"],
+      "linter": ["eslint_d"]
     },
     "tsx": {
-      "lsp-server": [
-        "angular_ls"
-      ],
-      "formatter": [
-        "prettier"
-      ],
-      "linter": [
-        "eslint_d"
-      ]
+      "lsp-server": ["angular_ls", "ts_ls"],
+      "formatter": ["prettier", "eslint_d"],
+      "linter": ["eslint_d"]
     },
     "htmlangular": {
-      "lsp-server": [
-        "angular_ls"
-      ],
-      "formatter": [
-        "prettier"
-      ]
+      "lsp-server": ["angular_ls", "ts_ls"],
+      "formatter": ["prettier"]
     },
     "css": {
-      "lsp-server": [
-        "cssls"
-      ],
-      "formatter": [
-        "prettier"
-      ]
+      "lsp-server": ["cssls"],
+      "formatter": ["prettier"]
     },
     "latex": {
-      "lsp-server": [
-        "texlab"
-      ],
-      "formatter": [
-        "latexindent"
-      ]
+      "lsp-server": ["texlab"],
+      "formatter": ["latexindent"]
     },
     "lua": {
-      "lsp-server": [
-        "lua_ls"
-      ],
-      "formatter": [
-        "stylua"
-      ]
+      "lsp-server": ["lua_ls"],
+      "formatter": ["stylua"]
     },
     "python": {
-      "lsp-server": [
-        "pyright",
-        "ruff"
-      ]
+      "lsp-server": ["pyright", "ruff"]
     },
     "rust": {
-      "lsp-server": [
-        "rust_analyzer"
-      ]
+      "lsp-server": ["rust_analyzer"]
     },
     "tex": {
-      "lsp-server": [
-        "texlab"
-      ],
-      "formatter": [
-        "latexindent"
-      ]
+      "lsp-server": ["texlab"],
+      "formatter": ["latexindent"]
     },
     "yaml": {
-      "lsp-server": [
-        "yamlls"
-      ],
-      "formatter": [
-        "prettier"
-      ]
+      "lsp-server": ["yamlls"],
+      "formatter": ["prettier"]
     },
     "yml": {
-      "lsp-server": [
-        "yamlls"
-      ],
-      "formatter": [
-        "prettier"
-      ]
-    },
-    "json": {
-      "lsp-server": [
-        "jsonls",
-        "biome"
-      ]
-    },
-    "jsonc": {
-      "lsp-server": [
-        "jsonls",
-        "biome"
-      ]
+      "lsp-server": ["yamlls"],
+      "formatter": ["prettier"]
     },
     "markdown": {
-      "lsp-server": [
-        "marksman"
-      ],
-      "formatter": [
-        "prettier"
-      ],
-      "linter": [
-        "markdownlint"
-      ]
+      "lsp-server": ["marksman"],
+      "formatter": ["prettier"],
+      "linter": ["markdownlint"]
     },
     "md": {
-      "lsp-server": [
-        "marksman"
-      ],
-      "formatter": [
-        "prettier"
-      ],
-      "linter": [
-        "markdownlint"
-      ]
+      "lsp-server": ["marksman"],
+      "formatter": ["prettier"],
+      "linter": ["markdownlint"]
     },
     "*": {
-      "lsp-server": [
-        "ast_grep"
-      ]
+      "lsp-server": ["ast_grep"]
     }
   },
   "tool-to-mason": {
@@ -237,7 +118,8 @@
     "yamlls": "yaml-language-server",
     "dockerls": "dockerfile-language-server",
     "angular_ls": "angular-language-server",
-    "lua_ls": "lua-language-server"
+    "lua_ls": "lua-language-server",
+    "php_cs_fixer": "phpcs"
   },
   "mason-exclude": [
     "rust-analyzer",
@@ -246,10 +128,7 @@
     "clang-format"
   ],
   "lsp-action-autoexec": {
-    "ruff": [
-      "source.fixAll.ruff",
-      "source.organizeImports.ruff"
-    ],
+    "ruff": ["source.fixAll.ruff", "source.organizeImports.ruff"],
     "ts_ls": [
       "source.fixAll.ts",
       "source.removeUnused.ts",
@@ -258,10 +137,7 @@
       "source.sortImports.ts",
       "source.organizeImports.ts"
     ],
-    "angular_ls": [
-      "source.fixAll.angular",
-      "source.organizeImports.angular"
-    ]
+    "angular_ls": ["source.fixAll.angular", "source.organizeImports.angular"]
   },
   "lsp-settings": {
     "pyright": {
@@ -271,9 +147,7 @@
         },
         "python": {
           "analysis": {
-            "ignore": [
-              "*"
-            ]
+            "ignore": ["*"]
           }
         }
       }
@@ -301,9 +175,7 @@
               "Q",
               "RUF"
             ],
-            "ignore": [
-              "E501"
-            ],
+            "ignore": ["*"],
             "format": {
               "preview": true
             }
