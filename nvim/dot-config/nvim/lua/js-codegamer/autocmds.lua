@@ -110,41 +110,6 @@ vim.api.nvim_create_autocmd('FileType', {
   end,
 })
 
-vim.api.nvim_create_autocmd('FileType', {
-  pattern = require('js-codegamer.tooling').getTSFileTypes(),
-  group = vim.api.nvim_create_augroup('SetupTreeSitter', { clear = true }),
-  callback = function(args)
-    local ft = args.match
-
-    local ok, ts = pcall(require, 'nvim-treesitter')
-    if not ok then
-      return
-    end
-
-    if not InstalledTSParsers then
-      InstalledTSParsers = {}
-      for _, parser in ipairs(ts.get_installed()) do
-        InstalledTSParsers[parser] = 'n'
-      end
-    end
-
-    if not InstalledTSParsers[ft] then
-      ts.install(ft):wait(12000)
-      InstalledTSParsers[ft] = 'y'
-    elseif InstalledTSParsers[ft] == 'n' then
-      ts.update(ft):wait(12000)
-      InstalledTSParsers[ft] = 'y'
-    end
-
-    if vim.tbl_contains(ts.get_installed(), ft) then
-      vim.treesitter.start()
-      vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
-      vim.wo.foldmethod = 'expr'
-      vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
-    end
-  end,
-})
-
 -- Auto Execute code actions on save
 local tooling = require 'js-codegamer.tooling'
 vim.api.nvim_create_autocmd('BufWritePre', {

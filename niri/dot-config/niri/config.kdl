@@ -151,7 +151,8 @@ binds {
     // Application bindings
     Mod+T hotkey-overlay-title="Open a Terminal: ghostty" { spawn "app2unit" "--" "ghostty" "--class=term.ghostty"; }
     Mod+D hotkey-overlay-title="Run an Application: launcher" { spawn "launcher" "-p" "app2unit --"; }
-    Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "app2unit" "--" "lock"; }
+    Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "~/.local/bin/lock-handler"; }
+    // "loginctl" "lock-session"; }
     Mod+W hotkey-overlay-title="Open Browser: firefox" { spawn "app2unit" "--" "firefox"; }
     Mod+E hotkey-overlay-title="Open File Manager: yazi" { spawn "app2unit" "-T" "--" "yazi"; }
     Mod+X hotkey-overlay-title="Open Text Editor: neovim" { spawn "app2unit" "-T" "--" "nvim"; }

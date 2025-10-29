@@ -46,6 +46,9 @@ local options = {
   inccommand = 'split',
   list = true,
   listchars = { tab = '» ', trail = '·', nbsp = '␣' },
+  foldexpr = 'v:lua.vim.treesitter.foldexpr()',
+  foldmethod = 'expr',
+  indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
 }
 
 vim.opt.shortmess:append 'c'

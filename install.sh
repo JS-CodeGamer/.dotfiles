@@ -14,7 +14,8 @@ done
 
 git clone "$GIT_URL" --depth 1 --single-branch ~/.config/dotfiles
 
-STOW_C="stow -t $HOME -d $HOME/.config/dotfiles"
-STOWPKG=${STOWPKG:-~/.config/dotfiles/.stowpkgs}
+STOW_C="stow -t $HOME -d $HOME/.config/dotfiles --dotfiles"
 
-xargs $STOW_C <"$STOWPKG"
+cat "${STOWPKG:-~/.config/dotfiles/.stowpkgs}" | grep -v '^:' | xargs $STOW_C
+
+cat "${STOWPKG:-~/.config/dotfiles/.stowpkgs}" | grep '^:' | xargs $STOW_C --no-folding

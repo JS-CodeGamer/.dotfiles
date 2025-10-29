@@ -129,7 +129,7 @@ alias g='git'
 __git_complete g git
 
 # config
-alias stowc="stow -t $HOME -d $HOME/.dotfiles --dotfiles"
+alias stowc="stow -t $HOME -d $HOME/.config/dotfiles --dotfiles"
 
 # iptables
 alias ipt='sudo iptables -nvL --line-numbers'
