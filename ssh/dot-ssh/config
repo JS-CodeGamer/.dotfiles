@@ -1,7 +1,6 @@
 Host github.com
-	IdentityFile ~/.ssh/github.pub
+	IdentityFile ~/.ssh/github
 	IdentitiesOnly yes
-  AddKeysToAgent yes
   User git
 
 Host ssh.js-codegamer.net
