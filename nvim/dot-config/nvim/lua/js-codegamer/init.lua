@@ -1,13 +1,13 @@
 -- vim: ts=2 sts=2 sw=2 et
 
+-- [[ Load options first thing ]]
+require 'js-codegamer.options'
+
 function TBuiltin(name, args)
   return function()
     require('telescope.builtin')[name](args or {})
   end
 end
-
--- [[ Load options ]]
-require 'js-codegamer.options'
 
 -- [[ Install `lazy.nvim` plugin manager if not exists ]]
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -28,11 +28,6 @@ vim.opt.rtp:prepend(lazypath)
 -- [[ Configure and install plugins ]]
 require('lazy').setup {
   spec = {
-    {
-      'vhyrro/luarocks.nvim',
-      priority = 1000,
-      opts = { rocks = { 'lua-cjson' } },
-    },
     { import = 'js-codegamer.plugins' },
   },
   defaults = {

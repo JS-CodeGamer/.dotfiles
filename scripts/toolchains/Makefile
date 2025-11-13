@@ -1,6 +1,7 @@
 # Makefile for cross-compilation toolchain
 # Usage:
 #   make TARGET=riscv64-unknown-elf
+#   make TARGET=arm-linux-gnueabihf WITHOUT_LIBS=1
 #   make TARGET=arm-none-eabi WITH_NEWLIB=1 JOBS=8
 #   make TARGET=riscv64-unknown-elf clean
 #   make TARGET=arm-none-eabi binutils gcc
@@ -67,7 +68,9 @@ endef
 # Main targets
 .PHONY: all clean distclean info help binutils gcc newlib libs
 
-ifeq ($(WITH_NEWLIB),1)
+ifeq ($(WITHOUT_LIBS),1)
+all: binutils gcc
+else ifeq ($(WITH_NEWLIB),1)
 all: binutils gcc newlib libs
 else
 all: binutils gcc libs
@@ -127,12 +130,12 @@ $(BINUTILS_CONFIGURED): | $(STAMPS)
 		--prefix=$(PREFIX) \
 		--with-sysroot \
 		--disable-nls \
-		--disable-werror \
-		--disable-gdb \
-		--disable-sim \
-		--disable-libdecnumber \
-		--disable-readline
+		--disable-werror
 	@touch $@
+		# --disable-sim \
+		# --disable-libdecnumber \
+		# --disable-readline \
+		# --disable-gdb \
 
 $(BINUTILS_BUILT): $(BINUTILS_CONFIGURED)
 	$(call log_info,Building binutils)
@@ -246,6 +249,10 @@ $(LIBSTDCXX_INSTALLED): $(LIBSTDCXX_BUILT)
 
 $(STAMPS):
 	@mkdir -p $(STAMPS)
+
+cleanstamps:
+	$(call log_warn,Cleaning stamps directory for $(TARGET))
+	rm -rf $(STAMPS)
 
 clean:
 	$(call log_warn,Cleaning build directory for $(TARGET))

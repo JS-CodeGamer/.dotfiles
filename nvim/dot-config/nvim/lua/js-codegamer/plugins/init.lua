@@ -2,6 +2,8 @@ return {
   'nvim-lua/plenary.nvim',
   'folke/which-key.nvim',
 
+  { 'folke/persistence.nvim', event = 'BufReadPre' }, -- automated session management
+
   { 'tpope/vim-sleuth', event = 'VimEnter' }, -- Detect tabstop and shiftwidth automatically
 
   { 'numToStr/Comment.nvim', event = 'VimEnter' }, -- Comment support

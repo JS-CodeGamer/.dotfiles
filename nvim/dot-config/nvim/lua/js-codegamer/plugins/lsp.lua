@@ -2,14 +2,13 @@ return {
   'neovim/nvim-lspconfig',
   event = { 'BufReadPre', 'BufNewFile' },
   dependencies = {
-    'folke/neoconf.nvim',
+    -- 'folke/neoconf.nvim', -- Doesn't work with new nvim lsp api
     { 'j-hui/fidget.nvim', opts = {} },
-    { 'folke/lazydev.nvim', opts = {} },
     'hrsh7th/cmp-nvim-lsp',
     'b0o/schemastore.nvim',
   },
   config = function()
-    require('neoconf').setup()
+    -- require('neoconf').setup()
 
     local capabilities = vim.lsp.protocol.make_client_capabilities()
     capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
@@ -21,6 +20,7 @@ return {
     local servers = {}
     local tooling = require 'js-codegamer.tooling'
     local server_info = tooling.GetLSPServers()
+    vim.print()
     for _, servers_ft in pairs(server_info) do
       for _, server in ipairs(servers_ft) do
         table.insert(servers, server)

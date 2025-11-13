@@ -9,6 +9,7 @@ return {
       'hrsh7th/cmp-buffer',
       'hrsh7th/cmp-cmdline',
       'onsails/lspkind.nvim',
+      { 'folke/lazydev.nvim', opts = {} },
     },
     config = function()
       local cmp = require 'cmp'
@@ -67,10 +68,11 @@ return {
           end, { 'i', 's' }),
         },
         sources = {
+          { name = "lazydev",  group_index = 0 },
           { name = 'nvim_lsp', priority = 1000 },
-          { name = 'luasnip', priority = 750 },
-          { name = 'path', priority = 500 },
-          { name = 'buffer', priority = 250, keyword_length = 3, max_item_count = 10 },
+          { name = 'luasnip',  priority = 750 },
+          { name = 'path',     priority = 500 },
+          { name = 'buffer',   priority = 250, keyword_length = 3, max_item_count = 10 },
         },
         experimental = { ghost_text = true },
       }

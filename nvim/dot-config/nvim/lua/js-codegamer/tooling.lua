@@ -3,29 +3,28 @@ local cjson_imported, cjson = pcall(require, 'cjson')
 
 local config_path = vim.fn.stdpath 'config' .. '/tools.jsonc'
 
-local function read_json(path)
-  local file = io.open(path, 'r')
+local data = {}
+if cjson_imported then
+  local file = io.open(config_path, 'r')
   if not file then
     vim.print('Failed to read: ' .. path)
   end
   local content = ''
   for line in file:lines() do
-    if line:find '//' then
-      line = ''
+    local comment_loc = line:find '//'
+    if comment_loc then
+      line = line:sub(0, comment_loc - 1)
     end
-    content = content .. line .. '\n'
+    -- remove comments
+    content = content .. line
   end
   file:close()
-  local ok, parsed = pcall(cjson.decode, content)
+  local ok, _data = pcall(cjson.decode, content)
   if not ok then
     vim.print('Failed to decode JSON: ' .. parsed)
+  else
+    data = _data
   end
-  return parsed
-end
-
-local data = {}
-if cjson_imported then
-  data = read_json(config_path)
 end
 
 local filetypes = {}
