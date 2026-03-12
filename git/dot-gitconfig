@@ -1,45 +1,73 @@
 [alias]
-  a = add
-  aa = add .
-  au = add --update
-  b = branch
-  c = commit
-  ca = commit --all
-  cam = commit --amend --no-edit
-  came = commit --amend
-  caam = commit --amend --all
-  co = checkout
-  d = diff
-  dt = difftool
-  fa = fetch --all
-  l = log --oneline --graph --all --decorate
-  pu = push
-  pf = push --force-with-lease
-  p = pull
-  rst = reset
-  rsr = restore
-  rb = rebase -i
-  s = status
-  st = stash
-  sp = stash pop
-  sh = show
-  shn = show --name-status
+  a       = add
+  aa      = add .
+  au      = add --update
+
+  b       = branch
+  bd      = branch --delete
+  bi      = bisect start
+  bb      = bisect bad
+  bg      = bisect good
+
+  c       = commit
+  ca      = commit --all
+  cam     = commit --amend --no-edit
+  came    = commit --amend
+  caam    = commit --amend --all
+
+  co      = checkout
+
+  d       = diff
+  dn      = diff --name-only
+  dt      = difftool
+
+  f       = fetch
+  l       = log --oneline --graph --decorate
+  la      = log --oneline --graph --all --decorate
+  ln      = l --name-only
+
+  pu      = push
+  pf      = push --force-with-lease
+  p       = pull
+
+  rs      = reset
+  rso     = restore
+
+  rb      = rebase -i
+  rba     = rebase --abort
+  rbc     = rebase --continue
+
+  s       = status
+  st      = stash
+  sp      = stash pop
+
+  sh      = show
+  shn     = show --name-status
+
 [user]
-  email = 85994817+JS-CodeGamer@users.noreply.github.com
-  name = Jagteshver Singh
+  email   = 85994817+JS-CodeGamer@users.noreply.github.com
+  name    = Jagteshver Singh
+
 [init]
   defaultBranch = main
+
 [core]
-  editor = nvim
+  editor  = nvim
   autocrlf = input
+  fsmonitor   = true
+  untrackedCache = true
+
 [pager]
-  branch = false
-  diff = delta
-  log = delta
-  reflog = delta
-  show = delta
+  branch  = false
+  diff    = delta
+  log     = delta
+  reflog  = delta
+  show    = delta
+  status = false
+
 [interactive]
   diffFilter = delta --color-only
+
 [delta]
   file-decoration-style = auto ul
   file-style = auto
@@ -64,38 +92,68 @@
   syntax-theme = base16-ocean.dark
   true-color = auto
   zero-style = auto
+
 [diff]
-  tool = nvimdiff
+  tool    = nvimdiff
+  algorithm   = histogram
+  colorMoved  = default
+  colorMovedWS = ignore-all-space
+
 [difftool]
-  prompt = true
+  prompt  = true
+
 [difftool "nvimdiff"]
-  cmd = "nvim -d \"$LOCAL\" \"$REMOTE\""
+  cmd     = "nvim -d \"$LOCAL\" \"$REMOTE\""
+
 [merge]
-  tool = nvimdiff
+  tool    = nvimdiff
   conflictstyle = zdiff3
+
 [mergetool]
-  prompt = false
+  prompt  = false
   keepBackup = false
+
 [push]
   autoSetupRemote = true
+  followTags = true
+
 [rerere]
   enabled = true
+
 [column]
-  ui = auto
+  ui      = auto
+
 [branch]
-  sort = -committerdate
+  sort    = -committerdate
+
 [color]
-  ui = auto
+  ui      = auto
+
 [credential]
-  helper = store
+  helper = /usr/lib/git-core/git-credential-libsecret
+
 [fetch]
-  prune = true
+  prune   = true
+  writeCommitGraph = true
+
+
 [pull]
-  rebase = true
+  rebase  = true
+
 [rebase]
   autoStash = true
+  updateRefs  = true
+  missingCommitsCheck = error
+
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
+
+[transfer]
+  fsckObjects = true
+
+[receive]
+  fsckObjects = true
+

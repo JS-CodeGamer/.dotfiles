@@ -1,11 +1,33 @@
 [Unit]
-Description=A headless WeeChat client and relay service 
-After=network.target
+Description=Headless WeeChat client and relay service
+After=network-online.target
+Wants=network-online.target
 
 [Service]
-Type=forking
-ExecStart=/usr/bin/weechat-headless --daemon
+Type=simple
+ExecStart=/usr/bin/weechat-headless --stdout
+Restart=on-failure
+RestartSec=5s
+
+# Ensure correct home/config
+Environment=HOME=%h
+WorkingDirectory=%h
+
+# Kill cleanly
+ExecStop=/usr/bin/weechat-headless --quit
+
+# Resource control (optional but nice)
 Slice=app.slice
+MemoryMax=512M
+CPUQuota=50%
+
+# Security hardening (safe for WeeChat)
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=full
+ProtectHome=read-only
+ReadWritePaths=%h/.weechat
 
 [Install]
 WantedBy=default.target
+

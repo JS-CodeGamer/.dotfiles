@@ -41,6 +41,16 @@ export NVM_DIR=$XDG_CONFIG_HOME/nvm
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
 
+# pnpm
+export PNPM_HOME="/home/jagteshver/.local/share/pnpm"
+case ":$PATH:" in
+*":$PNPM_HOME:"*) ;;
+*) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+
+# Wine
+export WINEPREFIX="/media/storage/bottles/"
+
 ## fzf -- fuzy search
 if check fzf; then
   # [ -f "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.bash ] &&
@@ -379,3 +389,4 @@ if [ -d "$HOME/.local/share/custom" ]; then
     fi
   done
 fi
+

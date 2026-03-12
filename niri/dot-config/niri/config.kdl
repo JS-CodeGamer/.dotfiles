@@ -89,9 +89,9 @@ cursor {
 
 spawn-at-startup "wl-paste" "--watch" "cliphist" "store"
 
-environment {
-    DISPLAY ":0"
-}
+// environment {
+//     DISPLAY ":0"
+// }
 
 prefer-no-csd
 
@@ -153,9 +153,10 @@ binds {
     Mod+D hotkey-overlay-title="Run an Application: launcher" { spawn "launcher" "-p" "app2unit --"; }
     Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "~/.local/bin/lock-handler"; }
     // "loginctl" "lock-session"; }
-    Mod+W hotkey-overlay-title="Open Browser: firefox" { spawn "app2unit" "--" "firefox"; }
+    Mod+W hotkey-overlay-title="Open Browser: Zen" { spawn "app2unit" "--" "zen-browser"; }
     Mod+E hotkey-overlay-title="Open File Manager: yazi" { spawn "app2unit" "-T" "--" "yazi"; }
     Mod+X hotkey-overlay-title="Open Text Editor: neovim" { spawn "app2unit" "-T" "--" "nvim"; }
+    Mod+Shift+S hotkey-overlay-title="Open Text Editor: neovim" { spawn "app2unit" "--" "steam"; }
 
     // Script Bindings
     Mod+S hotkey-overlay-title="Open Notification Panel" { spawn "swaync-client" "-t" "-sw"; }
@@ -197,8 +198,8 @@ binds {
     XF86MonBrightnessDown { spawn "brightnessctl" "set" "2%-"; }
 
     // Some spl keys
-    XF86Mail { spawn "app2unit" "--" "firefox" "gmail.com"; }
-    XF86Search { spawn "app2unit" "--" "firefox"; }
+    XF86Mail { spawn "app2unit" "--" "zen-browser" "gmail.com"; }
+    XF86Search { spawn "app2unit" "--" "zen-browser"; }
 
     // Compositor bindings
     Mod+Shift+Slash { show-hotkey-overlay; }
@@ -346,7 +347,7 @@ window-rule {
   match app-id="steam"
   match app-id="matplotlib"
   match app-id=r#"float$"#
-  match app-id=r#"firefox$"# title="^Picture-in-Picture$"
+  match app-id=r#"zen-browser$"# title="^Picture-in-Picture$"
   open-floating true
 }
 
@@ -359,10 +360,10 @@ window-rule {
   match app-id="term.ghostty.invoke" title=r#"nmtui|blueman-manager|yazi"#
   match app-id="xdg" title=r#"(f|F)(ile|older)"#
   match title=r#"Save As"#
-  match app-id=r#"firefox$"# title="Library"
-  match app-id=r#"firefox$"# title="Extension.*Bitwarden.*"
+  match app-id=r#"zen-browser$"# title="Library"
   match app-id="blueman-manager"
   default-column-width { proportion 0.5; }
   default-window-height { proportion 0.5; }
   open-floating true
 }
+

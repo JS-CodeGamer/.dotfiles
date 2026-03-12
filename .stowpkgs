@@ -12,7 +12,7 @@ mpd
 mpv
 ncmpcpp
 niri
-:nvim
+nvim
 :scripts
 :ssh
 swaync

@@ -3,5 +3,6 @@ Host github.com
 	IdentitiesOnly yes
   User git
 
-Host ssh.js-codegamer.net
+Host ssh.js-codegamer.dev
   ProxyCommand /usr/bin/cloudflared access ssh --hostname %h
+

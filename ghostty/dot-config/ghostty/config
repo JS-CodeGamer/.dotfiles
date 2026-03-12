@@ -2,7 +2,8 @@
 # theme = Argonaut
 theme = Aura
 
-font-family = MonaspiceNe NFM
+font-family = MonaspiceRn NFM
 
 class = term.ghostty.invoke
 keybind = shift+enter=text:\n
+
