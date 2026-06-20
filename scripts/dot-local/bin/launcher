@@ -60,4 +60,6 @@ else
   COMMAND="$($COMMAND)"
 fi
 
-$LAUNCH_PREFIX $COMMAND
+if [ -n "$COMMAND" ]; then
+  $LAUNCH_PREFIX $COMMAND
+fi

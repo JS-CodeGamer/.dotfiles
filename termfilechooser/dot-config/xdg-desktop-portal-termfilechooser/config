@@ -1,2 +1,5 @@
 [filechooser]
-cmd=~/.local/bin/termfilechooser-yazi-wrapper.sh
+cmd=yazi-wrapper.sh
+env=TERMCMD='ghostty --class=term.ghostty.invoke -e'
+save_mode = last
+

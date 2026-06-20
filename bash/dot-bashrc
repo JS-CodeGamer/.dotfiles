@@ -388,5 +388,7 @@ if [ -d "$HOME/.local/share/custom" ]; then
       source "$file"
     fi
   done
+elif [ -f "$HOME/.local/share/custom"  ]; then
+  source "$HOME/.local/share/custom"
 fi
 

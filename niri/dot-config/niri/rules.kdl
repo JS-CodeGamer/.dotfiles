@@ -1,0 +1,24 @@
+window-rule {
+  match app-id="steam"
+  match app-id="matplotlib"
+  match app-id=r#"float$"#
+  match app-id=r#"zen-browser$"# title="^Picture-in-Picture$"
+  open-floating true
+}
+
+window-rule {
+  match app-id=r#"term.ghostty"#
+  opacity 0.89
+}
+
+window-rule {
+  match app-id="term.ghostty.invoke"
+  match app-id="xdg" title=r#"(f|F)(ile|older)"#
+  match title=r#"Save As"#
+  match app-id=r#"zen-browser$"# title="Library"
+  match app-id="blueman-manager"
+  default-column-width { proportion 0.5; }
+  default-window-height { proportion 0.5; }
+  open-floating true
+}
+
