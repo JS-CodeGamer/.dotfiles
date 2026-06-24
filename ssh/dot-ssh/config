@@ -6,3 +6,9 @@ Host github.com
 Host ssh.js-codegamer.dev
   ProxyCommand /usr/bin/cloudflared access ssh --hostname %h
 
+Host corr-dev
+  IdentityFile ~/.ssh/dev-env.pem
+  IdentitiesOnly true
+  User ec2-user
+  Hostname devssh.corridorplatforms.com
+

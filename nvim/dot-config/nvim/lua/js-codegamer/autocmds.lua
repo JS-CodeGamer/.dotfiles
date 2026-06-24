@@ -387,32 +387,6 @@ vim.api.nvim_create_autocmd('BufWritePre', {
   end,
 })
 
--- Ensure final newline on save
-vim.api.nvim_create_autocmd('BufWritePre', {
-  group = cleanup_group,
-  desc = 'Ensure final newline on save',
-  callback = function(event)
-    -- Skip for certain filetypes
-    local exclude_ft = { 'markdown', 'text' }
-    if vim.tbl_contains(exclude_ft, vim.bo[event.buf].filetype) then
-      return
-    end
-
-    -- Skip if disabled via buffer variable
-    if vim.b[event.buf].ensure_final_newline == false or vim.g.ensure_final_newline == false then
-      return
-    end
-
-    local line_count = vim.api.nvim_buf_line_count(event.buf)
-    if line_count > 0 then
-      local last_line = vim.api.nvim_buf_get_lines(event.buf, line_count - 1, line_count, false)[1]
-      if last_line ~= '' then
-        vim.api.nvim_buf_set_lines(event.buf, line_count, line_count, false, { '' })
-      end
-    end
-  end,
-})
-
 -- ============================================================================
 -- Quickfix and Location List Management
 -- ============================================================================

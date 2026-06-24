@@ -1,36 +1,75 @@
 return {
   'neovim/nvim-lspconfig',
   event = { 'BufReadPre', 'BufNewFile' },
+
   dependencies = {
-    -- 'folke/neoconf.nvim', -- Doesn't work with new nvim lsp api
     { 'j-hui/fidget.nvim', opts = {} },
     'hrsh7th/cmp-nvim-lsp',
     'b0o/schemastore.nvim',
   },
-  config = function()
-    -- require('neoconf').setup()
 
-    local capabilities = vim.lsp.protocol.make_client_capabilities()
-    capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
+  config = function()
+    local tooling = require 'js-codegamer.tooling'
+
+    -- =========================================================================
+    -- Capabilities
+    -- =========================================================================
+
+    local capabilities = vim.tbl_deep_extend(
+      'force',
+      vim.lsp.protocol.make_client_capabilities(),
+      require('cmp_nvim_lsp').default_capabilities()
+    )
+
+    -- =========================================================================
+    -- Global defaults for ALL servers
+    -- =========================================================================
+
     vim.lsp.config('*', {
-      capabilities,
+      capabilities = capabilities,
       root_markers = { '.git' },
     })
 
-    local servers = {}
-    local tooling = require 'js-codegamer.tooling'
+    -- =========================================================================
+    -- Register server configs BEFORE enabling
+    -- =========================================================================
+
+    local configs = tooling.GetLSPConfig()
+
+    for server, conf in pairs(configs) do
+      conf.capabilities = vim.tbl_deep_extend(
+        'force',
+        {},
+        capabilities,
+        conf.capabilities or {}
+      )
+
+      vim.lsp.config(server, conf)
+    end
+
+    -- =========================================================================
+    -- Collect enabled servers (deduplicated)
+    -- =========================================================================
+
+    local enabled = {}
+    local seen = {}
+
     local server_info = tooling.GetLSPServers()
-    vim.print()
+
     for _, servers_ft in pairs(server_info) do
       for _, server in ipairs(servers_ft) do
-        table.insert(servers, server)
+        if not seen[server] then
+          seen[server] = true
+          table.insert(enabled, server)
+        end
       end
     end
 
-    vim.lsp.enable(servers)
+    -- =========================================================================
+    -- Enable servers
+    -- =========================================================================
 
-    for serv, conf in pairs(tooling.GetLSPConfig()) do
-      vim.lsp.config(serv, conf)
-    end
+    vim.lsp.enable(enabled)
   end,
 }
+

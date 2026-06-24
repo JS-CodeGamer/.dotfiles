@@ -1,0 +1,439 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PROGRAM=${0##*/}
+
+: "${PASS_TOMB_CONFIG:=${XDG_CONFIG_HOME:-$HOME/.config}/pass-tomb/config}"
+[ -r "$PASS_TOMB_CONFIG" ] && . "$PASS_TOMB_CONFIG"
+
+: "${PASS_TOMB_NAME:=passwords}"
+: "${PASS_TOMB_FILE:=$HOME/Vaults/$PASS_TOMB_NAME.tomb}"
+: "${PASS_TOMB_KEY:=}"
+: "${PASS_TOMB_MOUNT:=$HOME/.local/share/pass-tomb/mount}"
+: "${PASS_TOMB_KEY_GNUPGHOME:=$HOME/.local/share/pass-tomb/tomb-key-gnupg}"
+: "${PASS_TOMB_GNUPGHOME:=$PASS_TOMB_MOUNT/gnupg}"
+: "${PASS_TOMB_STORE:=$PASS_TOMB_MOUNT/password-store}"
+: "${PASS_TOMB_BRANCH:=main}"
+
+usage() {
+  cat <<EOF
+Usage:
+  $PROGRAM bootstrap
+  $PROGRAM doctor
+  $PROGRAM deps
+  $PROGRAM create-tomb [size_mb]
+  $PROGRAM open
+  $PROGRAM env
+  eval "\$($PROGRAM env)"
+  $PROGRAM shell
+  $PROGRAM keygen "Name <email>"
+  $PROGRAM import-key /path/to/private-key.asc
+  $PROGRAM init-pass KEY_FINGERPRINT [git@github.com:USER/REPO.git]
+  $PROGRAM clone git@github.com:USER/REPO.git
+  $PROGRAM sync
+  $PROGRAM status
+  $PROGRAM close
+  $PROGRAM slam
+
+Environment overrides:
+  PASS_TOMB_CONFIG     default: ~/.config/pass-tomb/config
+  PASS_TOMB_FILE       default: ~/Vaults/passwords.tomb
+  PASS_TOMB_KEY        optional Tomb key file
+  PASS_TOMB_MOUNT      default: ~/.local/share/pass-tomb/mount
+  PASS_TOMB_KEY_GNUPGHOME
+                       default: ~/.local/share/pass-tomb/tomb-key-gnupg
+  PASS_TOMB_GNUPGHOME  default: \$PASS_TOMB_MOUNT/gnupg
+  PASS_TOMB_STORE      default: \$PASS_TOMB_MOUNT/password-store
+  PASS_TOMB_BRANCH     default: main
+EOF
+}
+
+die() {
+  printf '%s: %s\n' "$PROGRAM" "$*" >&2
+  exit 1
+}
+
+need() {
+  command -v "$1" >/dev/null 2>&1 || die "missing command: $1"
+}
+
+has() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+tomb_cmd() {
+  need tomb
+  mkdir -p "$PASS_TOMB_KEY_GNUPGHOME"
+  chmod 700 "$PASS_TOMB_KEY_GNUPGHOME"
+  GNUPGHOME=$PASS_TOMB_KEY_GNUPGHOME tomb "$@"
+}
+
+is_mounted() {
+  mountpoint -q "$PASS_TOMB_MOUNT"
+}
+
+require_open_tomb() {
+  if ! is_mounted; then
+    die "Tomb is not mounted at $PASS_TOMB_MOUNT. Run: $PROGRAM open"
+  fi
+}
+
+ensure_layout() {
+  require_open_tomb
+  mkdir -p "$PASS_TOMB_GNUPGHOME" "$PASS_TOMB_STORE"
+  chmod 700 "$PASS_TOMB_GNUPGHOME"
+}
+
+export_env() {
+  cat <<EOF
+export GNUPGHOME=$(printf '%q' "$PASS_TOMB_GNUPGHOME")
+export PASSWORD_STORE_DIR=$(printf '%q' "$PASS_TOMB_STORE")
+export PASSWORD_STORE_GPG_OPTS='--no-emit-version --no-comments'
+export PASS_TOMB_CONFIG=$(printf '%q' "$PASS_TOMB_CONFIG")
+export PASS_TOMB_NAME=$(printf '%q' "$PASS_TOMB_NAME")
+export PASS_TOMB_FILE=$(printf '%q' "$PASS_TOMB_FILE")
+export PASS_TOMB_KEY=$(printf '%q' "$PASS_TOMB_KEY")
+export PASS_TOMB_MOUNT=$(printf '%q' "$PASS_TOMB_MOUNT")
+export PASS_TOMB_KEY_GNUPGHOME=$(printf '%q' "$PASS_TOMB_KEY_GNUPGHOME")
+export PASS_TOMB_GNUPGHOME=$(printf '%q' "$PASS_TOMB_GNUPGHOME")
+export PASS_TOMB_STORE=$(printf '%q' "$PASS_TOMB_STORE")
+export PASS_TOMB_BRANCH=$(printf '%q' "$PASS_TOMB_BRANCH")
+if [ -t 0 ]; then
+  export GPG_TTY=\$(tty)
+  gpg-connect-agent --homedir "\$GNUPGHOME" updatestartuptty /bye >/dev/null 2>&1 || true
+fi
+EOF
+}
+
+with_env() {
+  export GNUPGHOME=$PASS_TOMB_GNUPGHOME
+  export PASSWORD_STORE_DIR=$PASS_TOMB_STORE
+  export PASSWORD_STORE_GPG_OPTS='--no-emit-version --no-comments'
+  if [ -t 0 ]; then
+    export GPG_TTY
+    GPG_TTY=$(tty)
+    gpg-connect-agent --homedir "$GNUPGHOME" updatestartuptty /bye >/dev/null 2>&1 || true
+  fi
+}
+
+cmd_deps() {
+  local missing=0
+
+  for cmd in git gpg gpg-connect-agent mountpoint; do
+    if has "$cmd"; then
+      printf 'ok   %s: %s\n' "$cmd" "$(command -v "$cmd")"
+    else
+      printf 'miss %s\n' "$cmd"
+      missing=1
+    fi
+  done
+
+  for cmd in pass tomb; do
+    if has "$cmd"; then
+      printf 'ok   %s: %s\n' "$cmd" "$(command -v "$cmd")"
+    else
+      printf 'miss %s\n' "$cmd"
+      missing=1
+    fi
+  done
+
+  if ! has pass || ! has tomb; then
+    cat <<'EOF'
+
+Install commands for this Arch machine:
+  sudo pacman -S --needed pass
+  yay -S --needed tomb
+
+Do those in a real terminal because sudo and Tomb need interactive password prompts.
+EOF
+  fi
+
+  return "$missing"
+}
+
+cmd_doctor() {
+  local ok=1
+  cmd_deps || ok=0
+
+  printf '\nconfig\n'
+  printf '  PASS_TOMB_CONFIG=%s\n' "$PASS_TOMB_CONFIG"
+  printf '  PASS_TOMB_FILE=%s\n' "$PASS_TOMB_FILE"
+  printf '  PASS_TOMB_KEY=%s\n' "${PASS_TOMB_KEY:-<unset>}"
+  printf '  PASS_TOMB_MOUNT=%s\n' "$PASS_TOMB_MOUNT"
+  printf '  PASS_TOMB_KEY_GNUPGHOME=%s\n' "$PASS_TOMB_KEY_GNUPGHOME"
+  printf '  PASS_TOMB_GNUPGHOME=%s\n' "$PASS_TOMB_GNUPGHOME"
+  printf '  PASS_TOMB_STORE=%s\n' "$PASS_TOMB_STORE"
+  printf '  PASS_TOMB_BRANCH=%s\n' "$PASS_TOMB_BRANCH"
+
+  if is_mounted; then
+    printf '\nmount: open\n'
+    with_env
+    gpg --list-secret-keys --keyid-format LONG || true
+    if [ -d "$PASS_TOMB_STORE/.git" ]; then
+      git -C "$PASS_TOMB_STORE" status --short --branch || true
+    fi
+  else
+    printf '\nmount: closed\n'
+  fi
+
+  [ "$ok" -eq 1 ]
+}
+
+cmd_bootstrap() {
+  cat <<EOF
+pass + Tomb bootstrap
+
+1. Install missing commands:
+   $PROGRAM deps
+
+2. Create or place the Tomb:
+   $PROGRAM create-tomb 256
+
+3. Open the Tomb in your terminal:
+   export PASS_TOMB_KEY="\$HOME/Vaults/passwords.tomb.key"
+   $PROGRAM open
+   $PROGRAM shell
+
+4. Create or import the dedicated pass GPG key:
+   $PROGRAM keygen "Jagteshver Singh <85994817+JS-CodeGamer@users.noreply.github.com>"
+   # or:
+   $PROGRAM import-key /path/to/private-key.asc
+
+5. Create the private GitHub repo:
+   gh auth refresh -h github.com
+   gh repo create pass-store --private
+
+6. Initialize pass and push:
+   $PROGRAM init-pass FINGERPRINT git@github.com:JS-CodeGamer/pass-store.git
+   pass insert web/example
+   $PROGRAM sync
+
+7. Close:
+   exit
+   $PROGRAM close
+EOF
+}
+
+cmd_create_tomb() {
+  local size=${1:-256}
+  [ "$#" -le 1 ] || die "usage: $PROGRAM create-tomb [size_mb]"
+  if [ -e "$PASS_TOMB_FILE" ]; then
+    die "Tomb file already exists: $PASS_TOMB_FILE"
+  fi
+
+  mkdir -p "${PASS_TOMB_FILE%/*}"
+
+  if [ -z "$PASS_TOMB_KEY" ]; then
+    PASS_TOMB_KEY=${PASS_TOMB_FILE}.key
+  fi
+
+  if [ -e "$PASS_TOMB_KEY" ]; then
+    die "Tomb key already exists: $PASS_TOMB_KEY"
+  fi
+
+  tomb_cmd -s "$size" dig "$PASS_TOMB_FILE"
+  tomb_cmd forge "$PASS_TOMB_KEY"
+  tomb_cmd -k "$PASS_TOMB_KEY" lock "$PASS_TOMB_FILE"
+
+  printf 'Created:\n'
+  printf '  Tomb: %s\n' "$PASS_TOMB_FILE"
+  printf '  Key:  %s\n' "$PASS_TOMB_KEY"
+  printf '\nOpen it with:\n'
+  printf '  export PASS_TOMB_KEY=%q\n' "$PASS_TOMB_KEY"
+  printf '  %s open\n' "$PROGRAM"
+}
+
+cmd_open() {
+  mkdir -p "$PASS_TOMB_MOUNT"
+
+  if is_mounted; then
+    printf 'Tomb is already mounted at %s\n' "$PASS_TOMB_MOUNT"
+    return
+  fi
+
+  [ -f "$PASS_TOMB_FILE" ] || die "missing Tomb file: $PASS_TOMB_FILE"
+
+  if [ -n "$PASS_TOMB_KEY" ]; then
+    [ -f "$PASS_TOMB_KEY" ] || die "missing Tomb key: $PASS_TOMB_KEY"
+    tomb_cmd -k "$PASS_TOMB_KEY" open "$PASS_TOMB_FILE" "$PASS_TOMB_MOUNT"
+  else
+    tomb_cmd open "$PASS_TOMB_FILE" "$PASS_TOMB_MOUNT"
+  fi
+
+  ensure_layout
+  printf 'Opened. Run this in your shell:\n'
+  printf '  eval "$(%s env)"\n' "$PROGRAM"
+}
+
+cmd_shell() {
+  ensure_layout
+  with_env
+  exec "${SHELL:-/bin/bash}" -i
+}
+
+cmd_keygen() {
+  [ "$#" -eq 1 ] || die "usage: $PROGRAM keygen \"Name <email>\""
+  ensure_layout
+  with_env
+  gpg --quick-generate-key "$1" future-default default 2y
+  printf '\nSecret keys in Tomb GNUPGHOME:\n'
+  gpg --list-secret-keys --keyid-format LONG
+}
+
+cmd_import_key() {
+  [ "$#" -eq 1 ] || die "usage: $PROGRAM import-key /path/to/private-key.asc"
+  [ -r "$1" ] || die "cannot read key file: $1"
+  ensure_layout
+  with_env
+  gpg --import "$1"
+  gpg --list-secret-keys --keyid-format LONG
+}
+
+cmd_init_pass() {
+  [ "$#" -ge 1 ] && [ "$#" -le 2 ] || die "usage: $PROGRAM init-pass KEY_FINGERPRINT [git@github.com:USER/REPO.git]"
+  need pass
+  ensure_layout
+  with_env
+
+  pass init "$1"
+  pass git init
+  pass git branch -M "$PASS_TOMB_BRANCH"
+  pass git config user.name "$(git config --global --get user.name || printf '%s' "$USER")"
+  pass git config user.email "$(git config --global --get user.email || printf '%s@localhost' "$USER")"
+
+  if [ "$#" -eq 2 ]; then
+    if git -C "$PASS_TOMB_STORE" remote get-url origin >/dev/null 2>&1; then
+      git -C "$PASS_TOMB_STORE" remote set-url origin "$2"
+    else
+      git -C "$PASS_TOMB_STORE" remote add origin "$2"
+    fi
+    pass git push -u origin "$PASS_TOMB_BRANCH"
+  fi
+}
+
+cmd_clone() {
+  [ "$#" -eq 1 ] || die "usage: $PROGRAM clone git@github.com:USER/REPO.git"
+  need git
+  ensure_layout
+  with_env
+
+  if [ -d "$PASS_TOMB_STORE/.git" ]; then
+    die "$PASS_TOMB_STORE already contains a git repo"
+  fi
+
+  rmdir "$PASS_TOMB_STORE" 2>/dev/null || true
+  git clone "$1" "$PASS_TOMB_STORE"
+  git -C "$PASS_TOMB_STORE" switch "$PASS_TOMB_BRANCH" 2>/dev/null || true
+}
+
+cmd_sync() {
+  need pass
+  require_open_tomb
+  [ -d "$PASS_TOMB_STORE/.git" ] || die "not a git repo: $PASS_TOMB_STORE"
+  with_env
+
+  git -C "$PASS_TOMB_STORE" fetch --prune origin
+  git -C "$PASS_TOMB_STORE" pull --rebase --autostash origin "$PASS_TOMB_BRANCH"
+  git -C "$PASS_TOMB_STORE" push origin "$PASS_TOMB_BRANCH"
+}
+
+cmd_status() {
+  require_open_tomb
+  with_env
+  printf 'GNUPGHOME=%s\n' "$GNUPGHOME"
+  printf 'PASSWORD_STORE_DIR=%s\n' "$PASSWORD_STORE_DIR"
+  printf '\n'
+  gpg --list-secret-keys --keyid-format LONG || true
+  printf '\n'
+  if [ -d "$PASS_TOMB_STORE/.git" ]; then
+    git -C "$PASS_TOMB_STORE" status --short --branch
+    git -C "$PASS_TOMB_STORE" remote -v
+  else
+    printf 'No git repo at %s\n' "$PASS_TOMB_STORE"
+  fi
+}
+
+print_close_recovery() {
+  local source mapper loopdev
+
+  source=$(findmnt -n -o SOURCE "$PASS_TOMB_MOUNT" 2>/dev/null | awk 'NR == 1 { print; exit }' || true)
+  mapper=${source##*/}
+
+  if [ -n "$mapper" ] && [ "$mapper" != "$source" ]; then
+    loopdev=/dev/${mapper##*.}
+  else
+    mapper=MAPPER_NAME
+    loopdev=LOOP_DEVICE
+  fi
+
+  cat >&2 <<EOF
+
+$PROGRAM: Tomb did not close through its normal metadata.
+
+Try this in a real terminal:
+  tomb close $(printf '%q' "$PASS_TOMB_NAME")
+
+If Tomb says the filesystem is busy:
+  fuser -vm $(printf '%q' "$PASS_TOMB_MOUNT")
+  tomb slam $(printf '%q' "$PASS_TOMB_NAME")
+
+If Tomb still cannot see the open mount but findmnt shows it mounted,
+recover manually with:
+  sudo umount $(printf '%q' "$PASS_TOMB_MOUNT")
+  sudo cryptsetup luksClose $(printf '%q' "$mapper")
+  sudo losetup -d $(printf '%q' "$loopdev")
+
+Use these to re-check state:
+  findmnt $(printf '%q' "$PASS_TOMB_MOUNT")
+  losetup -a
+EOF
+}
+
+cmd_close() {
+  if [ -d "$PASS_TOMB_GNUPGHOME" ]; then
+    gpgconf --homedir "$PASS_TOMB_GNUPGHOME" --kill gpg-agent >/dev/null 2>&1 || true
+  fi
+
+  if is_mounted; then
+    if ! tomb_cmd close "$PASS_TOMB_NAME"; then
+      print_close_recovery
+      return 1
+    fi
+
+    if is_mounted; then
+      print_close_recovery
+      return 1
+    fi
+  else
+    printf 'Tomb is not mounted at %s\n' "$PASS_TOMB_MOUNT"
+  fi
+}
+
+cmd_slam() {
+  if [ -d "$PASS_TOMB_GNUPGHOME" ]; then
+    gpgconf --homedir "$PASS_TOMB_GNUPGHOME" --kill gpg-agent >/dev/null 2>&1 || true
+  fi
+
+  tomb_cmd slam "$PASS_TOMB_NAME"
+}
+
+case "${1:-}" in
+  bootstrap) shift; cmd_bootstrap "$@" ;;
+  deps) shift; cmd_deps "$@" ;;
+  doctor) shift; cmd_doctor "$@" ;;
+  create-tomb) shift; cmd_create_tomb "$@" ;;
+  open) shift; cmd_open "$@" ;;
+  env) shift; ensure_layout; export_env "$@" ;;
+  shell) shift; cmd_shell "$@" ;;
+  keygen) shift; cmd_keygen "$@" ;;
+  import-key) shift; cmd_import_key "$@" ;;
+  init-pass) shift; cmd_init_pass "$@" ;;
+  clone) shift; cmd_clone "$@" ;;
+  sync) shift; cmd_sync "$@" ;;
+  status) shift; cmd_status "$@" ;;
+  close) shift; cmd_close "$@" ;;
+  slam) shift; cmd_slam "$@" ;;
+  -h|--help|help|'') usage ;;
+  *) usage >&2; exit 2 ;;
+esac
+
