@@ -1,0 +1,17 @@
+// Find outputs by running `niri msg outputs` while inside a niri instance.
+output "eDP-1" {
+    mode "1920x1080"
+    scale 1
+    focus-at-startup
+    position x=0 y=0
+    variable-refresh-rate
+}
+
+output "HDMI-A-1" {
+    mode "1920x1080"
+    scale 1
+    transform "normal"
+    // transform "90"
+    position x=0 y=-1080
+    variable-refresh-rate
+}

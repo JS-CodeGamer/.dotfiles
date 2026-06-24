@@ -1,0 +1,10 @@
+[Unit]
+Description=Run wallpaper and theme cycle periodically
+
+[Timer]
+OnBootSec=30s
+OnUnitActiveSec=30s
+Persistent=true
+
+[Install]
+WantedBy=timers.target

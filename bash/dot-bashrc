@@ -6,6 +6,7 @@
 # Unlimited history
 export HISTSIZE=-1
 export HISTFILESIZE=-1
+export HISTCONTROL=ignoreboth:erasedups
 
 # go bin
 if [ -d "$HOME/go/bin" ]; then
@@ -77,7 +78,8 @@ if check fzf; then
   fi
 fi
 
-shopt -s histappend checkwinsize expand_aliases globstar
+shopt -s histappend cmdhist lithist histverify histreedit checkwinsize expand_aliases globstar
+set -o histexpand
 set +o noclobber
 
 if check app2unit-open; then
@@ -102,7 +104,7 @@ alias c='clear'
 
 ## ls
 check eza &&
-  alias ls='eza --color --group-directories-first --icons' # use exa if available
+  alias ls='eza --color --icons --group-directories-first' # use exa if available
 alias la='ls -A'                                           # all files and dirs
 alias ll='ls -al'                                          # long format
 alias lt='ls -aT'                                          # tree listing using exa
@@ -370,7 +372,7 @@ set_prompt() {
   [[ $EXIT -eq 0 ]] && STATUS_COLOR=$GREEN || STATUS_COLOR=$RED
 
   PROMPT_DIRTRIM=2
-  PS1="\n${WHITE}\t $(show_venv)${BOLD}\u@\h${RESET}:${BLUE}\w${RESET}$(parse_git_branch)\n${STATUS_COLOR}→${RESET} "
+  PS1="${WHITE}\t $(show_venv)${BOLD}\u@\h${RESET}:${BLUE}\w${RESET}$(parse_git_branch)\n${STATUS_COLOR}→${RESET} "
 }
 
 PROMPT_COMMAND=set_prompt

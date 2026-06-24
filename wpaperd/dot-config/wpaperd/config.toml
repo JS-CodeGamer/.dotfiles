@@ -1,8 +1,0 @@
-[default]
-duration = "1m"
-mode = "fit"
-transition-time = 300
-queue-size = 5
-
-[any]
-path = "/home/jagteshver/images/wallpapers"

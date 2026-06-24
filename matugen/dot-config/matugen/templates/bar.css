@@ -1,0 +1,31 @@
+window {
+  background: transparent;
+  min-height: 10px;
+}
+
+.bar-panel {
+  background: {{ colors.surface.default.rgba | set_alpha: 0.5}};
+  border-radius: 0 0 12px 12px;
+  padding: 8px 16px;
+  backdrop-filter: blur(100px);
+}
+
+.bar-section {
+  border-spacing: 12px;
+}
+
+label {
+  color: {{ colors.on_surface.default.rgba }};
+  font-family:
+    "Symbols Nerd Font", "MonaspiceXe NFM", "Noto Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.clock {
+  font-size: 14px;
+}
+
+.icon {
+  font-size: 18px;
+}

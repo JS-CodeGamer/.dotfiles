@@ -5,13 +5,14 @@ binds {
     Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "~/.local/bin/lock-handler"; }
     // "loginctl" "lock-session"; }
     Mod+W hotkey-overlay-title="Open Browser: Zen" { spawn "app2unit" "--" "zen-browser"; }
+    Mod+P { spawn "app2unit" "--" "zen-browser" "--private-window"; }
     Mod+E hotkey-overlay-title="Open File Manager: yazi" { spawn "app2unit" "-T" "--" "yazi"; }
     Mod+X hotkey-overlay-title="Open Text Editor: neovim" { spawn "app2unit" "-T" "--" "nvim"; }
     Mod+Shift+S hotkey-overlay-title="Open Text Editor: neovim" { spawn "app2unit" "--" "steam"; }
 
     // Script Bindings
     Mod+S hotkey-overlay-title="Open Notification Panel" { spawn "swaync-client" "-t" "-sw"; }
-    Mod+Ctrl+T hotkey-overlay-title="Change Wallpaper" { spawn "wpaperctl" "next"; }
+    Mod+Ctrl+T hotkey-overlay-title="Change Wallpaper" { spawn "~/.local/bin/cycle-theme"; }
     Mod+Insert { spawn "fuzzel-emoji"; }
     Mod+V { spawn "bash" "-c" "cliphist list | $SELECTOR | cliphist decode | wl-copy"; }
     Mod+Shift+P { spawn "passmenu"; }
@@ -26,7 +27,7 @@ binds {
     // Ctrl+Mod+Shift+T { spawn "~/.local/bin/im2txt"; }
 
     // Audio
-    XF86AudioMute { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
+    XF86AudioMute { spawn "bash" "-c" "mediactl toggle mute"; }
     XF86AudioRaiseVolume { spawn "bash" "-c" "mediactl vol inc 2%"; }
     XF86AudioLowerVolume { spawn "bash" "-c" "mediactl vol dec 2%"; }
 
@@ -37,16 +38,16 @@ binds {
     XF86AudioPrev { spawn "bash" "-c" "mediactl prev"; }
     Mod+N { spawn "bash" "-c" "mediactl next"; }
     Mod+Space { spawn "bash" "-c" "mediactl toggle"; }
-    Mod+P { spawn "bash" "-c" "mediactl prev"; }
+    Mod+Ctrl+P { spawn "bash" "-c" "mediactl prev"; }
     Mod+M { spawn "bash" "-c" "mediactl mute"; }
-    Mod+Ctrl+P { spawn "bash" "-c" "mediactl seek -5"; }
-    Mod+Ctrl+N { spawn "bash" "-c" "mediactl seek +5"; }
+    // Mod+Ctrl+P { spawn "bash" "-c" "mediactl seek -5"; }
+    // Mod+Ctrl+N { spawn "bash" "-c" "mediactl seek +5"; }
 
     Mod+I { spawn "bash" "-c" "notify-send \"Now Playing\" \"$(playerctl metadata artist) - $(playerctl metadata title)\""; }
 
     // Brightness Controls
-    XF86MonBrightnessUp { spawn "brightnessctl" "set" "2%+"; }
-    XF86MonBrightnessDown { spawn "brightnessctl" "set" "2%-"; }
+    XF86MonBrightnessUp { spawn "brightnessctl" "set" "10%+"; }
+    XF86MonBrightnessDown { spawn "brightnessctl" "set" "10%-"; }
 
     // Some spl keys
     XF86Mail { spawn "app2unit" "--" "zen-browser" "gmail.com"; }

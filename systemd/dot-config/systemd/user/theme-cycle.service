@@ -1,0 +1,9 @@
+[Unit]
+Description=Cycle wallpaper and theme
+After=niri.service
+
+[Service]
+Type=oneshot
+ExecCondition=/usr/bin/systemctl --user is-active --quiet niri.service
+ExecStart=%h/.local/bin/cycle-theme
+KillMode=process

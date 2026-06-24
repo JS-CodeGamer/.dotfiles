@@ -1,0 +1,15 @@
+input {
+    keyboard {
+        numlock
+    }
+
+    touchpad {
+        tap
+        drag true
+        natural-scroll
+        disabled-on-external-mouse
+        scroll-method "two-finger"
+    }
+
+    disable-power-key-handling
+}

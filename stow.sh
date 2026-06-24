@@ -10,20 +10,36 @@ STOWPKGS_FILE=".stowpkgs"
 declare -A FAILED_FILES
 FAILED_PACKAGES=()
 
+usage() {
+  cat <<EOF
+Usage: $0 [-s stowpkg_file] [-f only_package]...
+    echo "  -s: Specify custom .stowpkgs file
+EOF
+}
+
 # Parse arguments
 CUSTOM_STOWPKG=""
-while getopts ":s:h" opt; do
+ONLY=()
+while [ $# -ge 1 ]; do
+  opt="$1"
+  shift
   case $opt in
-    s) CUSTOM_STOWPKG="$OPTARG" ;;
-    h)
-      echo "Usage: $0 [-s stowpkg_file]"
-      echo "  -s: Specify custom .stowpkgs file"
-      exit 0
-      ;;
-    \?)
-      echo "Error: Invalid option -$OPTARG" >&2
+  s) CUSTOM_STOWPKG="$OPTARG" ;;
+  h)
+    usage
+    exit 0
+    ;;
+  f)
+    if [ $# -eq 0 ]; then
+      usage
       exit 1
-      ;;
+    fi
+    ONLY+=("$1")
+    ;;
+  \?)
+    echo "Error: Invalid option -$OPTARG" >&2
+    exit 1
+    ;;
   esac
 done
 
@@ -55,7 +71,7 @@ process_package() {
       if [[ "$line" =~ (WARNING|ERROR|conflict) ]]; then
         FAILED_FILES["$pkg"]+="$line"$'\n'
       fi
-    done <<< "$output"
+    done <<<"$output"
   fi
 }
 
@@ -90,4 +106,3 @@ else
   done
   exit 1
 fi
-

@@ -79,28 +79,109 @@
 			]
 		},
 		// without biome
-		// "html": { "lsp-server": [ "html" ], "formatter": [ "prettier" ] },
-		// "javascript": { "lsp-server": [ "ts_ls" ], "formatter": [ "prettier" ], "linter": [ "eslint_d" ] },
-		// "javascriptreact": { "lsp-server": [ "ts_ls" ], "formatter": [ "prettier" ], "linter": [ "eslint_d" ] },
-		// "tsx": { "lsp-server": [ "angular_ls" ], "formatter": [ "prettier" ], "linter": [ "eslint_d" ] },
-		// "typescript": { "lsp-server": [ "angular_ls" ], "formatter": [ "prettier" ], "linter": [ "eslint_d" ] },
-		// "typescriptreact": { "lsp-server": [ "angular_ls" ], "formatter": [ "prettier" ], "linter": [ "eslint_d" ] },
-		// "htmlangular": { "lsp-server": [ "angular_ls" ], "formatter": [ "prettier" ] },
-		// "css": { "lsp-server": [ "cssls" ], "formatter": [ "prettier" ] },
-		// "jsx": { "lsp-server": [ "ts_ls" ], "formatter": [ "prettier" ], "linter": [ "eslint_d" ] },
-		// with biome
 		"html": {
 			"lsp-server": [
-				"html",
-				"biome"
+				"html"
+			],
+			"formatter": [
+				"prettier"
+			]
+		},
+		"javascript": {
+			"lsp-server": [
+				"ts_ls"
+			],
+			"formatter": [
+				"prettier"
+			],
+			"linter": [
+				"eslint_d"
+			]
+		},
+		"javascriptreact": {
+			"lsp-server": [
+				"ts_ls"
+			],
+			"formatter": [
+				"prettier"
+			],
+			"linter": [
+				"eslint_d"
+			]
+		},
+		"tsx": {
+			"lsp-server": [
+				"angular_ls"
+			],
+			"formatter": [
+				"prettier"
+			],
+			"linter": [
+				"eslint_d"
+			]
+		},
+		"typescript": {
+			"lsp-server": [
+				"angular_ls"
+			],
+			"formatter": [
+				"prettier"
+			],
+			"linter": [
+				"eslint_d"
+			]
+		},
+		"typescriptreact": {
+			"lsp-server": [
+				"angular_ls"
+			],
+			"formatter": [
+				"prettier"
+			],
+			"linter": [
+				"eslint_d"
 			]
 		},
 		"htmlangular": {
 			"lsp-server": [
-				"angular_ls",
-				"biome"
+				"angular_ls"
+			],
+			"formatter": [
+				"prettier"
 			]
 		},
+		"css": {
+			"lsp-server": [
+				"cssls"
+			],
+			"formatter": [
+				"prettier"
+			]
+		},
+		"jsx": {
+			"lsp-server": [
+				"ts_ls"
+			],
+			"formatter": [
+				"prettier"
+			],
+			"linter": [
+				"eslint_d"
+			]
+		},
+		// with biome
+		// "html": {
+		// 	"lsp-server": [
+		// 		"html",
+		// 		"biome"
+		// 	]
+		// },
+		// "htmlangular": {
+		// 	"lsp-server": [
+		// 		"angular_ls",
+		// 		"biome"
+		// 	]
+		// },
 		// "javascript": {
 		// 	"lsp-server": ["ts_ls", "biome"]
 		// },
@@ -110,30 +191,30 @@
 		// "jsx": {
 		// 	"lsp-server": ["ts_ls", "biome"]
 		// },
-		"typescript": {
-			"lsp-server": [
-				"angular_ls",
-				"biome"
-			]
-		},
-		"typescriptreact": {
-			"lsp-server": [
-				"angular_ls",
-				"biome"
-			]
-		},
-		"tsx": {
-			"lsp-server": [
-				"angular_ls",
-				"biome"
-			]
-		},
-		"css": {
-			"lsp-server": [
-				"cssls",
-				"biome"
-			]
-		},
+		// "typescript": {
+		// 	"lsp-server": [
+		// 		"angular_ls",
+		// 		"biome"
+		// 	]
+		// },
+		// "typescriptreact": {
+		// 	"lsp-server": [
+		// 		"angular_ls",
+		// 		"biome"
+		// 	]
+		// },
+		// "tsx": {
+		// 	"lsp-server": [
+		// 		"angular_ls",
+		// 		"biome"
+		// 	]
+		// },
+		// "css": {
+		// 	"lsp-server": [
+		// 		"cssls",
+		// 		"biome"
+		// 	]
+		// },
 		"latex": {
 			"lsp-server": [
 				"texlab"

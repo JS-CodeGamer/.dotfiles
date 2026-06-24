@@ -1,11 +1,11 @@
 [Unit]
 Description=Wallpaper Daemon
-Documentation=man:wpaperd(1)
+Documentation=man:awww(1)
 After=graphical-session.target
 
 [Service]
 Type=exec
-ExecStart=/usr/bin/wpaperd
+ExecStart=/usr/bin/awww-daemon
 Restart=on-failure
 Slice=session-graphical.slice
 
