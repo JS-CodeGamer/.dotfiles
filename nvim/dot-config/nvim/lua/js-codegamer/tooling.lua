@@ -1,6 +1,4 @@
 -- tools.lua: Centralized management for LSP servers, formatters, and linters
-local cjson_imported, cjson = pcall(require, "cjson")
-
 local config_path = vim.fn.stdpath("config") .. "/tools.jsonc"
 
 -- Cache for parsed data and computed mappings

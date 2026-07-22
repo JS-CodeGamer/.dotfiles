@@ -14,7 +14,7 @@ binds {
     Mod+S hotkey-overlay-title="Open Notification Panel" { spawn "swaync-client" "-t" "-sw"; }
     Mod+Ctrl+T hotkey-overlay-title="Change Wallpaper" { spawn "~/.local/bin/cycle-theme"; }
     Mod+Insert { spawn "fuzzel-emoji"; }
-    Mod+V { spawn "bash" "-c" "cliphist list | $SELECTOR | cliphist decode | wl-copy"; }
+    Mod+V { spawn "bash" "-c" "cliphist list | $SELECTOR | cliphist decode | wl-copy && wtype -M ctrl -M shift -k v -m shift -m ctrl"; }
     Mod+Shift+P { spawn "passmenu"; }
 
     // Mod+Shift+Alt+S { spawn "grim -g "$(slurp)" - | swappy -f -"; }

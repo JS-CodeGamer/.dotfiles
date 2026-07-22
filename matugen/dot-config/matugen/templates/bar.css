@@ -4,7 +4,7 @@ window {
 }
 
 .bar-panel {
-  background: {{ colors.surface.default.rgba | set_alpha: 0.5}};
+  background: {{ colors.surface.default.rgba | set_alpha: 0.9}};
   border-radius: 0 0 12px 12px;
   padding: 8px 16px;
   backdrop-filter: blur(100px);

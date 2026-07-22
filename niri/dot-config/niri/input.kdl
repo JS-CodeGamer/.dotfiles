@@ -7,7 +7,7 @@ input {
         tap
         drag true
         natural-scroll
-        disabled-on-external-mouse
+        // disabled-on-external-mouse
         scroll-method "two-finger"
     }
 

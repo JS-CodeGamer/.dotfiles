@@ -10,6 +10,7 @@
   bg      = bisect good
 
   c       = commit
+  cm      = commit --message
   ca      = commit --all
   cam     = commit --amend --no-edit
   came    = commit --amend
