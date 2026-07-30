@@ -395,3 +395,5 @@ if [ -d "$HOME/.local/share/custom" ]; then
 elif [ -f "$HOME/.local/share/custom" ]; then
   source "$HOME/.local/share/custom"
 fi
+
+eval "$(ray completions bash)"
